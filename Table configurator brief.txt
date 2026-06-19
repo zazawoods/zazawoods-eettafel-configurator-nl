@@ -1,0 +1,632 @@
+3D Table Configurator Project Plan — From A to Z
+A. Define the goal
+
+The goal of the project is to create a 3D table configurator that allows customers to visually build their ideal table online and submit or purchase the exact configuration.
+
+The configurator should help users:
+
+choose a table model
+adjust dimensions
+choose colors and finishes
+switch between leg options
+see changes live in 3D
+understand what the final table will look like
+connect the chosen setup to a quote request or product checkout flow
+
+A strong goal statement could be:
+
+“Build a fast, premium 3D table configurator that allows customers to configure Bogade tables visually, with realistic materials, correct dimensions, valid leg combinations, and a clear path toward lead generation or purchase.”
+
+B. Define the problem
+
+Right now, customers likely have to imagine too much.
+
+Typical problems the configurator solves:
+
+customers cannot easily visualize different shapes, leg styles, and finishes
+customers may hesitate because they are unsure how the final product will look
+manual sales guidance takes time
+custom options are harder to explain through static photos
+not every combination is valid, and this is difficult to communicate manually
+quoting custom tables can become repetitive and time-consuming
+
+So the configurator is not just a design tool. It is also a sales tool, a validation tool, and a conversion tool.
+
+C. Define who it is for
+
+You should clearly identify the users.
+
+Primary users:
+
+private customers looking for a dining table
+design-conscious customers who want to compare styles
+customers who want a custom size
+customers who want more confidence before requesting a quote
+
+Secondary users:
+
+your sales team
+showroom staff
+interior professionals
+marketing team
+
+Each of these users has slightly different needs. The configurator should mainly be built for the customer, but useful internally too.
+
+D. Define the product scope
+
+Be strict about what version 1 includes.
+
+Version 1 could include:
+choice of table shape
+length and width controls
+thickness display
+wood color choice
+edge finish choice
+leg model selection
+powder coating color for metal legs
+real-time 3D preview
+camera controls
+mobile and desktop support
+quote request or checkout handoff
+rule-based valid combinations only
+Version 1 should probably not include:
+AR
+room scene customization
+chairs or styling accessories
+advanced lighting changes
+dynamic pricing if this adds too much complexity initially
+multi-table comparison
+user accounts and save-for-later
+
+That can all come later.
+
+E. Define the table models and options
+
+This is one of the most important stages. You need to fully map the product logic before building.
+
+You need to list:
+
+all table shapes
+all compatible leg options per shape
+all available lengths per model
+all available widths per model
+all edge finish options
+all wood colors
+all material types if applicable
+all base materials
+all powder coating options
+thickness rules
+any limitations between size and leg combinations
+
+For example:
+
+Deens ovaal may allow legs A, B, C, D
+Boomstam may allow only certain edges
+Ceramic tops may always use 2 cm thickness
+Oak tops may always use 4 cm thickness
+some legs may not be valid above a certain size
+some shapes may require repositioning of legs automatically when dimensions change
+
+This should become the master configuration matrix.
+
+F. Define the user journey
+
+You need to decide how the customer moves through the configurator.
+
+A clean flow could be:
+
+user opens configurator
+selects table shape
+selects dimensions
+selects wood color or tabletop finish
+selects edge finish
+selects leg type
+if metal: selects powder coating color
+rotates and views table in 3D
+sees summary of chosen configuration
+clicks request quote or buy now
+
+Important: the process should feel simple, not technical. Internally it may be complex, but externally it should feel smooth.
+
+G. Gather all required assets
+
+Before development starts, collect everything in one organized structure.
+
+You will need:
+
+GLB files for tabletop shapes
+GLB files for leg models
+texture files for wood finishes
+texture files for metal finishes if needed
+naming system for all files
+preview references
+product and option names
+SKU logic or Shopify mapping
+pricing data if pricing will be shown
+dimension rules
+leg placement rules
+visual reference images
+
+Folder structure matters a lot here. If the asset library is messy, the build becomes messy.
+
+H. Standardize the asset system
+
+Your 3D files must follow a clean system.
+
+You should define:
+
+consistent file names
+consistent pivot points
+correct object orientation
+correct scale
+separated meshes where needed
+material names that make sense
+consistent UV setup
+optimized polycount
+proper export settings
+
+Example naming:
+
+shape_deens_ovaal.glb
+shape_organisch.glb
+leg_butterfly.glb
+leg_matrix.glb
+finish_pure_oak.jpg
+finish_smoked_oak.jpg
+powder_black_9005
+
+Without this structure, developers will lose time translating chaos into code.
+
+I. Define the technical system
+
+Now decide how the configurator will actually be built.
+
+You need to decide:
+
+front-end framework
+3D engine
+Shopify integration method
+hosting approach
+mobile optimization strategy
+configurator data structure
+pricing and product mapping structure
+
+A likely direction is:
+
+React or Next.js front end
+Three.js or React Three Fiber for 3D
+Shopify integration for product or quote handoff
+configuration rules stored in JSON
+
+The main point is this: the configurator should not hardcode everything manually. It should be data-driven as much as possible.
+
+J. Create the rules engine
+
+This is the logic core of the configurator.
+
+You need rules for:
+
+which legs belong to which shape
+which dimensions are allowed for which model
+when leg positions must shift
+when options must disappear
+when material thickness changes
+which options are incompatible
+what SKU or product mapping belongs to each valid result
+
+This is one of the most critical steps, because the configurator must only allow realistic and producible combinations.
+
+K. Define resizing behavior
+
+Because your GLB files may start from one base size, you need exact logic for resizing.
+
+Questions to define:
+
+does the tabletop scale proportionally or only on X and Z axes?
+does thickness remain fixed?
+do legs stay original size while moving outward?
+at what point do leg positions shift?
+does stretching affect wood grain direction?
+what is the max size before proportions become unrealistic?
+
+For your tables, most likely:
+
+tabletop surface changes in length and width
+thickness stays fixed
+legs do not scale in a distorted way
+legs reposition based on dimension logic
+
+This must be documented precisely before build.
+
+L. Decide how materials behave
+
+Your wood and finish system should feel premium and realistic.
+
+You need to define:
+
+whether each wood color is a texture or shader setup
+whether grain direction stays consistent
+whether stretching is allowed visually
+whether ceramic uses separate material behavior
+whether roughness, bump, and reflection values are adjustable
+whether lighting is fixed or dynamic
+
+Since your brand is visual, this part matters a lot. Cheap-looking material behavior will hurt trust.
+
+M. Define camera behavior
+
+The camera experience should feel elegant and controlled.
+
+Decide:
+
+default angle
+zoom limits
+rotation limits
+whether camera snaps to useful views
+whether there are preset views
+whether mobile uses simplified interaction
+
+Useful preset views:
+
+front view
+angled hero view
+tabletop close view
+leg detail view
+dining perspective
+
+This helps customers understand the product better than just free orbit alone.
+
+N. Define the UI structure
+
+The interface should feel premium, simple, and sales-oriented.
+
+Possible UI sections:
+
+left or bottom option panel
+3D viewer in center
+summary panel
+CTA button
+dimensions display
+material swatches
+step-by-step option flow
+
+The UI must not feel like engineering software. It should feel like luxury product selection.
+
+O. Define the business output
+
+What happens after the customer finishes configuring?
+
+You have a few possible outputs:
+
+add to cart
+request quote
+send configuration by email
+save configuration internally
+generate SKU combination
+generate PDF summary
+send lead into CRM
+
+For your business, a strong first version may be:
+
+customer configures table
+configuration is summarized
+customer submits quote request or goes to a matching Shopify product
+P. Map Shopify or backend integration
+
+This part must be designed carefully.
+
+You need to decide:
+
+does each combination map to a Shopify variant
+does the configurator generate a custom line item
+does it pass properties into cart
+does it create a quote form instead of direct checkout
+how are dimensions stored
+how are custom values pushed into order metadata
+
+If variant count becomes too large, then direct variant mapping may not be practical. In that case, line-item properties or quote-based flow may be better.
+
+Q. Create wireframes first
+
+Before full design or development, sketch the structure.
+
+You should create wireframes for:
+
+desktop configurator
+mobile configurator
+product summary state
+invalid combination handling
+final CTA state
+
+This avoids wasting time polishing a layout that has poor logic.
+
+R. Build a clickable logic prototype
+
+Even before full 3D, make a prototype of the logic flow.
+
+This can validate:
+
+order of steps
+clarity of UI
+whether customers understand the choices
+whether too many options create friction
+whether mobile is manageable
+
+This stage helps solve usability before solving rendering.
+
+S. Prepare the MVP
+
+The first build should be a minimum viable configurator, not the final dream system.
+
+A good MVP for your table configurator:
+
+2 to 4 table shapes
+limited leg library
+key wood colors
+core edge finishes
+resize logic
+valid combination rules
+good 3D performance
+quote or cart output
+
+This is enough to test whether the concept converts.
+
+T. Start development in layers
+
+Do not try to build everything at once.
+
+Suggested build order:
+
+base app structure
+3D scene setup
+import one table and one leg
+dimension change logic
+material switching
+leg switching
+rule engine
+UI controls
+summary generation
+Shopify or quote integration
+mobile optimization
+testing and polishing
+
+This reduces technical chaos.
+
+U. Test asset performance
+
+3D projects often fail on speed.
+
+You need to check:
+
+load times
+texture weight
+model complexity
+mobile performance
+memory use
+scene responsiveness
+
+If needed:
+
+compress textures
+reduce polycount
+lazy-load assets
+preload only the next likely asset
+simplify shadows and lighting
+
+Fast and smooth matters more than flashy.
+
+V. Test product accuracy
+
+You also need commercial accuracy, not just technical function.
+
+Check:
+
+do dimensions reflect reality
+do wood colors resemble reality
+do leg placements stay correct
+are invalid combinations blocked
+are proportions believable
+does the final summary match what production would build
+
+This step is critical because the configurator becomes a promise to the customer.
+
+W. Test with real users
+
+Show it to:
+
+yourself
+your sales team
+a few customers
+maybe an interior designer
+someone unfamiliar with the product
+
+Ask:
+
+do they understand it immediately
+do they trust what they see
+do they find the right options
+do they get stuck
+do they miss information
+do they feel more likely to inquire or buy
+
+Real user confusion will reveal what you missed.
+
+X. Refine the experience
+
+After testing, improve:
+
+UI clarity
+option order
+camera presets
+material realism
+speed
+mobile usability
+wording
+CTA placement
+summary layout
+
+This stage often makes the difference between “cool tool” and “actual sales tool.”
+
+Y. Launch with tracking
+
+When you launch, measure performance properly.
+
+Track:
+
+configurator opens
+step completion rate
+drop-off points
+most selected shapes
+most selected finishes
+quote requests submitted
+conversion rate
+device type
+loading issues
+
+This tells you where to optimize.
+
+Z. Improve into version 2
+
+Once version 1 works, then expand.
+
+Version 2 could include:
+
+AR view
+save and resume
+multiple table comparison
+room scene placement
+chair pairing
+upsells
+visual dining room context
+downloadable spec sheet
+direct dealer mode
+multilingual interface
+
+But only after the foundation works.
+
+What you need to create before development starts
+
+For your specific project, I would strongly recommend creating these 10 documents first:
+
+1. Product option matrix
+
+A sheet that shows:
+
+shape
+allowed dimensions
+allowed legs
+allowed finishes
+allowed edge types
+material rules
+2. Asset inventory
+
+A sheet that lists:
+
+file names
+type of asset
+status
+missing items
+notes
+3. Leg placement rules
+
+A document describing:
+
+where legs sit by default
+how they move when width changes
+how they move when length changes
+when different placements apply
+4. Dimension rules
+
+A sheet defining:
+
+min length
+max length
+step intervals
+width options
+thickness by material
+unsupported combinations
+5. Material system sheet
+
+A document listing:
+
+wood finishes
+texture files
+roughness levels
+ceramic options
+metal color options
+6. User flow map
+
+A simple step-by-step diagram showing:
+
+how users enter
+how they configure
+how they finish
+where data goes
+7. Wireframes
+
+Desktop and mobile layouts for the configurator.
+
+8. Technical architecture summary
+
+A simple document explaining:
+
+front end
+3D engine
+data structure
+Shopify handoff
+hosting approach
+9. QA checklist
+
+A list of everything that must be tested before launch.
+
+10. Launch KPI sheet
+
+A list of what you want to measure after launch.
+
+Best practical order for you
+
+If I were structuring this for your business, I would do it in this order:
+
+define exact scope for V1
+create product rules matrix
+organize GLB and texture assets
+define resize and leg positioning logic
+define Shopify or quote handoff
+create wireframes
+create technical build brief
+build MVP
+test with real combinations
+launch and optimize
+The most important risks in your project
+
+These are likely the biggest pitfalls:
+
+1. Asset chaos
+
+If files are messy, development slows down hard.
+
+2. Weak rules logic
+
+If invalid combinations slip through, the configurator becomes unreliable.
+
+3. Unrealistic materials
+
+If wood or finishes look fake, trust drops.
+
+4. Poor mobile experience
+
+A lot of users will likely browse on mobile first.
+
+5. Too much in version 1
+
+Trying to build everything immediately can delay launch massively.
+
+6. Bad integration with product/order flow
+
+If the customer configures beautifully but cannot continue easily, conversion suffers.
+
+One-sentence project brief example
+
+You could use something like this as your project brief starter:
+
+“Develop a premium, fast-loading 3D table configurator for Bogade that allows customers to configure shape, size, color, edge finish, and leg style with correct product logic and a seamless handoff to quote request or Shopify checkout.”

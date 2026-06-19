@@ -1,0 +1,231 @@
+Handle,Title,Body (HTML),Vendor,Product Category,Type,Tags,Published,Option1 Name,Option1 Value,Option2 Name,Option2 Value,Variant SKU,Variant Grams,Variant Inventory Tracker,Variant Inventory Qty,Variant Inventory Policy,Variant Fulfillment Service,Variant Price,Variant Compare At Price,Variant Requires Shipping,Image Src,Image Position,Variant Weight Unit,Status
+configurator-rechthoek,Vorm: Rechthoek,,Bogade,,Tafelblad,configurator,TRUE,Afmeting,180 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,kg,active
+configurator-rechthoek,,,,,,,,Afmeting,180 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,180 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,200 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,200 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,200 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,220 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,220 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,220 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,240 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,240 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,240 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,260 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,260 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,260 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,280 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,280 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,280 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,300 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,300 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,300 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,350 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,350 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,350 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,400 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,400 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rechthoek,,,,,,,,Afmeting,400 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-ovaal,Vorm: Ovaal,,Bogade,,Tafelblad,configurator,TRUE,Afmeting,160 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,kg,active
+configurator-ovaal,,,,,,,,Afmeting,180 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-ovaal,,,,,,,,Afmeting,200 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-ovaal,,,,,,,,Afmeting,220 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-ovaal,,,,,,,,Afmeting,240 x 120,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-ovaal,,,,,,,,Afmeting,260 x 120,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-ovaal,,,,,,,,Afmeting,280 x 120,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-ovaal,,,,,,,,Afmeting,300 x 120,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-deens-ovaal,Vorm: Deens Ovaal,,Bogade,,Tafelblad,configurator,TRUE,Afmeting,180 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,kg,active
+configurator-deens-ovaal,,,,,,,,Afmeting,200 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-deens-ovaal,,,,,,,,Afmeting,220 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-deens-ovaal,,,,,,,,Afmeting,240 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-deens-ovaal,,,,,,,,Afmeting,260 x 120,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-deens-ovaal,,,,,,,,Afmeting,280 x 120,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-deens-ovaal,,,,,,,,Afmeting,300 x 120,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-deens-ovaal,,,,,,,,Afmeting,350 x 140,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rond,Vorm: Rond,,Bogade,,Tafelblad,configurator,TRUE,Afmeting,Ø 100,,,,0,,0,deny,manual,0.00,,TRUE,,,kg,active
+configurator-rond,,,,,,,,Afmeting,Ø 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rond,,,,,,,,Afmeting,Ø 120,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rond,,,,,,,,Afmeting,Ø 130,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rond,,,,,,,,Afmeting,Ø 140,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rond,,,,,,,,Afmeting,Ø 150,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rond,,,,,,,,Afmeting,Ø 160,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rond,,,,,,,,Afmeting,Ø 170,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-rond,,,,,,,,Afmeting,Ø 180,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kiezel,Vorm: Kiezel,,Bogade,,Tafelblad,configurator,TRUE,Afmeting,180 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,kg,active
+configurator-kiezel,,,,,,,,Afmeting,200 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kiezel,,,,,,,,Afmeting,220 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kiezel,,,,,,,,Afmeting,240 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kiezel,,,,,,,,Afmeting,260 x 120,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kiezel,,,,,,,,Afmeting,280 x 120,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kiezel,,,,,,,,Afmeting,300 x 120,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-organisch,Vorm: Organisch,,Bogade,,Tafelblad,configurator,TRUE,Afmeting,200 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,kg,active
+configurator-organisch,,,,,,,,Afmeting,220 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-organisch,,,,,,,,Afmeting,240 x 120,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-organisch,,,,,,,,Afmeting,260 x 130,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-organisch,,,,,,,,Afmeting,280 x 140,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-organisch,,,,,,,,Afmeting,300 x 140,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,Vorm: Halfrond,,Bogade,,Tafelblad,configurator,TRUE,Afmeting,180 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,kg,active
+configurator-halfrond,,,,,,,,Afmeting,180 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,180 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,200 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,200 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,200 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,220 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,220 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,220 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,240 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,240 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,240 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,260 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,260 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,260 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,280 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,280 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,280 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,300 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,300 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,300 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,350 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,350 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,350 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,400 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,400 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-halfrond,,,,,,,,Afmeting,400 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,Vorm: Boogvormig,,Bogade,,Tafelblad,configurator,TRUE,Afmeting,180 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,kg,active
+configurator-boogvormig,,,,,,,,Afmeting,180 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,180 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,200 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,200 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,200 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,220 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,220 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,220 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,240 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,240 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,240 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,260 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,260 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,260 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,280 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,280 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,280 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,300 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,300 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,300 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,350 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,350 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,350 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,400 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,400 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-boogvormig,,,,,,,,Afmeting,400 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,Vorm: Luna,,Bogade,,Tafelblad,configurator,TRUE,Afmeting,180 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,kg,active
+configurator-luna,,,,,,,,Afmeting,180 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,180 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,200 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,200 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,200 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,220 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,220 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,220 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,240 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,240 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,240 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,260 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,260 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,260 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,280 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,280 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,280 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,300 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,300 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,300 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,350 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,350 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,350 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,400 x 90,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,400 x 100,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-luna,,,,,,,,Afmeting,400 x 110,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-materiaal,Materiaal,,Bogade,,Materiaal,configurator,TRUE,Type,Eikenhout,,,,0,,0,deny,manual,0.00,,TRUE,,,kg,active
+configurator-materiaal,,,,,,,,Type,Keramiek,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,Kleur:,,Bogade,,Kleur,configurator,TRUE,Kleur,Natural (Eikenhout),,,,0,,0,deny,manual,0.00,,TRUE,,,kg,active
+configurator-kleur,,,,,,,,Kleur,Cocoa (Eikenhout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Mist (Eikenhout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Vanilla (Eikenhout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Pure (Eikenhout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Golden Hour (Eikenhout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Macchiato (Eikenhout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Shell Grey (Eikenhout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Walnut (Eikenhout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Charcoal (Eikenhout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Calacatta Black (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Crema Marfil (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Elegant Black (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Emperador (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Fior di Bosco (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Golden White (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Jade (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Onice Avorio (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Onice Beige (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Onice Giada (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Onice Nero (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Patagonia (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Pulpis (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Silver Root Marble (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Sodalite Blue (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Statuario (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Tafu (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Taj Mahal (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Travertino (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-kleur,,,,,,,,Kleur,Verde Aver (Keramiek),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-randafwerking,Randafwerking,,Bogade,,Randafwerking,configurator,TRUE,Profiel,Standaard,,,,0,,0,deny,manual,0.00,,TRUE,,,kg,active
+configurator-randafwerking,,,,,,,,Profiel,Facetrand,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-randafwerking,,,,,,,,Profiel,20 graden,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-randafwerking,,,,,,,,Profiel,20 graden inversed,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-randafwerking,,,,,,,,Profiel,Facet bol,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-randafwerking,,,,,,,,Profiel,Boomstamrand,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-randafwerking,,,,,,,,Profiel,Sharknose,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,Onderstel:,,Bogade,,Onderstel,configurator,TRUE,Model,Konische Spider (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,kg,active
+configurator-onderstel,,,,,,,,Model,Pilares (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Hannah (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Golvend Kolom (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Lara (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Diablo (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Ferdo (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Schuin (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Rondo (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Bernard (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Demi Lune (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Blok (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Hapa (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Base (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Golvend Duo (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Moda (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Vera (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,A-vorm (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Butterfly (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Diago (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,V-vorm (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Walrus (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Ekso (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,X-vorm (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Hairpin (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Matrix (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Konische Spider (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Stative (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Vedo (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Thore (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Criss Cross (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Lara (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Pluto (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Ovaal Kolom (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Tapse Spin (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Pedro (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,VN (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Cona (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Positivo (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-onderstel,,,,,,,,Model,Ronde Kolom (Metaal),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-poedercoat,Poedercoat kleur:,,Bogade,,Poedercoat,configurator,TRUE,Kleur,Zwart,,,,0,,0,deny,manual,0.00,,TRUE,,,kg,active
+configurator-poedercoat,,,,,,,,Kleur,Wit,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-poedercoat,,,,,,,,Kleur,Antraciet,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-poedercoat,,,,,,,,Kleur,Brons,,,,0,,0,deny,manual,0.00,,TRUE,,,,active
+configurator-poedercoat,,,,,,,,Kleur,Champagne,,,,0,,0,deny,manual,0.00,,TRUE,,,,active

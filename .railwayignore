@@ -1,0 +1,13 @@
+3D models/
+Descr/
+glb files tables and legs/
+Swatches/
+Textures/
+Visual reference/
+Table configurator brief.txt
+shopify-products.csv
+shopify-onderstellen.csv
+vercel.json
+.vercel/
+.git/
+node_modules/

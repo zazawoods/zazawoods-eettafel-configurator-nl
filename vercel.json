@@ -1,0 +1,27 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/configurator/" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
+      ]
+    },
+    {
+      "source": "/((?!api).*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Content-Security-Policy", "value": "frame-ancestors 'self' https://bogade.nl https://www.bogade.nl https://bogade.com https://www.bogade.com https://bogade-configurator.vercel.app https://bogade-configurator-production.up.railway.app" }
+      ]
+    }
+  ],
+  "functions": {
+    "api/upload-glb.js": {
+      "maxDuration": 15
+    }
+  }
+}
