@@ -162,13 +162,9 @@ export const MATERIAL_TYPES = {
 };
 
 export const EDGE_OPTIONS = [
-  { id: 'standaard',      name: 'Gerade',          description: 'Gerade, scharfe Kante' },
-  { id: 'facet',          name: 'Facette',          description: 'Schräge Facette nach innen', onlyMaterial: ['oak'] },
-  { id: '20graden',       name: '20 Grad',          description: '20° abgeschrägte Kante', onlyMaterial: ['oak'] },
-  { id: '20graden-inv',   name: '20 Grad invertiert', description: '20° invertierte Kante', onlyMaterial: ['oak'] },
-  { id: 'facet-bol',      name: 'Facette konvex',          description: 'Abgerundetes, konvexes Profil', onlyMaterial: ['oak'] },
-  { id: 'boomstam',       name: 'Baumstamm',       description: 'Natürliche Baumstammkante', onlyShapes: ['rectangle'], onlyMaterial: ['oak'] },
-  { id: 'sharknose',      name: 'Sharknose',          description: 'Abgerundete Nase mit Schräge', onlyMaterial: ['ceramic'] }
+  { id: 'standaard', name: 'Gerade Kante',     description: 'Klassische gerade Kante' },
+  { id: 'facet',     name: 'Schweizer Kante',  description: 'Charakteristische Schweizer Kante', onlyMaterial: ['oak'] },
+  { id: 'boomstam',  name: 'Baumstammkante',   description: 'Natürliche Baumstammkante',         onlyMaterial: ['oak'] }
 ];
 
 export const POWDER_COAT_COLORS = [

@@ -3433,7 +3433,7 @@ class TableConfigurator {
     if (!filteredEdges.find(e => e.id === this.state.edge)) {
       this.state.edge = 'standaard';
       const valEdge = document.getElementById('val-edge');
-      if (valEdge) valEdge.textContent = 'Standardkante';
+      if (valEdge) valEdge.textContent = 'Gerade Kante';
     }
 
     const edgeSwatches = {
@@ -3753,7 +3753,7 @@ class TableConfigurator {
     const matType = MATERIAL_TYPES[this.state.materialType];
     const color = matType?.colors.find(c => c.id === this.state.color);
     const activeLeg = this.legObjects[this.activeLegIndex];
-    const edgeNames = { standaard: 'Gerade', facet: 'Facette', '20graden': '20 Grad', '20graden-inv': '20 Grad invertiert', 'facet-bol': 'Facette konvex', boomstam: 'Baumstamm', sharknose: 'Sharknose' };
+    const edgeNames = { standaard: 'Gerade Kante', facet: 'Schweizer Kante', boomstam: 'Baumstammkante' };
 
     const lines = [];
     lines.push(`${shape?.name || ''} · ${this.state.materialType === 'oak' ? 'Eiche' : 'Keramik'} ${color?.name || ''}`);
@@ -4241,7 +4241,7 @@ class TableConfigurator {
     summary.innerHTML = `
       <strong>${shape.name}</strong> &middot; ${matType.name} ${color ? color.name : ''}<br>
       ${dimStr} &middot;
-      ${edge ? edge.name : 'Gerade'} Kante${extras}
+      ${edge ? edge.name : 'Gerade Kante'}${extras}
       ${legLabel ? `<br>Untergestell: ${legLabel}` : ''}
     `;
 
