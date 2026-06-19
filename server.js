@@ -81,10 +81,11 @@ app.post('/api/upload-glb', async (req, res) => {
   }
 });
 
-// Serve static files from /configurator (HTML/CSS/JS: 1 hour cache)
+// Serve static files from /configurator (HTML/CSS/JS: no-cache, must revalidate every request)
 app.use(express.static(path.join(__dirname, 'configurator'), {
-  maxAge: '1h',
-  etag: true
+  maxAge: 0,
+  etag: true,
+  setHeaders: (res) => res.setHeader('Cache-Control', 'no-cache, must-revalidate')
 }));
 
 // Serve root-level assets (GLB files, Textures, Swatches: 7 day cache)
