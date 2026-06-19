@@ -88,10 +88,18 @@ app.use(express.static(path.join(__dirname, 'configurator'), {
   setHeaders: (res) => res.setHeader('Cache-Control', 'no-cache, must-revalidate')
 }));
 
-// Serve root-level assets (GLB files, Textures, Swatches: 7 day cache)
+// Serve root-level assets:
+//   HTML / CSS / JS  → no-cache (must revalidate so deploys propagate immediately)
+//   GLB / textures / swatches / fonts → 7 day cache
 app.use(express.static(__dirname, {
-  maxAge: '7d',
-  etag: true
+  etag: true,
+  setHeaders: (res, filePath) => {
+    if (/\.(?:html?|css|js|mjs|json)$/i.test(filePath)) {
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+    } else {
+      res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+    }
+  }
 }));
 
 // Rewrite: root serves configurator index
