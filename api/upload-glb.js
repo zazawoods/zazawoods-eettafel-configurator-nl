@@ -71,7 +71,7 @@ export default async function handler(req, res) {
       await writeFile(`${TEMP_DIR}/${id}.glb`, buffer);
 
       // Return the public URL
-      const host = req.headers.host || 'bogade-configurator.vercel.app';
+      const host = req.headers.host || 'zazawoods-esstisch-konfigurator-production.up.railway.app';
       const protocol = host.includes('localhost') ? 'http' : 'https';
       const url = `${protocol}://${host}/api/upload-glb?id=${id}`;
 

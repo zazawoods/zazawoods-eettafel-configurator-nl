@@ -1,13 +1,13 @@
-// Bogade Table Configurator — Configuration Data
+// Zaza Woods Esstisch-Konfigurator — Configuration Data
 
 const BASE_PATH = '..';
 
 export const TABLE_SHAPES = [
   {
     id: 'rectangle',
-    name: 'Rechthoek',
+    name: 'Rechteck',
     glbFile: `${BASE_PATH}/glb files tables and legs/rectangle.glb`,
-    icon: `<img src="Swatches/Vorm/Rechthoekig.png" alt="Rechthoek"/>`,
+    icon: `<img src="Swatches/Vorm/Rechthoekig.png" alt="Rechteck"/>`,
     meshPrefix: ['rectangle', 'Rectangle'],
     defaultLength: 240,
     defaultWidth: 100,
@@ -16,9 +16,9 @@ export const TABLE_SHAPES = [
   },
   {
     id: 'oval',
-    name: 'Ovaal',
+    name: 'Oval',
     glbFile: `${BASE_PATH}/glb files tables and legs/Oval.glb`,
-    icon: `<img src="Swatches/Vorm/Ovaal.png" alt="Ovaal"/>`,
+    icon: `<img src="Swatches/Vorm/Ovaal.png" alt="Oval"/>`,
     meshPrefix: ['Oval'],
     defaultLength: 240,
     defaultWidth: 120,
@@ -29,9 +29,9 @@ export const TABLE_SHAPES = [
   },
   {
     id: 'danish-oval',
-    name: 'Deens Ovaal',
+    name: 'Dänisch-Oval',
     glbFile: `${BASE_PATH}/glb files tables and legs/DanishOval.glb`,
-    icon: `<img src="Swatches/Vorm/Deens ovaal.png" alt="Deens Ovaal"/>`,
+    icon: `<img src="Swatches/Vorm/Deens ovaal.png" alt="Dänisch-Oval"/>`,
     meshPrefix: ['Danish_Oval', 'Danish'],
     defaultLength: 240,
     defaultWidth: 110,
@@ -42,9 +42,9 @@ export const TABLE_SHAPES = [
   },
   {
     id: 'round',
-    name: 'Rond',
+    name: 'Rund',
     glbFile: `${BASE_PATH}/glb files tables and legs/Round.glb`,
-    icon: `<img src="Swatches/Vorm/Rond.png" alt="Rond"/>`,
+    icon: `<img src="Swatches/Vorm/Rond.png" alt="Rund"/>`,
     meshPrefix: ['Round'],
     excludeLegs: ['Rondo'],
     defaultLength: 140,
@@ -54,9 +54,9 @@ export const TABLE_SHAPES = [
   },
   {
     id: 'kiezel',
-    name: 'Kiezel',
+    name: 'Kiesel',
     glbFile: `${BASE_PATH}/glb files tables and legs/Kiezel.glb`,
-    icon: `<img src="Swatches/Vorm/Kiezel.png" alt="Kiezel"/>`,
+    icon: `<img src="Swatches/Vorm/Kiezel.png" alt="Kiesel"/>`,
     meshPrefix: ['Kiezel'],
     hasVariant: true,
     defaultLength: 240,
@@ -82,9 +82,9 @@ export const TABLE_SHAPES = [
   },
   {
     id: 'halfrond',
-    name: 'Halfrond',
+    name: 'Halbrund',
     glbFile: `${BASE_PATH}/glb files tables and legs/Halfrond.glb`,
-    icon: `<img src="Swatches/Vorm/Halfrond.png" alt="Halfrond"/>`,
+    icon: `<img src="Swatches/Vorm/Halfrond.png" alt="Halbrund"/>`,
     meshPrefix: ['Halfrond'],
     defaultLength: 240,
     defaultWidth: 100,
@@ -93,9 +93,9 @@ export const TABLE_SHAPES = [
   },
   {
     id: 'boogvorm',
-    name: 'Boogvormig',
+    name: 'Bogenförmig',
     glbFile: `${BASE_PATH}/glb files tables and legs/Boogvorm.glb`,
-    icon: `<img src="Swatches/Vorm/Boogvormig.png" alt="Boogvormig"/>`,
+    icon: `<img src="Swatches/Vorm/Boogvormig.png" alt="Bogenförmig"/>`,
     meshPrefix: ['Boogvorm'],
     defaultLength: 240,
     defaultWidth: 100,
@@ -107,7 +107,7 @@ export const TABLE_SHAPES = [
 export const MATERIAL_TYPES = {
   oak: {
     id: 'oak',
-    name: 'Eikenhout',
+    name: 'Eiche',
     thickness: 4,
     roughness: 0.72,
     metalness: 0.0,
@@ -130,7 +130,7 @@ export const MATERIAL_TYPES = {
   },
   ceramic: {
     id: 'ceramic',
-    name: 'Keramiek',
+    name: 'Keramik',
     thickness: 2,
     thicknessOptions: [1.2, 2],
     roughness: 0.35,
@@ -162,21 +162,21 @@ export const MATERIAL_TYPES = {
 };
 
 export const EDGE_OPTIONS = [
-  { id: 'standaard',      name: 'Standaard',          description: 'Strakke rechte rand' },
-  { id: 'facet',          name: 'Facetrand',          description: 'Schuine facetrand naar binnen', onlyMaterial: ['oak'] },
-  { id: '20graden',       name: '20 graden',          description: '20° schuine rand', onlyMaterial: ['oak'] },
-  { id: '20graden-inv',   name: '20 graden inversed', description: '20° omgekeerde rand', onlyMaterial: ['oak'] },
-  { id: 'facet-bol',      name: 'Facet bol',          description: 'Afgerond convex profiel', onlyMaterial: ['oak'] },
-  { id: 'boomstam',       name: 'Boomstam',       description: 'Natuurlijke boomstamrand', onlyShapes: ['rectangle'], onlyMaterial: ['oak'] },
-  { id: 'sharknose',      name: 'Sharknose',          description: 'Afgeronde neus met schuine rand', onlyMaterial: ['ceramic'] }
+  { id: 'standaard',      name: 'Gerade',          description: 'Gerade, scharfe Kante' },
+  { id: 'facet',          name: 'Facette',          description: 'Schräge Facette nach innen', onlyMaterial: ['oak'] },
+  { id: '20graden',       name: '20 Grad',          description: '20° abgeschrägte Kante', onlyMaterial: ['oak'] },
+  { id: '20graden-inv',   name: '20 Grad invertiert', description: '20° invertierte Kante', onlyMaterial: ['oak'] },
+  { id: 'facet-bol',      name: 'Facette konvex',          description: 'Abgerundetes, konvexes Profil', onlyMaterial: ['oak'] },
+  { id: 'boomstam',       name: 'Baumstamm',       description: 'Natürliche Baumstammkante', onlyShapes: ['rectangle'], onlyMaterial: ['oak'] },
+  { id: 'sharknose',      name: 'Sharknose',          description: 'Abgerundete Nase mit Schräge', onlyMaterial: ['ceramic'] }
 ];
 
 export const POWDER_COAT_COLORS = [
-  { id: 'black',        name: 'Zwart',          swatch: '#1a1a1a' },
-  { id: 'anthracite',   name: 'Antraciet',      swatch: '#3d3d3d' },
-  { id: 'bronze',       name: 'Brons',          swatch: '#6b5a3e' },
-  { id: 'champagne',    name: 'Champagne',      swatch: '#c9b98a' },
-  { id: 'white',        name: 'Wit',            swatch: '#f5f5f0' }
+  { id: 'black',        name: 'Schwarz',          swatch: '#1a1a1a' },
+  { id: 'anthracite',   name: 'Anthrazit',      swatch: '#3d3d3d' },
+  { id: 'bronze',       name: 'Bronze',          swatch: '#6b5a3e' },
+  { id: 'champagne',    name: 'Champagner',      swatch: '#c9b98a' },
+  { id: 'white',        name: 'Weiß',            swatch: '#f5f5f0' }
 ];
 
 export const DEFAULT_STATE = {

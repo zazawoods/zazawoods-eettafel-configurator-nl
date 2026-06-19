@@ -15,7 +15,7 @@
       "source": "/((?!api).*)",
       "headers": [
         { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Content-Security-Policy", "value": "frame-ancestors 'self' https://bogade.nl https://www.bogade.nl https://bogade.com https://www.bogade.com https://bogade-configurator.vercel.app https://bogade-configurator-production.up.railway.app" }
+        { "key": "Content-Security-Policy", "value": "frame-ancestors 'self' https://zazawoods.de https://www.zazawoods.de https://zazawoods.nl https://www.zazawoods.nl https://zazawoods-esstisch-konfigurator-production.up.railway.app" }
       ]
     }
   ],

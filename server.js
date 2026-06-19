@@ -25,7 +25,7 @@ app.use('/api', (req, res, next) => {
 app.use((req, res, next) => {
   if (!req.path.startsWith('/api')) {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Content-Security-Policy', "frame-ancestors 'self' https://bogade.nl https://www.bogade.nl https://bogade.com https://www.bogade.com https://bogade-configurator-production.up.railway.app");
+    res.setHeader('Content-Security-Policy', "frame-ancestors 'self' https://zazawoods.de https://www.zazawoods.de https://zazawoods.nl https://www.zazawoods.nl https://zazawoods-esstisch-konfigurator-production.up.railway.app");
   }
   next();
 });
@@ -99,5 +99,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Bogade configurator running on port ${PORT}`);
+  console.log(`Zaza Woods Esstisch-Konfigurator running on port ${PORT}`);
 });

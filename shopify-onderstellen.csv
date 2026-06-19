@@ -1,5 +1,5 @@
 Handle,Title,Body (HTML),Vendor,Product Category,Type,Tags,Published,Option1 Name,Option1 Value,Option2 Name,Option2 Value,Variant SKU,Variant Grams,Variant Inventory Tracker,Variant Inventory Qty,Variant Inventory Policy,Variant Fulfillment Service,Variant Price,Variant Compare At Price,Variant Requires Shipping,Image Src,Image Position,Variant Weight Unit,Status
-configurator-onderstel,Onderstel:,,Bogade,,Onderstel,configurator,TRUE,Model,Konische Spider (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,kg,active
+configurator-onderstel,Onderstel:,,Zaza Woods,,Onderstel,configurator,TRUE,Model,Konische Spider (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,kg,active
 configurator-onderstel,,,,,,,,Model,Pilares (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
 configurator-onderstel,,,,,,,,Model,Hannah (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active
 configurator-onderstel,,,,,,,,Model,Golvend Kolom (Hout),,,,0,,0,deny,manual,0.00,,TRUE,,,,active

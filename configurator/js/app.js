@@ -1,4 +1,4 @@
-// Bogade Table Configurator — Main Application
+// Zaza Woods Esstisch-Konfigurator — Main Application
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -115,7 +115,7 @@ class TableConfigurator {
 
     // Notify parent page (Shopify) to update its URL
     if (window.parent !== window) {
-      window.parent.postMessage({ type: 'configurator-state', params: params.toString() }, 'https://bogade.com');
+      window.parent.postMessage({ type: 'configurator-state', params: params.toString() }, 'https://zazawoods.de');
     }
   }
 
@@ -1738,7 +1738,7 @@ class TableConfigurator {
     };
     if (nameMap[name]) name = nameMap[name];
 
-    return name || 'Standaard';
+    return name || 'Standard';
   }
 
   isWoodLeg(namesString) {
@@ -2266,7 +2266,7 @@ class TableConfigurator {
 
   updateLoaderProgress(pct) {
     const el = document.getElementById('loader-text');
-    if (el) el.textContent = `We zetten de poten er even onder... ${pct}%`;
+    if (el) el.textContent = `Wir bauen Ihren Tisch auf… ${pct}%`;
   }
 
   // ─── Morph Animation ─────────────────────────
@@ -3183,7 +3183,7 @@ class TableConfigurator {
     const grid = document.getElementById('leg-grid');
 
     if (this.legObjects.length === 0) {
-      grid.innerHTML = '<p style="font-size:12px;color:#999;padding:8px 0;">Geen onderstellen beschikbaar</p>';
+      grid.innerHTML = '<p style="font-size:12px;color:#999;padding:8px 0;">Keine Untergestelle verfügbar</p>';
       return;
     }
 
@@ -3433,16 +3433,16 @@ class TableConfigurator {
     if (!filteredEdges.find(e => e.id === this.state.edge)) {
       this.state.edge = 'standaard';
       const valEdge = document.getElementById('val-edge');
-      if (valEdge) valEdge.textContent = 'Standaard rand';
+      if (valEdge) valEdge.textContent = 'Standardkante';
     }
 
     const edgeSwatches = {
-      'standaard': `<img src="Swatches/Randafwerking/Standaard.png" alt="Standaard"/>`,
-      'facet': `<img src="Swatches/Randafwerking/Facetrand.png" alt="Facetrand"/>`,
-      '20graden': `<img src="Swatches/Randafwerking/20 graden.png" alt="20 graden"/>`,
-      '20graden-inv': `<img src="Swatches/Randafwerking/20 graden inversed.png" alt="20 graden inversed"/>`,
-      'facet-bol': `<img src="Swatches/Randafwerking/Facet bol.png" alt="Facet bol"/>`,
-      'boomstam': `<img src="Swatches/Randafwerking/Boomstamrand.png" alt="Boomstamrand"/>`,
+      'standaard': `<img src="Swatches/Randafwerking/Standaard.png" alt="Gerade"/>`,
+      'facet': `<img src="Swatches/Randafwerking/Facetrand.png" alt="Facette"/>`,
+      '20graden': `<img src="Swatches/Randafwerking/20 graden.png" alt="20 Grad"/>`,
+      '20graden-inv': `<img src="Swatches/Randafwerking/20 graden inversed.png" alt="20 Grad invertiert"/>`,
+      'facet-bol': `<img src="Swatches/Randafwerking/Facet bol.png" alt="Facette konvex"/>`,
+      'boomstam': `<img src="Swatches/Randafwerking/Boomstamrand.png" alt="Baumstamm"/>`,
       'sharknose': `<img src="Swatches/Randafwerking/Facetrand.png" alt="Sharknose"/>`
     };
 
@@ -3753,10 +3753,10 @@ class TableConfigurator {
     const matType = MATERIAL_TYPES[this.state.materialType];
     const color = matType?.colors.find(c => c.id === this.state.color);
     const activeLeg = this.legObjects[this.activeLegIndex];
-    const edgeNames = { standaard: 'Standaard', facet: 'Facetrand', '20graden': '20 graden', '20graden-inv': '20 graden inversed', 'facet-bol': 'Facet bol', boomstam: 'Boomstam', sharknose: 'Sharknose' };
+    const edgeNames = { standaard: 'Gerade', facet: 'Facette', '20graden': '20 Grad', '20graden-inv': '20 Grad invertiert', 'facet-bol': 'Facette konvex', boomstam: 'Baumstamm', sharknose: 'Sharknose' };
 
     const lines = [];
-    lines.push(`${shape?.name || ''} · ${this.state.materialType === 'oak' ? 'Eikenhout' : 'Keramiek'} ${color?.name || ''}`);
+    lines.push(`${shape?.name || ''} · ${this.state.materialType === 'oak' ? 'Eiche' : 'Keramik'} ${color?.name || ''}`);
     if (this.state.shape === 'round') {
       lines.push(`Ø ${this.state.length} × ${this.state.height || 76} cm`);
     } else {
@@ -3768,7 +3768,7 @@ class TableConfigurator {
   }
 
   getShareUrl() {
-    return `https://bogade.com/pages/eettafel-3d-configurator${window.location.search}`;
+    return `https://zazawoods.de/pages/esstisch-konfigurator${window.location.search}`;
   }
 
   showSharePopup() {
@@ -3778,17 +3778,17 @@ class TableConfigurator {
   handleShare(channel) {
     const url = this.getShareUrl();
     const summary = this.getConfigSummaryText().join('\n');
-    const text = `Bekijk mijn Bogade tafel configuratie:\n${summary}\n\n`;
+    const text = `Sieh dir meine Zaza Woods Esstisch-Konfiguration an:\n${summary}\n\n`;
 
     switch (channel) {
       case 'whatsapp':
         window.open(`https://wa.me/?text=${encodeURIComponent(text + url)}`, '_blank');
         break;
       case 'email':
-        window.open(`mailto:?subject=${encodeURIComponent('Mijn Bogade Tafel Configuratie')}&body=${encodeURIComponent(text + url)}`, '_blank');
+        window.open(`mailto:?subject=${encodeURIComponent('Meine Zaza Woods Tischkonfiguration')}&body=${encodeURIComponent(text + url)}`, '_blank');
         break;
       case 'copy':
-        navigator.clipboard.writeText(url).then(() => this.showToast('Link gekopieerd'));
+        navigator.clipboard.writeText(url).then(() => this.showToast('Link kopiert'));
         break;
     }
     document.getElementById('share-popup').classList.add('hidden');
@@ -3837,12 +3837,12 @@ class TableConfigurator {
       maxTextW = Math.max(maxTextW, ctx.measureText(line).width);
     });
 
-    // Logo + "BOGADE" text dimensions
+    // Logo + "ZAZA WOODS" text dimensions
     const logoH = Math.round(h * 0.032);
     const logoW = logoImg ? logoH * (logoImg.naturalWidth / logoImg.naturalHeight) : 0;
     const brandFont = `600 ${Math.round(fontSize * 1.0)}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
     ctx.font = brandFont;
-    const brandTextW = ctx.measureText('BOGADE').width;
+    const brandTextW = ctx.measureText('ZAZA WOODS').width;
     const brandRowW = logoW + 6 + brandTextW;
     maxTextW = Math.max(maxTextW, brandRowW);
 
@@ -3878,7 +3878,7 @@ class TableConfigurator {
     ctx.lineTo(boxX + boxW - padding, sepY);
     ctx.stroke();
 
-    // Draw logo + BOGADE text (centered in remaining space)
+    // Draw logo + ZAZA WOODS text (centered in remaining space)
     const brandY = sepY + padding * 0.4;
     const brandTotalW = logoW + 6 + brandTextW;
     const brandX = boxX + (boxW - brandTotalW) / 2;
@@ -3887,7 +3887,7 @@ class TableConfigurator {
     }
     ctx.fillStyle = '#1a1a1a';
     ctx.font = brandFont;
-    ctx.fillText('BOGADE', brandX + logoW + 6, brandY + logoH * 0.75);
+    ctx.fillText('ZAZA WOODS', brandX + logoW + 6, brandY + logoH * 0.75);
 
     // Generate filename: Vorm-length-color-legname
     const shape = TABLE_SHAPES.find(s => s.id === this.state.shape);
@@ -3895,7 +3895,7 @@ class TableConfigurator {
     const color = matType?.colors.find(c => c.id === this.state.color);
     const activeLeg = this.legObjects[this.activeLegIndex];
     const filename = [
-      shape?.name || 'Tafel',
+      shape?.name || 'Tisch',
       this.state.length,
       color?.name || '',
       activeLeg?.displayName || ''
@@ -3907,7 +3907,7 @@ class TableConfigurator {
       canvas.toBlob(async (blob) => {
         const file = new File([blob], filename, { type: 'image/png' });
         try {
-          await navigator.share({ title: 'Mijn Bogade Tafel', files: [file] });
+          await navigator.share({ title: 'Mein Zaza Woods Tisch', files: [file] });
         } catch { /* user cancelled */ }
       });
     } else {
@@ -3916,11 +3916,11 @@ class TableConfigurator {
       a.download = filename;
       a.click();
     }
-    this.showToast('Screenshot opgeslagen');
+    this.showToast('Screenshot gespeichert');
   }
 
   saveCurrentConfig() {
-    const saved = JSON.parse(localStorage.getItem('bogade-saved-configs') || '[]');
+    const saved = JSON.parse(localStorage.getItem('zazawoods-saved-configs') || '[]');
 
     // Generate a thumbnail
     this.renderer.render(this.scene, this.camera);
@@ -3943,8 +3943,8 @@ class TableConfigurator {
 
     saved.unshift(config);
     if (saved.length > 10) saved.pop(); // max 10
-    localStorage.setItem('bogade-saved-configs', JSON.stringify(saved));
-    this.showToast('Configuratie opgeslagen');
+    localStorage.setItem('zazawoods-saved-configs', JSON.stringify(saved));
+    this.showToast('Konfiguration gespeichert');
     return config;
   }
 
@@ -3952,20 +3952,20 @@ class TableConfigurator {
     const popup = document.getElementById('saved-popup');
     const list = document.getElementById('saved-list');
     const empty = document.getElementById('saved-empty');
-    const saved = JSON.parse(localStorage.getItem('bogade-saved-configs') || '[]');
+    const saved = JSON.parse(localStorage.getItem('zazawoods-saved-configs') || '[]');
 
     if (saved.length === 0) {
       list.innerHTML = '';
       empty.style.display = '';
       // Show save button
-      list.innerHTML = `<button id="save-current-btn" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--color-accent);background:var(--color-accent-light);color:var(--color-accent);font-weight:600;font-size:13px;cursor:pointer;margin-bottom:12px;">+ Huidige configuratie opslaan</button>`;
+      list.innerHTML = `<button id="save-current-btn" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--color-accent);background:var(--color-accent-light);color:var(--color-accent);font-weight:600;font-size:13px;cursor:pointer;margin-bottom:12px;">+ Aktuelle Konfiguration speichern</button>`;
       list.querySelector('#save-current-btn').onclick = () => {
         this.saveCurrentConfig();
         this.showSavedConfigs(); // refresh
       };
     } else {
       empty.style.display = 'none';
-      let html = `<button id="save-current-btn" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--color-accent);background:var(--color-accent-light);color:var(--color-accent);font-weight:600;font-size:13px;cursor:pointer;margin-bottom:12px;">+ Huidige configuratie opslaan</button>`;
+      let html = `<button id="save-current-btn" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--color-accent);background:var(--color-accent-light);color:var(--color-accent);font-weight:600;font-size:13px;cursor:pointer;margin-bottom:12px;">+ Aktuelle Konfiguration speichern</button>`;
       saved.forEach(c => {
         html += `
           <div class="saved-card" data-url="${c.url}">
@@ -3974,7 +3974,7 @@ class TableConfigurator {
               <div class="saved-card-title">${c.title}</div>
               <div class="saved-card-sub">${c.sub}</div>
             </div>
-            <button class="saved-card-del" data-id="${c.id}" title="Verwijderen">&times;</button>
+            <button class="saved-card-del" data-id="${c.id}" title="Löschen">&times;</button>
           </div>`;
       });
       list.innerHTML = html;
@@ -4001,7 +4001,7 @@ class TableConfigurator {
           e.stopPropagation();
           const id = parseInt(btn.dataset.id);
           const updated = saved.filter(c => c.id !== id);
-          localStorage.setItem('bogade-saved-configs', JSON.stringify(updated));
+          localStorage.setItem('zazawoods-saved-configs', JSON.stringify(updated));
           this.showSavedConfigs();
         });
       });
@@ -4070,7 +4070,7 @@ class TableConfigurator {
     qrContainer.innerHTML = '';
 
     const params = new URL(window.location.href).search;
-    const currentUrl = 'https://bogade.com/pages/eettafel-3d-configurator' + params;
+    const currentUrl = 'https://zazawoods.de/pages/esstisch-konfigurator' + params;
     const qrImg = document.createElement('img');
     qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(currentUrl)}&margin=8`;
     qrImg.width = 180;
@@ -4101,7 +4101,7 @@ class TableConfigurator {
 
     // Close button
     const closeBtn = document.createElement('button');
-    closeBtn.textContent = 'Sluiten';
+    closeBtn.textContent = 'Schließen';
     closeBtn.style.cssText = 'position:fixed;top:20px;right:20px;z-index:100000;padding:12px 24px;border-radius:24px;border:none;background:rgba(0,0,0,0.7);color:#fff;font-size:14px;font-weight:600;cursor:pointer;';
     closeBtn.onclick = () => {
       session.end();
@@ -4241,7 +4241,7 @@ class TableConfigurator {
     summary.innerHTML = `
       <strong>${shape.name}</strong> &middot; ${matType.name} ${color ? color.name : ''}<br>
       ${dimStr} &middot;
-      ${edge ? edge.name : 'Standaard'} rand${extras}
+      ${edge ? edge.name : 'Gerade'} Kante${extras}
       ${legLabel ? `<br>Onderstel: ${legLabel}` : ''}
     `;
 
@@ -4269,7 +4269,7 @@ class TableConfigurator {
         priceEl.textContent = formatPrice(total);
         priceEl.classList.remove('price-loading');
       } else {
-        priceEl.textContent = 'Prijs berekenen...';
+        priceEl.textContent = 'Preis wird berechnet…';
         priceEl.classList.add('price-loading');
       }
     }
@@ -4304,7 +4304,7 @@ class TableConfigurator {
 
   requestParentGapFix() {
     if (window.parent !== window) {
-      window.parent.postMessage({ type: 'bogade-configurator', action: 'remove-gap' }, '*');
+      window.parent.postMessage({ type: 'zazawoods-configurator', action: 'remove-gap' }, '*');
     }
   }
 

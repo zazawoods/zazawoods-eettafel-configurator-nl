@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bogade — Tafel Configurator</title>
+  <title>Esstisch-Konfigurator — Zaza Woods</title>
   <base href="/configurator/">
   <script>
-    // Only allow loading from bogade.nl or direct access for development
+    // Only allow loading from zazawoods.de/.nl or direct access for development
     (function() {
-      const allowed = ['bogade.nl', 'www.bogade.nl', 'bogade.com', 'www.bogade.com', 'localhost', '127.0.0.1', 'bogade-configurator.vercel.app', 'bogade-configurator-production.up.railway.app'];
+      const allowed = ['zazawoods.de', 'www.zazawoods.de', 'zazawoods.nl', 'www.zazawoods.nl', 'localhost', '127.0.0.1', 'zazawoods-esstisch-konfigurator-production.up.railway.app'];
       const host = window.location.hostname;
       const parentHost = window !== window.top ? document.referrer && new URL(document.referrer).hostname : host;
       const isDirect = window === window.top;
       const isAllowed = allowed.some(d => host === d || host.endsWith('.' + d) || parentHost === d || parentHost.endsWith('.' + d));
       if (!isDirect && !isAllowed) {
-        document.documentElement.innerHTML = '<body style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;"><p>Niet toegestaan.</p></body>';
+        document.documentElement.innerHTML = '<body style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;"><p>Nicht erlaubt.</p></body>';
       }
     })();
   </script>
@@ -37,7 +37,7 @@
   <div id="loader" class="loader">
     <div class="loader-inner">
       <div class="spinner"></div>
-      <p id="loader-text">We zetten de poten er even onder... 0%</p>
+      <p id="loader-text">Wir bauen Ihren Tisch auf… 0%</p>
     </div>
   </div>
   <div class="configurator">
@@ -47,18 +47,18 @@
       <canvas id="canvas3d"></canvas>
       <div id="mini-loader" class="mini-loader hidden">
         <div class="mini-spinner"></div>
-        <span id="mini-loader-text">Tafel wordt geladen...</span>
+        <span id="mini-loader-text">Tisch wird geladen…</span>
       </div>
 
       <div class="viewer-header">
-        <a href="https://bogade.com" target="_top" class="brand" style="text-decoration:none;color:inherit;"><img src="logo.png" alt="Bogade" style="height:60px;width:auto;"></a>
+        <a href="https://zazawoods.de" target="_top" class="brand" style="text-decoration:none;color:inherit;display:inline-flex;align-items:center;font-family:'Inter',sans-serif;font-weight:700;letter-spacing:0.18em;font-size:16px;color:#1a1a1a;text-transform:uppercase;line-height:1;padding:8px 0;">Zaza Woods</a>
       </div>
 
       <div class="viewer-controls-right">
-        <button id="btn-reset-camera" class="viewer-btn" title="Reset camera">
+        <button id="btn-reset-camera" class="viewer-btn" title="Kamera zurücksetzen">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
         </button>
-        <button id="btn-ar" class="viewer-btn" title="Bekijk in je ruimte">
+        <button id="btn-ar" class="viewer-btn" title="In Ihrem Raum ansehen">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 2L2 7l10 5 10-5-10-5z"/>
             <path d="M2 17l10 5 10-5"/>
@@ -68,10 +68,10 @@
       </div>
 
       <div class="viewer-controls">
-        <button id="btn-save" class="viewer-btn" title="Configuratie opslaan">
+        <button id="btn-save" class="viewer-btn" title="Konfiguration speichern">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         </button>
-        <button id="btn-share" class="viewer-btn" title="Configuratie delen">
+        <button id="btn-share" class="viewer-btn" title="Konfiguration teilen">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
         </button>
       </div>
@@ -93,11 +93,11 @@
             <path d="M2 12l10 5 10-5"/>
           </svg>
         </div>
-        <h3>Bekijk in je eigen ruimte</h3>
-        <p>Scan de QR-code met je telefoon om de tafel via AR in je kamer te plaatsen.</p>
-        <p style="font-size:11px;color:#aaa;margin:-12px 0 16px;">Alleen beschikbaar voor iPhone</p>
+        <h3>In Ihrem Raum ansehen</h3>
+        <p>Scannen Sie den QR-Code mit Ihrem Telefon, um den Tisch per AR in Ihren Raum zu stellen.</p>
+        <p style="font-size:11px;color:#aaa;margin:-12px 0 16px;">Nur für iPhone verfügbar</p>
         <div id="ar-qr" class="ar-qr"></div>
-        <p class="ar-popup-hint">Of open deze configurator op je telefoon en tik op de AR-knop.</p>
+        <p class="ar-popup-hint">Oder öffnen Sie den Konfigurator auf Ihrem Telefon und tippen Sie auf den AR-Button.</p>
       </div>
     </div>
 
@@ -108,7 +108,7 @@
     <div id="share-popup" class="ar-popup hidden">
       <div class="ar-popup-inner" style="max-width:360px;">
         <button id="share-popup-close" class="ar-popup-close">&times;</button>
-        <h3>Deel je configuratie</h3>
+        <h3>Konfiguration teilen</h3>
         <div class="share-options">
           <button class="share-opt" data-channel="whatsapp">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -116,11 +116,11 @@
           </button>
           <button class="share-opt" data-channel="email">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            <span>E-mail</span>
+            <span>E-Mail</span>
           </button>
           <button class="share-opt" data-channel="copy">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            <span>Kopieer link</span>
+            <span>Link kopieren</span>
           </button>
         </div>
       </div>
@@ -130,9 +130,9 @@
     <div id="saved-popup" class="ar-popup hidden">
       <div class="ar-popup-inner" style="max-width:440px;">
         <button id="saved-popup-close" class="ar-popup-close">&times;</button>
-        <h3>Opgeslagen configuraties</h3>
+        <h3>Gespeicherte Konfigurationen</h3>
         <div id="saved-list" style="max-height:360px;overflow-y:auto;margin-top:16px;"></div>
-        <p id="saved-empty" style="font-size:13px;color:#999;">Nog geen opgeslagen configuraties.</p>
+        <p id="saved-empty" style="font-size:13px;color:#999;">Noch keine gespeicherten Konfigurationen.</p>
       </div>
     </div>
 
@@ -148,8 +148,8 @@
               <svg viewBox="0 0 80 50" width="28" height="18"><rect x="10" y="10" width="60" height="30" rx="15" fill="none" stroke="currentColor" stroke-width="2"/></svg>
             </div>
             <div class="section-label">
-              <span class="section-title">Vorm</span>
-              <span class="section-value" id="val-shape">Rechthoek</span>
+              <span class="section-title">Form</span>
+              <span class="section-value" id="val-shape">Rechteck</span>
             </div>
             <svg class="section-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -170,8 +170,8 @@
               <div style="width:100%;height:100%;border-radius:50%;background:#c8a97e;"></div>
             </div>
             <div class="section-label">
-              <span class="section-title">Materiaal</span>
-              <span class="section-value" id="val-material">Eikenhout &middot; Natural</span>
+              <span class="section-title">Material</span>
+              <span class="section-value" id="val-material">Eiche &middot; Natural</span>
             </div>
             <svg class="section-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -179,11 +179,11 @@
             <div class="material-type-toggle" id="material-type-toggle">
               <button class="mat-type-swatch active" data-type="oak">
                 <div class="mat-swatch-img" id="oak-swatch-img"></div>
-                <span>Eikenhout</span>
+                <span>Eiche</span>
               </button>
               <button class="mat-type-swatch" data-type="ceramic">
                 <div class="mat-swatch-img" id="ceramic-swatch-img"></div>
-                <span>Keramiek</span>
+                <span>Keramik</span>
               </button>
             </div>
             <div class="color-swatches" id="color-swatches">
@@ -199,8 +199,8 @@
               <svg width="28" height="18" viewBox="0 0 28 18" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="2" y1="9" x2="26" y2="9"/><line x1="2" y1="5" x2="2" y2="13"/><line x1="26" y1="5" x2="26" y2="13"/></svg>
             </div>
             <div class="section-label">
-              <span class="section-title">Afmeting</span>
-              <span class="section-value" id="val-dimensions">200 x 100 x 76 cm</span>
+              <span class="section-title">Abmessungen</span>
+              <span class="section-value" id="val-dimensions">200 × 100 × 76 cm</span>
             </div>
             <svg class="section-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -212,8 +212,8 @@
               <!-- Populated by JS: ceramic thickness buttons -->
             </div>
             <div class="dimension-info">
-              <span>Hoogte: <strong>76 cm</strong></span>
-              <span>Dikte blad: <strong id="thickness-value">4 cm</strong></span>
+              <span>Höhe: <strong>76 cm</strong></span>
+              <span>Plattenstärke: <strong id="thickness-value">4 cm</strong></span>
             </div>
           </div>
         </div>
@@ -225,8 +225,8 @@
               <svg viewBox="0 0 40 28" width="28" height="18"><rect x="4" y="4" width="32" height="20" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
             </div>
             <div class="section-label">
-              <span class="section-title">Randafwerking</span>
-              <span class="section-value" id="val-edge">Recht</span>
+              <span class="section-title">Kantenprofil</span>
+              <span class="section-value" id="val-edge">Gerade</span>
             </div>
             <svg class="section-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -237,15 +237,15 @@
           </div>
         </div>
 
-        <!-- Section: Onderstel (Legs) -->
+        <!-- Section: Legs / Untergestell -->
         <div class="section" data-section="legs">
           <button class="section-header">
             <div class="section-icon" id="leg-section-icon">
               <svg viewBox="0 0 60 50" width="28" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="5" y1="6" x2="55" y2="6"/><line x1="10" y1="6" x2="50" y2="46"/><line x1="50" y1="6" x2="10" y2="46"/></svg>
             </div>
             <div class="section-label">
-              <span class="section-title">Onderstel</span>
-              <span class="section-value" id="val-legs">Laden...</span>
+              <span class="section-title">Untergestell</span>
+              <span class="section-value" id="val-legs">Wird geladen…</span>
             </div>
             <svg class="section-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -254,7 +254,7 @@
               <!-- Populated dynamically from GLB -->
             </div>
             <div class="leg-powder-section" id="leg-powder-section">
-              <p class="subsection-label">Poedercoat kleur (metalen onderstel)</p>
+              <p class="subsection-label">Pulverbeschichtung (Metallgestell)</p>
               <div class="color-swatches" id="powder-swatches">
                 <!-- Populated by JS -->
               </div>
@@ -267,19 +267,19 @@
       <!-- Summary footer -->
       <div class="sidebar-footer">
         <div class="summary">
-          <span class="summary-label">Overzicht</span>
-          <div class="summary-line" id="summary-text">Uw configuratie is gereed.</div>
+          <span class="summary-label">Übersicht</span>
+          <div class="summary-line" id="summary-text">Ihre Konfiguration ist bereit.</div>
         </div>
         <div class="price-divider"></div>
         <div class="price-bar">
-          <span class="price-label">Totaalbedrag:</span>
-          <span id="total-price" class="price-loading">Prijs berekenen...</span>
+          <span class="price-label">Gesamtpreis:</span>
+          <span id="total-price" class="price-loading">Preis wird berechnet…</span>
         </div>
-        <div class="free-shipping">Gratis Levering &amp; Montage</div>
+        <div class="free-shipping">Kostenlose Lieferung &amp; Montage</div>
         <div class="mobile-price-row">
           <div class="mobile-price-info">
             <span id="total-price-mobile" class="price-loading">€ ...</span>
-            <span class="mobile-shipping">Gratis Levering<br>&amp; Montage</span>
+            <span class="mobile-shipping">Kostenlose Lieferung<br>&amp; Montage</span>
           </div>
           <button class="cta-button cta-mobile" id="btn-add-to-cart-mobile">
             Bestellen
@@ -287,7 +287,7 @@
           </button>
         </div>
         <button class="cta-button cta-desktop" id="btn-add-to-cart">
-          Voeg toe aan winkelwagen
+          In den Warenkorb
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
         </button>
       </div>
@@ -299,7 +299,7 @@
   <!-- Mobile toggle -->
   <button class="mobile-toggle" id="mobile-toggle">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446A9 9 0 1 1 12 3z"/></svg>
-    Configureer
+    Konfigurieren
   </button>
 
   <script type="module" src="js/app.js"></script>
