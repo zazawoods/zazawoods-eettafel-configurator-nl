@@ -3,8 +3,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE } from './config.js';
-import { fetchAllPrices, calculateTotal, getLineItems, formatPrice, addToCart } from './shopify.js';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE } from './config.js?v=3cc5e8c';
+import { fetchAllPrices, calculateTotal, getLineItems, formatPrice, addToCart } from './shopify.js?v=3cc5e8c';
 
 class TableConfigurator {
   constructor() {
