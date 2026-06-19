@@ -651,7 +651,7 @@ class TableConfigurator {
     if (this.legObjects.length > 0) {
       const activeLeg = this.legObjects[this.activeLegIndex] || this.legObjects[0];
       document.getElementById('val-legs').textContent =
-        `${activeLeg.displayName}${activeLeg.isWood ? ' (Hout)' : ''}`;
+        `${activeLeg.displayName}${activeLeg.isWood ? ' (Holz)' : ''}`;
       this.state.legId = activeLeg.rawName;
     }
   }
@@ -1970,7 +1970,7 @@ class TableConfigurator {
     const leg = this.legObjects[index];
     this.state.legId = leg.rawName;
     document.getElementById('val-legs').textContent =
-      `${leg.displayName}${leg.isWood ? ' (Hout)' : ''}`;
+      `${leg.displayName}${leg.isWood ? ' (Holz)' : ''}`;
 
     this.updatePowderSectionVisibility();
     this.updateLegSectionIcon();
@@ -3283,11 +3283,11 @@ class TableConfigurator {
     let html = '';
     // Hide wood legs when ceramic is selected
     if (woodLegs.length > 0 && !isCeramic) {
-      html += `<div class="leg-category-label">Hout</div>
+      html += `<div class="leg-category-label">Holz</div>
                <div class="leg-category-grid">${woodLegs.map(renderLegBtn).join('')}</div>`;
     }
     if (metalLegs.length > 0) {
-      html += `<div class="leg-category-label">Metaal</div>
+      html += `<div class="leg-category-label">Metall</div>
                <div class="leg-category-grid">${metalLegs.map(renderLegBtn).join('')}</div>`;
     }
     grid.innerHTML = html;
