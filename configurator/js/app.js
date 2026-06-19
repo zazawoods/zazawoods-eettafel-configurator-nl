@@ -3110,7 +3110,7 @@ class TableConfigurator {
         <div class="shape-sub-option">
           <div class="dim-section-label">Radius</div>
           <div class="dim-btn-row" id="radius-row">
-            <button class="dim-btn ${this.state.radius === 0 ? 'active' : ''}" data-radius="0">Geen</button>
+            <button class="dim-btn ${this.state.radius === 0 ? 'active' : ''}" data-radius="0">Keine</button>
             <button class="dim-btn ${this.state.radius === 15 ? 'active' : ''}" data-radius="15">15mm</button>
             <button class="dim-btn ${this.state.radius === 35 ? 'active' : ''}" data-radius="35">35mm</button>
             <button class="dim-btn ${this.state.radius === 100 ? 'active' : ''}" data-radius="100">100mm</button>
@@ -3665,7 +3665,7 @@ class TableConfigurator {
 
       container.innerHTML = `
         <div class="dim-section">
-          <div class="dim-section-label">Dikte blad</div>
+          <div class="dim-section-label">Plattenstärke</div>
           <div class="dim-btn-row" id="thickness-row">
             ${matType.thicknessOptions.map(t => {
               const isAvailable = availableThicknesses.includes(t);
@@ -3704,11 +3704,11 @@ class TableConfigurator {
     if (isRound) {
       badge.innerHTML = `\u00d8 <span id="dim-length">${this.state.length}</span> x <span id="dim-height">${this.state.height}</span> cm`;
       document.getElementById('val-dimensions').textContent =
-        `\u00d8 ${this.state.length} x ${this.state.height} cm \u00b7 ${thicknessCm} cm blad`;
+        `\u00d8 ${this.state.length} x ${this.state.height} cm \u00b7 ${thicknessCm} cm Platte`;
     } else {
       badge.innerHTML = `<span id="dim-length">${this.state.length}</span> x <span id="dim-width">${this.state.width}</span> x <span id="dim-height">${this.state.height}</span> cm`;
       document.getElementById('val-dimensions').textContent =
-        `${this.state.length} \u00d7 ${this.state.width} \u00d7 ${this.state.height} cm \u00b7 ${thicknessCm} cm blad`;
+        `${this.state.length} \u00d7 ${this.state.width} \u00d7 ${this.state.height} cm \u00b7 ${thicknessCm} cm Platte`;
     }
   }
 
@@ -3762,8 +3762,8 @@ class TableConfigurator {
     } else {
       lines.push(`${this.state.length} × ${this.state.width} × ${this.state.height || 76} cm`);
     }
-    lines.push(`Randafwerking: ${edgeNames[this.state.edge] || this.state.edge}`);
-    if (activeLeg) lines.push(`Onderstel: ${activeLeg.displayName}${activeLeg.isWood ? ' (Hout)' : ' (Metaal)'}`);
+    lines.push(`Kantenprofil: ${edgeNames[this.state.edge] || this.state.edge}`);
+    if (activeLeg) lines.push(`Untergestell: ${activeLeg.displayName}${activeLeg.isWood ? ' (Holz)' : ' (Metall)'}`);
     return lines;
   }
 
@@ -4225,7 +4225,7 @@ class TableConfigurator {
     const activeLeg = this.legObjects[this.activeLegIndex];
     let legLabel = '';
     if (activeLeg) {
-      const legType = activeLeg.isWood ? 'Hout' : (powder ? powder.name : 'Metaal');
+      const legType = activeLeg.isWood ? 'Holz' : (powder ? powder.name : 'Metall');
       legLabel = `${activeLeg.displayName} (${legType})`;
     }
 
@@ -4242,7 +4242,7 @@ class TableConfigurator {
       <strong>${shape.name}</strong> &middot; ${matType.name} ${color ? color.name : ''}<br>
       ${dimStr} &middot;
       ${edge ? edge.name : 'Gerade'} Kante${extras}
-      ${legLabel ? `<br>Onderstel: ${legLabel}` : ''}
+      ${legLabel ? `<br>Untergestell: ${legLabel}` : ''}
     `;
 
     // Update live price
