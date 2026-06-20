@@ -42,7 +42,7 @@
   {%- endif -%}
 {%- endfor -%}
 
-{%- assign target_url = '/pages/esstisch-konfigurator?shape=' | append: init_shape -%}
+{%- assign target_url = 'https://zazawoods-esstisch-konfigurator-production.up.railway.app/?shape=' | append: init_shape -%}
 {%- if init_length != '' -%}
   {%- assign target_url = target_url | append: '&length=' | append: init_length -%}
 {%- endif -%}
@@ -51,6 +51,8 @@
    class="zw-konfig-btn"
    id="zw-esstisch-konfig-btn-{{ product.id }}"
    data-zw-esstisch-konfig="1"
+   target="_blank"
+   rel="noopener"
    aria-label="Konfigurator öffnen">
   <span class="zw-konfig-btn__ic" aria-hidden="true">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
@@ -127,7 +129,7 @@
           if (L) length = L;
         }
       });
-      var url = '/pages/esstisch-konfigurator?shape=' + encodeURIComponent(INIT_SHAPE);
+      var url = 'https://zazawoods-esstisch-konfigurator-production.up.railway.app/?shape=' + encodeURIComponent(INIT_SHAPE);
       if (length) url += '&length=' + length;
       btn.setAttribute('href', url);
     } catch (e) {}
