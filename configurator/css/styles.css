@@ -516,8 +516,8 @@ body {
 }
 
 .section.active .section-content {
-  max-height: 800px;
-  overflow-y: auto;
+  max-height: 3000px;
+  overflow-y: visible;
 }
 
 .section-content > * {
@@ -895,8 +895,8 @@ body {
 
 /* ---- Leg Grid ---- */
 .leg-grid {
-  max-height: 400px;
-  overflow-y: auto;
+  max-height: none;
+  overflow: visible;
   padding-bottom: 14px !important;
 }
 
