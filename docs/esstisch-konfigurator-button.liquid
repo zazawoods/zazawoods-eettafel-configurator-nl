@@ -1,51 +1,54 @@
 {%- comment -%}
   Zaza Woods — Esstisch-Konfigurator: «Konfigurator öffnen» button
   --------------------------------------------------------------
-  Drop this snippet into the product-template (or render it inside
-  `sections/main-product.liquid` next to the existing Picknick
-  selbst-erstellen-button).
+  ВКЛЮЧЕНИЕ:
+    Кнопка появляется ТОЛЬКО если у продукта в Shopify Admin →
+    Theme template выбран `esstisch-konfigurator`.
+    Если template другой (стандартный product / picknick / etc.) — 
+    snippet ничего не рендерит. Никаких изменений кода для toggle on/off:
+    управляешь через Theme template в админке.
 
-  Behaviour mirrors the Picknick button 1:1:
-   • Renders ONLY on the 6 Esstisch products linked to our configurator
-     (or whenever the template suffix is "esstisch-konfigurator")
-   • Picks up the currently-selected length (Maße / Länge option)
-   • Picks up the live edge choice (Kantenbearbeitung), if the page
-     has a custom edge picker — falls back to standaard
-   • Live-updates the URL whenever the user changes a variant option
-   • Sends the user to our Railway configurator with shape + length
-     preselected:  https://…/?shape=rectangle&length=240
+  POSE:
+    Render в product-template (sections/main-product.liquid рядом с
+    Picknick-кнопкой) через:
+      {% render 'esstisch-konfigurator-button' %}
+
+  ЛОГИКА SHAPE:
+    Snippet смотрит на product.handle и определяет какую форму
+    предвыбрать в конфигураторе (rectangle/oval/danish-oval/round/
+    kiezel/halfrond). Если handle не в whitelist — default 'rectangle'.
+
+  ЛОГИКА LENGTH:
+    Подбирает первую цифру из выбранной опции Maße/Länge/Durchmesser
+    и передаёт её как &length=…. URL обновляется в реальном времени
+    при смене variant'а.
 {%- endcomment -%}
 
 {%- assign suffix = template.suffix | downcase -%}
-{%- assign show = false -%}
-{%- assign init_shape = '' -%}
 
-{%- comment -%} 1) handle whitelist → which shape to preselect {%- endcomment -%}
+{%- if suffix == 'esstisch-konfigurator' -%}
+
+{%- assign init_shape = 'rectangle' -%}
 {%- assign h = product.handle | downcase -%}
 {%- if h == 'rechteckiger-esstisch-milano-aus-massiver-eichenholz-mit-baumstammkanten' -%}
-  {%- assign init_shape = 'rectangle' -%}{%- assign show = true -%}
+  {%- assign init_shape = 'rectangle' -%}
 {%- elsif h == 'ovaler-esstisch-danilo-aus-massiver-eichenholz-mit-schweizer-kante' -%}
-  {%- assign init_shape = 'oval' -%}{%- assign show = true -%}
+  {%- assign init_shape = 'oval' -%}
 {%- elsif h == 'danisch-ovaler-esstisch-aus-massivem-eichenholz-andreas-mit-abgeschragter-kante' -%}
-  {%- assign init_shape = 'danish-oval' -%}{%- assign show = true -%}
+  {%- assign init_shape = 'danish-oval' -%}
 {%- elsif h == 'runder-esstisch-romano-aus-massiver-eichenholz' -%}
-  {%- assign init_shape = 'round' -%}{%- assign show = true -%}
+  {%- assign init_shape = 'round' -%}
 {%- elsif h == 'esstisch-milano-aus-massivem-eichenholz-mit-baumstammkanten-copy' -%}
-  {%- assign init_shape = 'kiezel' -%}{%- assign show = true -%}
+  {%- assign init_shape = 'kiezel' -%}
 {%- elsif h == 'halbkreisform-esstisch-aus-massivem-eichenholz' -%}
-  {%- assign init_shape = 'halfrond' -%}{%- assign show = true -%}
-{%- elsif suffix == 'esstisch-konfigurator' -%}
-  {%- assign init_shape = 'rectangle' -%}{%- assign show = true -%}
+  {%- assign init_shape = 'halfrond' -%}
 {%- endif -%}
-
-{%- if show -%}
 
 {%- assign init_length = '' -%}
 {%- for opt in product.options_with_values -%}
   {%- assign oname = opt.name | downcase | strip -%}
   {%- assign val   = opt.selected_value | default: '' | downcase | strip -%}
   {%- if val == '' -%}{%- continue -%}{%- endif -%}
-
   {%- if oname contains 'maß' or oname contains 'länge' or oname contains 'lange'
         or oname contains 'durchmesser' or oname contains 'size' or oname contains 'length' -%}
     {%- assign digits = val | replace: 'cm', ' ' | replace: 'x', ' ' | replace: '×', ' ' -%}
@@ -120,8 +123,7 @@
   }
   function readSelectedOptions() {
     var picked = {};
-    var pickers = document.querySelectorAll('variant-selects, variant-radios');
-    pickers.forEach(function (p) {
+    document.querySelectorAll('variant-selects, variant-radios').forEach(function (p) {
       p.querySelectorAll('select').forEach(function (s) {
         var m = (s.name || '').match(/options\[(.+)\]/);
         if (m) picked[m[1]] = s.value;
