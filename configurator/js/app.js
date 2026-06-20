@@ -3459,7 +3459,21 @@ class TableConfigurator {
       `;
     };
 
-    grid.innerHTML = `<div class="leg-category-grid">${tischgestellList.map(renderBtn).join('')}</div>`;
+    // Split into two categories: Metall (top) and Holz (bottom) — same UX as Bogade
+    const isWoodTitle = t => /Eichenholz|Stäbchenholz|Holzsäule|aus\s+Eiche/i.test(t);
+    const metalLegs = [];
+    const woodLegs  = [];
+    tischgestellList.forEach((item, idx) => (isWoodTitle(item.title) ? woodLegs : metalLegs).push({ item, idx }));
+    let html = '';
+    if (metalLegs.length) {
+      html += '<div class="leg-category-label">Metall</div>';
+      html += `<div class="leg-category-grid">${metalLegs.map(o => renderBtn(o.item, o.idx)).join('')}</div>`;
+    }
+    if (woodLegs.length) {
+      html += '<div class="leg-category-label">Holz</div>';
+      html += `<div class="leg-category-grid">${woodLegs.map(o => renderBtn(o.item, o.idx)).join('')}</div>`;
+    }
+    grid.innerHTML = html || '<p style="font-size:12px;color:#999;padding:8px 0;">Keine Untergestelle verfügbar</p>';
 
     grid.onclick = (e) => {
       const btn = e.target.closest('.leg-option');
