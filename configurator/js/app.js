@@ -3174,12 +3174,12 @@ class TableConfigurator {
       // Block redirect if user has not actively picked all 3 required components
       const missing = [];
       if (!this.state.userPickedBehandlung) missing.push('Behandlung');
-      if (!this.state.userPickedEdge)       missing.push('Kantenprofil');
-      if (!this.state.userPickedLeg)        missing.push('Untergestell');
+      if (!this.state.userPickedEdge)       missing.push('Kantenbearbeitung');
+      if (!this.state.userPickedLeg)        missing.push('Tischgestell');
       if (missing.length > 0) {
         this.showToast('Bitte wähle: ' + missing.join(', '));
         // Visually expand the first missing section so the user sees it
-        const map = { Behandlung: 'material', Kantenprofil: 'edge', Untergestell: 'legs' };
+        const map = { Behandlung: 'material', Kantenbearbeitung: 'edge', Tischgestell: 'legs' };
         const sectionId = map[missing[0]];
         const sec = document.querySelector(`[data-section='${sectionId}']`);
         if (sec && !sec.classList.contains('active')) sec.querySelector('.section-header')?.click();
@@ -3944,8 +3944,8 @@ class TableConfigurator {
     } else {
       lines.push(`${this.state.length} × ${this.state.width} × ${this.getThicknessCm()} cm`);
     }
-    lines.push(`Kantenprofil: ${edgeNames[this.state.edge] || this.state.edge}`);
-    if (this.state.zwLegName) lines.push(`Untergestell: ${this.state.zwLegName}`); else if (activeLeg) lines.push(`Untergestell: ${activeLeg.displayName}${activeLeg.isWood ? ' (Holz)' : ' (Metall)'}`);
+    lines.push(`Kantenbearbeitung: ${edgeNames[this.state.edge] || this.state.edge}`);
+    if (this.state.zwLegName) lines.push(`Tischgestell: ${this.state.zwLegName}`); else if (activeLeg) lines.push(`Tischgestell: ${activeLeg.displayName}${activeLeg.isWood ? ' (Holz)' : ' (Metall)'}`);
     return lines;
   }
 
@@ -4424,7 +4424,7 @@ class TableConfigurator {
       <strong>${shape.name}</strong> &middot; ${matType.name} ${color ? color.name : ''}<br>
       ${dimStr} &middot;
       ${edge ? edge.name : 'Gerade Kante'}${extras}
-      ${this.state.zwLegName ? `<br>Untergestell: ${this.state.zwLegName}` : (legLabel ? `<br>Untergestell: ${legLabel}` : '')}
+      ${this.state.zwLegName ? `<br>Tischgestell: ${this.state.zwLegName}` : (legLabel ? `<br>Tischgestell: ${legLabel}` : '')}
     `;
 
     // Update live price
