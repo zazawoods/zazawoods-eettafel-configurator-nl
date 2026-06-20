@@ -55,8 +55,9 @@ class TableConfigurator {
     }
     if (params.has('material')) {
       const mat = params.get('material').toLowerCase();
-      if (mat === 'oak' || mat === 'eikenhout') this.state.materialType = 'oak';
-      else if (mat === 'ceramic' || mat === 'keramiek') this.state.materialType = 'ceramic';
+      // Material switcher hidden per design: always keep oak (ceramic data retained internally).
+      this.state.materialType = 'oak';
+      void mat;
     }
     if (params.has('color')) {
       const colorId = params.get('color');
