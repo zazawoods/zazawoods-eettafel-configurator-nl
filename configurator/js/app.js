@@ -3395,13 +3395,34 @@ class TableConfigurator {
       return `<svg viewBox="0 0 60 50" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="6" x2="55" y2="6"/><line x1="14" y1="6" x2="14" y2="46"/><line x1="46" y1="6" x2="46" y2="46"/></svg>`;
     };
 
-    // Build the per-shape leg list from ZW Tischgestell addons (filter out excluded titles)
-    const product = ZW_PRODUCTS_DATA && ZW_PRODUCTS_DATA[this.state.shape];
-    if (!product) {
+    // Build a UNION of all Tischgestell addons across every product (so every leg
+    // is available on every shape), then apply per-shape compatibility filtering.
+    if (!ZW_PRODUCTS_DATA) {
       grid.innerHTML = '<p style="font-size:12px;color:#999;padding:8px 0;">Lade Untergestelle…</p>';
       return;
     }
-    const tischgestellList = (product.addons.Tischgestell || []).filter(a => !LEG_TITLE_EXCLUDE.test(a.title));
+    const unionByTitle = new Map();
+    for (const prod of Object.values(ZW_PRODUCTS_DATA)) {
+      for (const a of (prod.addons.Tischgestell || [])) {
+        if (!unionByTitle.has(a.title)) unionByTitle.set(a.title, a);
+      }
+    }
+    let unionLegs = Array.from(unionByTitle.values());
+    // Always drop user-excluded patterns (Bank / Couchtisch / Bartisch)
+    unionLegs = unionLegs.filter(a => !LEG_TITLE_EXCLUDE.test(a.title));
+
+    // Shape compatibility filter
+    const isRoundOnly    = t => /Schmal \(Rund\)|Spider Gestell \(rund\)|Runde Holzsäule/i.test(t);
+    const isHalfrondOnly = t => /Halbrunde Tischbeine/i.test(t);
+    const isUniversalRoundOK = t => /Konisches Spidertischgestell|Aeris Tischgestell aus Eichenholz|Ovale Holzsäule aus Stäbchenholz/i.test(t);
+    let tischgestellList;
+    if (this.state.shape === 'round') {
+      tischgestellList = unionLegs.filter(a => isRoundOnly(a.title) || isUniversalRoundOK(a.title));
+    } else if (this.state.shape === 'halfrond') {
+      tischgestellList = unionLegs.filter(a => !isRoundOnly(a.title));
+    } else {
+      tischgestellList = unionLegs.filter(a => !isRoundOnly(a.title) && !isHalfrondOnly(a.title));
+    }
 
     // Sync zwLegName from current GLB leg, OR default to first ZW addon that ALSO has a 3D model match
     if (!tischgestellList.find(a => a.title === this.state.zwLegName)) {
