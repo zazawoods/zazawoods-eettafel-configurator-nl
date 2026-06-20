@@ -3573,7 +3573,7 @@ class TableConfigurator {
                 data-variant-id="${b.variantId}"
                 data-oak-id="${oakColor.id}"
                 title="${b.title}">
-          <div class="color-swatch-img" style="background-image:url('${fileUrl}');background-size:cover;background-position:center;"></div>
+          <div class="color-swatch-img" style="width:36px;height:36px;border-radius:50%;background:#e6dcc7 url('${fileUrl}') center/cover no-repeat;box-shadow:inset 0 0 0 1px rgba(0,0,0,0.06);flex-shrink:0;"></div>
           <span class="color-swatch-name">${b.title}</span>
         </button>
       `;
