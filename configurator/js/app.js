@@ -3287,13 +3287,17 @@ class TableConfigurator {
       return `<svg viewBox="0 0 60 50" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="6" x2="55" y2="6"/><line x1="14" y1="6" x2="14" y2="46"/><line x1="46" y1="6" x2="46" y2="46"/></svg>`;
     };
 
-    // Sync zwLegName from current GLB leg if not yet set
+    // Sync zwLegName from current GLB leg if not yet set, and reflect it in the section header
     if (!this.state.zwLegName && this.legObjects.length) {
       const cur = this.legObjects[this.activeLegIndex];
       if (cur) {
         const m = ZW_LEG_LIST.find(z => z.model && z.model.name === cur.displayName && z.model.isWood === cur.isWood);
         if (m) this.state.zwLegName = m.uiName;
       }
+    }
+    if (this.state.zwLegName) {
+      const vl = document.getElementById('val-legs');
+      if (vl) vl.textContent = this.state.zwLegName;
     }
 
     const renderBtn = (item, idx) => {
