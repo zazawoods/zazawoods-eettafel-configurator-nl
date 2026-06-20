@@ -59,12 +59,6 @@
 
 {%- assign cfg_base = 'https://zazawoods-esstisch-konfigurator-production.up.railway.app/' -%}
 {%- assign cfg_default_qs = '' -%}
-{%- if section.settings.preselect_shape != blank -%}
-  {%- assign cfg_default_qs = '?shape=' | append: section.settings.preselect_shape -%}
-  {%- if section.settings.preselect_length != blank -%}
-    {%- assign cfg_default_qs = cfg_default_qs | append: '&length=' | append: section.settings.preselect_length -%}
-  {%- endif -%}
-{%- endif -%}
 
 <div class="zw-config-section">
   <div class="zw-config-wrap">
@@ -150,9 +144,6 @@
     { "type": "range", "id": "radius",            "label": "Eckenradius (px)",                   "min": 0,   "max": 24,   "step": 2,  "default": 0 },
     { "type": "color", "id": "bg_color",          "label": "Hintergrund",                        "default": "#F7F6F3" },
 
-    { "type": "header", "content": "Standard-Vorbelegung (optional)" },
-    { "type": "text",  "id": "preselect_shape",   "label": "Default Form", "info": "rectangle / oval / danish-oval / round / kiezel / halfrond" },
-    { "type": "text",  "id": "preselect_length",  "label": "Default Länge (cm)" }
   ],
   "presets": [
     { "name": "3D Esstisch Konfigurator" }
