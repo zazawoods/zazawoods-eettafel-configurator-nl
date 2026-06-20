@@ -6,6 +6,7 @@ export const TABLE_SHAPES = [
   {
     id: 'rectangle',
     name: 'Rechteck',
+    shopifyHandle: 'rechteckiger-esstisch-milano-aus-massiver-eichenholz-mit-baumstammkanten',
     glbFile: `${BASE_PATH}/glb files tables and legs/rectangle.glb`,
     icon: `<img src="Swatches/Vorm/Rechthoekig.png" alt="Rechteck"/>`,
     meshPrefix: ['rectangle', 'Rectangle'],
@@ -17,6 +18,7 @@ export const TABLE_SHAPES = [
   {
     id: 'oval',
     name: 'Oval',
+    shopifyHandle: 'ovaler-esstisch-danilo-aus-massiver-eichenholz-mit-schweizer-kante',
     glbFile: `${BASE_PATH}/glb files tables and legs/Oval.glb`,
     icon: `<img src="Swatches/Vorm/Ovaal.png" alt="Oval"/>`,
     meshPrefix: ['Oval'],
@@ -30,6 +32,7 @@ export const TABLE_SHAPES = [
   {
     id: 'danish-oval',
     name: 'Dänisch-Oval',
+    shopifyHandle: 'danisch-ovaler-esstisch-aus-massivem-eichenholz-andreas-mit-abgeschragter-kante',
     glbFile: `${BASE_PATH}/glb files tables and legs/DanishOval.glb`,
     icon: `<img src="Swatches/Vorm/Deens ovaal.png" alt="Dänisch-Oval"/>`,
     meshPrefix: ['Danish_Oval', 'Danish'],
@@ -43,6 +46,7 @@ export const TABLE_SHAPES = [
   {
     id: 'round',
     name: 'Rund',
+    shopifyHandle: 'runder-esstisch-romano-aus-massiver-eichenholz',
     glbFile: `${BASE_PATH}/glb files tables and legs/Round.glb`,
     icon: `<img src="Swatches/Vorm/Rond.png" alt="Rund"/>`,
     meshPrefix: ['Round'],
@@ -55,6 +59,7 @@ export const TABLE_SHAPES = [
   {
     id: 'kiezel',
     name: 'Kiesel',
+    shopifyHandle: 'esstisch-milano-aus-massivem-eichenholz-mit-baumstammkanten-copy',
     glbFile: `${BASE_PATH}/glb files tables and legs/Kiezel.glb`,
     icon: `<img src="Swatches/Vorm/Kiezel.png" alt="Kiesel"/>`,
     meshPrefix: ['Kiezel'],
@@ -67,36 +72,12 @@ export const TABLE_SHAPES = [
     ]
   },
   {
-    id: 'organic',
-    name: 'Organisch',
-    glbFile: `${BASE_PATH}/glb files tables and legs/Organic.glb`,
-    icon: `<img src="Swatches/Vorm/Organisch.png" alt="Organisch"/>`,
-    meshPrefix: ['Organic'],
-    hasVariant: true,
-    defaultLength: 240,
-    defaultWidth: 120,
-    fixedDimensions: [
-      [200, 100], [220, 110], [240, 120],
-      [260, 130], [280, 140], [300, 140]
-    ]
-  },
-  {
     id: 'halfrond',
     name: 'Halbrund',
+    shopifyHandle: 'halbkreisform-esstisch-aus-massivem-eichenholz',
     glbFile: `${BASE_PATH}/glb files tables and legs/Halfrond.glb`,
     icon: `<img src="Swatches/Vorm/Halfrond.png" alt="Halbrund"/>`,
     meshPrefix: ['Halfrond'],
-    defaultLength: 240,
-    defaultWidth: 100,
-    lengths: [180, 200, 220, 240, 260, 280, 300, 350, 400],
-    widths: [90, 100, 110]
-  },
-  {
-    id: 'boogvorm',
-    name: 'Bogenförmig',
-    glbFile: `${BASE_PATH}/glb files tables and legs/Boogvorm.glb`,
-    icon: `<img src="Swatches/Vorm/Boogvormig.png" alt="Bogenförmig"/>`,
-    meshPrefix: ['Boogvorm'],
     defaultLength: 240,
     defaultWidth: 100,
     lengths: [180, 200, 220, 240, 260, 280, 300, 350, 400],
