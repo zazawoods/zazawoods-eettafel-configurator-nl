@@ -3420,7 +3420,8 @@ class TableConfigurator {
     const isUniversalRoundOK = t => /Konisches Spidertischgestell|Aeris Tischgestell aus Eichenholz|Ovale Holzsäule aus Stäbchenholz/i.test(t);
     let tischgestellList;
     if (this.state.shape === 'round') {
-      tischgestellList = unionLegs.filter(a => isRoundOnly(a.title) || isUniversalRoundOK(a.title));
+      // Only the 4 round-specific legs (Spider rund Schmal/normal, Runde Holzsäule Stäbchen/Eichenholz)
+      tischgestellList = unionLegs.filter(a => isRoundOnly(a.title));
     } else if (this.state.shape === 'halfrond') {
       tischgestellList = unionLegs.filter(a => !isRoundOnly(a.title));
     } else {
