@@ -47,6 +47,46 @@ const ZW_LEG_LIST = [
   { uiName: 'Runde Holzsäule aus Eichenholz (Satz)',                model: { name: 'Pilares', isWood: true } },
   { uiName: 'Halbrunde Tischbeine aus Eichenholz (Satz)',           model: { name: 'Hapa',    isWood: true } }
 ];
+
+// ─── ZW live product data (loaded async from zw-products.json) ───
+let ZW_PRODUCTS_DATA = null;
+async function loadZWProducts() {
+  if (ZW_PRODUCTS_DATA) return ZW_PRODUCTS_DATA;
+  try {
+    const r = await fetch('/configurator/js/zw-products.json?v=' + Date.now(), { cache: 'no-store' });
+    if (r.ok) {
+      ZW_PRODUCTS_DATA = await r.json();
+      console.log('[ZW] product data loaded', Object.keys(ZW_PRODUCTS_DATA));
+    } else {
+      console.warn('[ZW] zw-products.json fetch returned', r.status);
+    }
+  } catch (e) {
+    console.warn('[ZW] could not load zw-products.json', e);
+  }
+  return ZW_PRODUCTS_DATA;
+}
+
+const EDGE_TITLE_MAP = {
+  standaard: ['Gerade Kanten'],
+  facet:     ['Schweizer Kanten'],
+  boomstam:  ['Baumstammkanten']
+};
+
+function buildZWSizeKey(shape, state) {
+  if (shape === 'round')    return `${state.length}cm x 4cm`;
+  if (shape === 'halfrond') return `${state.length} cm / ${state.width}`;
+  return `${state.length}cm x ${state.width}cm x 4cm`;
+}
+
+function findBaseVariant(product, shape, state) {
+  if (!product) return null;
+  const want = buildZWSizeKey(shape, state);
+  const direct = product.baseVariants.find(v => v.title === want || v.opt1 === want);
+  if (direct) return direct;
+  const lenPrefix = `${state.length}cm`;
+  return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
+}
+
 import { fetchAllPrices, calculateTotal, getLineItems, formatPrice, addToCart } from './shopify.js?v=3cc5e8c';
 
 class TableConfigurator {
@@ -175,6 +215,7 @@ class TableConfigurator {
     this._pricesReady = false;
     fetchAllPrices().then(() => {
       this._pricesReady = true;
+      loadZWProducts().then(() => { this.updatePrice(); this.renderLegGrid(); });
       this.updatePrice();
     });
     this.loadModel(this.state.shape);
@@ -4276,15 +4317,31 @@ class TableConfigurator {
   }
 
   updatePrice() {
-    const activeLeg = this.legObjects[this.activeLegIndex];
-    const priceState = {
-      ...this.state,
-      _activeLeg: activeLeg ? {
-        displayName: activeLeg.displayName,
-        isWood: activeLeg.isWood
-      } : null
-    };
-    const total = calculateTotal(priceState);
+    const product = ZW_PRODUCTS_DATA && ZW_PRODUCTS_DATA[this.state.shape];
+    let total = 0;
+    if (product) {
+      const baseVariant = findBaseVariant(product, this.state.shape, this.state);
+      total = baseVariant ? baseVariant.price : 0;
+      const edgeTitles = EDGE_TITLE_MAP[this.state.edge] || [];
+      const edgeAddon = product.addons.Kantenbearbeitung.find(a => edgeTitles.includes(a.title));
+      if (edgeAddon) total += edgeAddon.price;
+      let legAddon = null;
+      if (this.state.zwLegName) {
+        legAddon = product.addons.Tischgestell.find(a => a.title === this.state.zwLegName);
+        if (legAddon) total += legAddon.price;
+      }
+      this._selectedVariants = {
+        base: baseVariant?.id,
+        edge: edgeAddon?.variantId,
+        leg:  legAddon?.variantId
+      };
+    } else {
+      const activeLeg = this.legObjects[this.activeLegIndex];
+      total = calculateTotal({
+        ...this.state,
+        _activeLeg: activeLeg ? { displayName: activeLeg.displayName, isWood: activeLeg.isWood } : null
+      });
+    }
     const priceEl = document.getElementById('total-price');
     const priceMobileEl = document.getElementById('total-price-mobile');
     if (priceEl) {
