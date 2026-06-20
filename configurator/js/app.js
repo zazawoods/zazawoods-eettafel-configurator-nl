@@ -72,6 +72,27 @@ const EDGE_TITLE_MAP = {
   boomstam:  ['Baumstammkanten']
 };
 
+// Map ZW Tischgestell title → 3D model in our GLBs (name + isWood).
+// Titles not in the map are still rendered as a card, but as a 'no-model' red entry.
+const ZW_LEG_MODEL_MAP = {
+  'Spider Tischgestell (S)':                            { name: 'Matrix',          isWood: false },
+  'Konisches Spidertischgestell':                       { name: 'Konische Spider', isWood: false },
+  'Thorn Tischgestelle (Satz)':                         { name: 'Pedro',           isWood: false },
+  'V Tischgestell':                                     { name: 'V-Form',          isWood: false },
+  'X Tischgestell (Satz)':                              { name: 'X-Form',          isWood: false },
+  'A Tischgestell (Satz)':                              { name: 'A-Form',          isWood: false },
+  'Aeris Tischgestell aus Eichenholz':                  { name: 'Lara',            isWood: true  },
+  'Ovale Holzsäule aus Stäbchenholz, Eiche':            { name: 'Wellen-Säule',    isWood: true  },
+  'Runde Holzsäule aus Stäbchenholz, Eiche':            { name: 'Wellen-Rund',     isWood: true  },
+  'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)':  { name: 'Wellen-Duo',      isWood: true  },
+  'Runde Holzsäule aus Eichenholz (Satz) (A)':          { name: 'Pilares',         isWood: true  },
+  'Halbrunde Tischbeine aus Eichenholz (Satz) (A)':     { name: 'Hapa',            isWood: true  }
+};
+
+// Exclusion patterns: never show items whose ZW title matches these (per user)
+const LEG_TITLE_EXCLUDE = /Bank-|Couchtisch|Bartisch/i;
+
+
 function buildZWSizeKey(shape, state) {
   if (shape === 'round')    return `${state.length}cm x 4cm`;
   if (shape === 'halfrond') return `${state.length} cm / ${state.width}`;
@@ -3132,7 +3153,19 @@ class TableConfigurator {
           isWood: activeLeg.isWood
         } : null
       };
-      addToCart(priceState);
+      // Phase 2: build a zazawoods.de cart permalink with all selected variants
+      const v = this._selectedVariants || {};
+      const items = [];
+      if (v.base) items.push(v.base + ':1');
+      if (v.edge) items.push(v.edge + ':1');
+      if (v.leg)  items.push(v.leg  + ':1');
+      if (items.length === 0) {
+        addToCart(priceState); // legacy fallback
+        return;
+      }
+      const cartUrl = 'https://zazawoods.de/cart/' + items.join(',');
+      // Open in the same tab so the user lands on the live cart with all items
+      window.location.href = cartUrl;
     };
     const btn = document.getElementById('btn-add-to-cart');
     if (btn) btn.addEventListener('click', cartHandler);
@@ -3328,13 +3361,18 @@ class TableConfigurator {
       return `<svg viewBox="0 0 60 50" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="6" x2="55" y2="6"/><line x1="14" y1="6" x2="14" y2="46"/><line x1="46" y1="6" x2="46" y2="46"/></svg>`;
     };
 
-    // Sync zwLegName from current GLB leg if not yet set, and reflect it in the section header
-    if (!this.state.zwLegName && this.legObjects.length) {
-      const cur = this.legObjects[this.activeLegIndex];
-      if (cur) {
-        const m = ZW_LEG_LIST.find(z => z.model && z.model.name === cur.displayName && z.model.isWood === cur.isWood);
-        if (m) this.state.zwLegName = m.uiName;
-      }
+    // Build the per-shape leg list from ZW Tischgestell addons (filter out excluded titles)
+    const product = ZW_PRODUCTS_DATA && ZW_PRODUCTS_DATA[this.state.shape];
+    if (!product) {
+      grid.innerHTML = '<p style="font-size:12px;color:#999;padding:8px 0;">Lade Untergestelle…</p>';
+      return;
+    }
+    const tischgestellList = (product.addons.Tischgestell || []).filter(a => !LEG_TITLE_EXCLUDE.test(a.title));
+
+    // Sync zwLegName from current GLB leg, OR default to first available in list
+    if (!tischgestellList.find(a => a.title === this.state.zwLegName)) {
+      // current selection no longer valid (shape changed) → pick first
+      this.state.zwLegName = tischgestellList[0]?.title || null;
     }
     if (this.state.zwLegName) {
       const vl = document.getElementById('val-legs');
@@ -3342,43 +3380,45 @@ class TableConfigurator {
     }
 
     const renderBtn = (item, idx) => {
+      const model = ZW_LEG_MODEL_MAP[item.title];  // {name, isWood} | undefined
       let hasModel = false, legIdx = -1;
-      if (item.model) {
-        legIdx = this.legObjects.findIndex(l => l.displayName === item.model.name && l.isWood === item.model.isWood);
+      if (model) {
+        legIdx = this.legObjects.findIndex(l => l.displayName === model.name && l.isWood === model.isWood);
         if (legIdx >= 0) hasModel = true;
       }
-      const active = this.state.zwLegName === item.uiName;
+      const active = this.state.zwLegName === item.title;
       const swatch = hasModel
-        ? getLegSwatch(item.model.name, item.model.isWood)
+        ? getLegSwatch(model.name, model.isWood)
         : `<svg viewBox="0 0 60 50" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="5" y1="6" x2="55" y2="6"/><line x1="15" y1="6" x2="15" y2="46"/><line x1="45" y1="6" x2="45" y2="46"/></svg>`;
+      const priceTag = item.price > 0 ? `<div class="leg-price">+€${(item.price/100).toFixed(0)}</div>` : '';
       return `
         <button class="leg-option ${hasModel ? 'has-model' : 'no-model'} ${active ? 'active' : ''}" data-zw-index="${idx}" data-leg-index="${legIdx}">
           <div class="leg-swatch-img">${swatch}</div>
-          <div>${item.uiName}</div>
+          <div class="leg-name">${item.title}</div>
+          ${priceTag}
         </button>
       `;
     };
 
-    grid.innerHTML = `<div class="leg-category-grid">${ZW_LEG_LIST.map(renderBtn).join('')}</div>`;
+    grid.innerHTML = `<div class="leg-category-grid">${tischgestellList.map(renderBtn).join('')}</div>`;
 
     grid.onclick = (e) => {
       const btn = e.target.closest('.leg-option');
       if (!btn) return;
       const zwIdx = parseInt(btn.dataset.zwIndex);
       const legIdx = parseInt(btn.dataset.legIndex);
-      const item = ZW_LEG_LIST[zwIdx];
-      this.state.zwLegName = item.uiName;
+      const item = tischgestellList[zwIdx];
+      this.state.zwLegName = item.title;
 
       if (legIdx >= 0) {
         this.switchLeg(legIdx);
       } else {
-        // No 3D model — hide every leg, keep tabletop
         this.legObjects.forEach(l => { if (l.object) l.object.visible = false; });
         this.activeLegIndex = -1;
       }
       grid.querySelectorAll('.leg-option').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      document.getElementById('val-legs').textContent = item.uiName;
+      document.getElementById('val-legs').textContent = item.title;
       this.updateSummary();
       this.updateLegSectionIcon();
     };
@@ -3494,13 +3534,21 @@ class TableConfigurator {
     const shape = TABLE_SHAPES.find(s => s.id === this.state.shape);
     const allowed = shape?.allowedEdges;
 
+    // Cross-reference with ZW Kantenbearbeitung addons for this shape (single source of truth)
+    const zwProduct = ZW_PRODUCTS_DATA && ZW_PRODUCTS_DATA[this.state.shape];
+    const zwEdgeTitles = (zwProduct?.addons?.Kantenbearbeitung || []).map(a => a.title);
     const filteredEdges = EDGE_OPTIONS.filter(edge => {
-      // Shape-specific restrictions
       if (edge.onlyShapes && !edge.onlyShapes.includes(this.state.shape)) return false;
-      // Material-specific restrictions
       if (edge.onlyMaterial && !edge.onlyMaterial.includes(this.state.materialType)) return false;
-      // Shape allows only certain edges
       if (allowed && !allowed.includes(edge.id)) return false;
+      // If ZW data is loaded and this product has Kantenbearbeitung addons, only show edges that exist there
+      if (zwEdgeTitles.length > 0) {
+        const titles = EDGE_TITLE_MAP[edge.id] || [];
+        if (!titles.some(t => zwEdgeTitles.includes(t))) return false;
+      } else if (zwProduct) {
+        // Product loaded but has NO edge addons → only the default 'standaard' makes sense
+        if (edge.id !== 'standaard') return false;
+      }
       return true;
     });
 

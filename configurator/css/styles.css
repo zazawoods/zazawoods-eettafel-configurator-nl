@@ -1355,3 +1355,22 @@ body {
 }
 .leg-option.has-model::after { background: #2d9c4c; }
 .leg-option.no-model::after  { background: #d4453b; }
+
+
+/* Untergestell ::after dots should not capture clicks (caused some cards to seem unclickable) */
+.leg-option.has-model::after,
+.leg-option.no-model::after { pointer-events: none; }
+
+/* Small surcharge tag inside leg card */
+.leg-price {
+  position: absolute;
+  bottom: 4px;
+  right: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-accent);
+  background: var(--color-white);
+  padding: 1px 4px;
+  border-radius: 4px;
+  pointer-events: none;
+}
