@@ -3473,8 +3473,10 @@ class TableConfigurator {
       if (legIdx >= 0) {
         this.switchLeg(legIdx);
       } else {
+        // No 3D model — hide all leg meshes
         this.legObjects.forEach(l => { if (l.object) l.object.visible = false; });
         this.activeLegIndex = -1;
+        this.updatePrice();   // important: recompute total + selected variant for cart
       }
       grid.querySelectorAll('.leg-option').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
@@ -3882,13 +3884,13 @@ class TableConfigurator {
 
     const badge = document.getElementById('dimension-badge');
     if (isRound) {
-      badge.innerHTML = `\u00d8 <span id="dim-length">${this.state.length}</span> x <span id="dim-height">${this.state.height}</span> cm`;
+      badge.innerHTML = `\u00d8 <span id="dim-length">${this.state.length}</span> x <span id="dim-height">${thicknessCm}</span> cm`;
       document.getElementById('val-dimensions').textContent =
-        `\u00d8 ${this.state.length} x ${this.state.height} cm \u00b7 ${thicknessCm} cm Platte`;
+        `\u00d8 ${this.state.length} cm \u00b7 ${thicknessCm} cm`;
     } else {
-      badge.innerHTML = `<span id="dim-length">${this.state.length}</span> x <span id="dim-height">${this.state.height}</span> cm`;
+      badge.innerHTML = `<span id="dim-length">${this.state.length}</span> x <span id="dim-width">${this.state.width}</span> x <span id="dim-height">${thicknessCm}</span> cm`;
       document.getElementById('val-dimensions').textContent =
-        `${this.state.length} \u00d7 ${this.state.height} cm \u00b7 ${thicknessCm} cm Platte`;
+        `${this.state.length} \u00d7 ${this.state.width} \u00d7 ${thicknessCm} cm`;
     }
   }
 

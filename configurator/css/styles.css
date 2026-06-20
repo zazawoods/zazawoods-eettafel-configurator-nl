@@ -1383,3 +1383,9 @@ body {
   text-align: center; max-width: 100%; word-break: break-word;
 }
 .color-swatch.active .color-swatch-name { color: var(--color-accent); font-weight: 600; }
+
+
+/* Make every leg-card child non-clickable so the button itself receives the click */
+.leg-option > * { pointer-events: none; }
+.leg-option { -webkit-tap-highlight-color: rgba(200,150,90,0.15); }
+.leg-option:active { transform: scale(0.985); }
