@@ -3940,9 +3940,9 @@ class TableConfigurator {
     const lines = [];
     lines.push(`${shape?.name || ''} · ${this.state.materialType === 'oak' ? 'Eiche' : 'Keramik'} ${color?.name || ''}`);
     if (this.state.shape === 'round') {
-      lines.push(`Ø ${this.state.length} × ${this.state.height || 76} cm`);
+      lines.push(`Ø ${this.state.length} cm · ${this.getThicknessCm()} cm`);
     } else {
-      lines.push(`${this.state.length} × ${this.state.height || 76} cm`);
+      lines.push(`${this.state.length} × ${this.state.width} × ${this.getThicknessCm()} cm`);
     }
     lines.push(`Kantenprofil: ${edgeNames[this.state.edge] || this.state.edge}`);
     if (this.state.zwLegName) lines.push(`Untergestell: ${this.state.zwLegName}`); else if (activeLeg) lines.push(`Untergestell: ${activeLeg.displayName}${activeLeg.isWood ? ' (Holz)' : ' (Metall)'}`);
@@ -4418,8 +4418,8 @@ class TableConfigurator {
 
     const summary = document.getElementById('summary-text');
     const dimStr = this.state.shape === 'round'
-      ? `\u00d8 ${this.state.length} x ${this.state.height} cm`
-      : `${this.state.length} \u00d7 ${this.state.height} cm`;
+      ? `\u00d8 ${this.state.length} cm \u00b7 ${this.getThicknessCm()} cm`
+      : `${this.state.length} \u00d7 ${this.state.width} \u00d7 ${this.getThicknessCm()} cm`;
     summary.innerHTML = `
       <strong>${shape.name}</strong> &middot; ${matType.name} ${color ? color.name : ''}<br>
       ${dimStr} &middot;
