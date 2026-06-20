@@ -3436,7 +3436,19 @@ class TableConfigurator {
       });
       this.state.zwLegName = (firstWithModel || tischgestellList[0])?.title || null;
     }
+    // Sync the 3D scene to whatever zwLegName is currently chosen
     if (this.state.zwLegName) {
+      const model = ZW_LEG_MODEL_MAP[this.state.zwLegName];
+      if (model) {
+        const idx = this.legObjects.findIndex(l => l.displayName === model.name && l.isWood === model.isWood);
+        if (idx >= 0 && idx !== this.activeLegIndex) {
+          this.switchLeg(idx);
+        }
+      } else {
+        // Selected ZW leg has no 3D model — hide all leg meshes (tabletop stays)
+        this.legObjects.forEach(l => { if (l.object) l.object.visible = false; });
+        this.activeLegIndex = -1;
+      }
       const vl = document.getElementById('val-legs');
       if (vl) vl.textContent = this.state.zwLegName;
     }
