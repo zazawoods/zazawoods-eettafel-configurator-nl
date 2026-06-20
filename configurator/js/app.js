@@ -3403,10 +3403,14 @@ class TableConfigurator {
     }
     const tischgestellList = (product.addons.Tischgestell || []).filter(a => !LEG_TITLE_EXCLUDE.test(a.title));
 
-    // Sync zwLegName from current GLB leg, OR default to first available in list
+    // Sync zwLegName from current GLB leg, OR default to first ZW addon that ALSO has a 3D model match
     if (!tischgestellList.find(a => a.title === this.state.zwLegName)) {
-      // current selection no longer valid (shape changed) → pick first
-      this.state.zwLegName = tischgestellList[0]?.title || null;
+      const firstWithModel = tischgestellList.find(item => {
+        const model = ZW_LEG_MODEL_MAP[item.title];
+        if (!model) return false;
+        return this.legObjects.some(l => l.displayName === model.name && l.isWood === model.isWood);
+      });
+      this.state.zwLegName = (firstWithModel || tischgestellList[0])?.title || null;
     }
     if (this.state.zwLegName) {
       const vl = document.getElementById('val-legs');
