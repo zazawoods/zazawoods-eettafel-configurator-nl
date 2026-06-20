@@ -4335,6 +4335,7 @@ class TableConfigurator {
         edge: edgeAddon?.variantId,
         leg:  legAddon?.variantId
       };
+      total = total / 100; // ZW data is in cents; legacy formatPrice expects EUR units
     } else {
       const activeLeg = this.legObjects[this.activeLegIndex];
       total = calculateTotal({
