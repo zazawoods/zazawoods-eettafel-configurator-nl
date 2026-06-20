@@ -3535,14 +3535,20 @@ class TableConfigurator {
         const last = filteredDims[filteredDims.length - 1];
         if (last) { this.state.length = last[0]; this.state.width = last[1]; }
       }
+      // De-duplicate by length so user sees one button per length (width is auto-paired internally)
+      const uniqueByLength = [];
+      const seen = new Set();
+      for (const [l, w] of filteredDims) {
+        if (!seen.has(l)) { uniqueByLength.push([l, w]); seen.add(l); }
+      }
       container.innerHTML = `
         <div class="dim-section">
-          <div class="dim-section-label">Afmeting (L × B)</div>
-          <div class="dim-fixed-grid" id="dim-fixed-grid">
-            ${filteredDims.map(([l, w]) => `
-              <button class="dim-btn-fixed ${l === this.state.length && w === this.state.width ? 'active' : ''}"
+          <div class="dim-section-label">Länge (cm)</div>
+          <div class="dim-btn-row" id="dim-fixed-grid">
+            ${uniqueByLength.map(([l, w]) => `
+              <button class="dim-btn ${l === this.state.length ? 'active' : ''}"
                       data-length="${l}" data-width="${w}">
-                ${l} × ${w}
+                ${l}
               </button>
             `).join('')}
           </div>
@@ -3550,11 +3556,11 @@ class TableConfigurator {
       `;
 
       container.querySelector('#dim-fixed-grid').addEventListener('click', (e) => {
-        const btn = e.target.closest('.dim-btn-fixed');
+        const btn = e.target.closest('.dim-btn');
         if (!btn) return;
         this.state.length = parseInt(btn.dataset.length);
         this.state.width = parseInt(btn.dataset.width);
-        container.querySelectorAll('.dim-btn-fixed').forEach(b => b.classList.remove('active'));
+        container.querySelector('#dim-fixed-grid').querySelectorAll('.dim-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         this.applyDimensions();
         this.updateDimensionDisplay();
@@ -3602,21 +3608,13 @@ class TableConfigurator {
       if (isCeramic && !filteredWidths.includes(this.state.width)) {
         this.state.width = filteredWidths[filteredWidths.length - 1] || filteredWidths[0];
       }
+      // Breite section hidden per design request; width stays at shape.defaultWidth internally.
       container.innerHTML = `
         <div class="dim-section">
-          <div class="dim-section-label">Lengte (cm)</div>
+          <div class="dim-section-label">Länge (cm)</div>
           <div class="dim-btn-row" id="dim-length-row">
             ${filteredLengths.map(v => `
               <button class="dim-btn ${v === this.state.length ? 'active' : ''}"
-                      data-value="${v}">${v}</button>
-            `).join('')}
-          </div>
-        </div>
-        <div class="dim-section">
-          <div class="dim-section-label">Breedte (cm)</div>
-          <div class="dim-btn-row" id="dim-width-row">
-            ${filteredWidths.map(v => `
-              <button class="dim-btn ${v === this.state.width ? 'active' : ''}"
                       data-value="${v}">${v}</button>
             `).join('')}
           </div>
@@ -3634,16 +3632,7 @@ class TableConfigurator {
         this.updateSummary();
       });
 
-      container.querySelector('#dim-width-row').addEventListener('click', (e) => {
-        const btn = e.target.closest('.dim-btn');
-        if (!btn) return;
-        this.state.width = parseInt(btn.dataset.value);
-        container.querySelector('#dim-width-row').querySelectorAll('.dim-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        this.applyDimensions();
-        this.updateDimensionDisplay();
-        this.updateSummary();
-      });
+      // (Breite click handler removed — width is no longer user-selectable)
     }
 
     this.renderThicknessOptions();
@@ -3709,9 +3698,9 @@ class TableConfigurator {
       document.getElementById('val-dimensions').textContent =
         `\u00d8 ${this.state.length} x ${this.state.height} cm \u00b7 ${thicknessCm} cm Platte`;
     } else {
-      badge.innerHTML = `<span id="dim-length">${this.state.length}</span> x <span id="dim-width">${this.state.width}</span> x <span id="dim-height">${this.state.height}</span> cm`;
+      badge.innerHTML = `<span id="dim-length">${this.state.length}</span> x <span id="dim-height">${this.state.height}</span> cm`;
       document.getElementById('val-dimensions').textContent =
-        `${this.state.length} \u00d7 ${this.state.width} \u00d7 ${this.state.height} cm \u00b7 ${thicknessCm} cm Platte`;
+        `${this.state.length} \u00d7 ${this.state.height} cm \u00b7 ${thicknessCm} cm Platte`;
     }
   }
 
@@ -3763,7 +3752,7 @@ class TableConfigurator {
     if (this.state.shape === 'round') {
       lines.push(`Ø ${this.state.length} × ${this.state.height || 76} cm`);
     } else {
-      lines.push(`${this.state.length} × ${this.state.width} × ${this.state.height || 76} cm`);
+      lines.push(`${this.state.length} × ${this.state.height || 76} cm`);
     }
     lines.push(`Kantenprofil: ${edgeNames[this.state.edge] || this.state.edge}`);
     if (activeLeg) lines.push(`Untergestell: ${activeLeg.displayName}${activeLeg.isWood ? ' (Holz)' : ' (Metall)'}`);
@@ -3938,7 +3927,7 @@ class TableConfigurator {
       id: Date.now(),
       thumb,
       title: `${shape?.name || ''} · ${color?.name || ''}`,
-      sub: `${this.state.length}×${this.state.width} · ${activeLeg?.displayName || ''}`,
+      sub: `${this.state.length} cm · ${activeLeg?.displayName || ''}`,
       state: { ...this.state },
       legName: activeLeg?.displayName || '',
       url: window.location.search
@@ -4240,7 +4229,7 @@ class TableConfigurator {
     const summary = document.getElementById('summary-text');
     const dimStr = this.state.shape === 'round'
       ? `\u00d8 ${this.state.length} x ${this.state.height} cm`
-      : `${this.state.length} \u00d7 ${this.state.width} \u00d7 ${this.state.height} cm`;
+      : `${this.state.length} \u00d7 ${this.state.height} cm`;
     summary.innerHTML = `
       <strong>${shape.name}</strong> &middot; ${matType.name} ${color ? color.name : ''}<br>
       ${dimStr} &middot;
