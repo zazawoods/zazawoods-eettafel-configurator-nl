@@ -3630,8 +3630,11 @@ class TableConfigurator {
   updateMaterialLabel() {
     const matType = MATERIAL_TYPES[this.state.materialType];
     const color = matType.colors.find(c => c.id === this.state.color);
+    // Prefer the actual Shopify Behandlung title if user has picked one (so e.g.
+    // 'Unsichtbarer Skylt-Lack' is shown, not just the 'Natural' fallback texture name).
+    const colorDisplay = this.state.behandlungTitle || (color ? color.name : '');
     document.getElementById('val-material').textContent =
-      `${matType.name} \u00b7 ${color ? color.name : ''}`;
+      `${matType.name} \u00b7 ${colorDisplay}`;
   }
 
   renderEdgeOptions() {
@@ -3974,7 +3977,7 @@ class TableConfigurator {
     const edgeNames = { standaard: 'Gerade Kante', facet: 'Schweizer Kante', boomstam: 'Baumstammkante' };
 
     const lines = [];
-    lines.push(`${shape?.name || ''} · ${this.state.materialType === 'oak' ? 'Eiche' : 'Keramik'} ${color?.name || ''}`);
+    lines.push(`${shape?.name || ''} · ${this.state.materialType === 'oak' ? 'Eiche' : 'Keramik'} ${this.state.behandlungTitle || color?.name || ''}`);
     if (this.state.shape === 'round') {
       lines.push(`Ø ${this.state.length} cm · ${this.getThicknessCm()} cm`);
     } else {
@@ -4457,7 +4460,7 @@ class TableConfigurator {
       ? `\u00d8 ${this.state.length} cm \u00b7 ${this.getThicknessCm()} cm`
       : `${this.state.length} \u00d7 ${this.state.width} \u00d7 ${this.getThicknessCm()} cm`;
     summary.innerHTML = `
-      <strong>${shape.name}</strong> &middot; ${matType.name} ${color ? color.name : ''}<br>
+      <strong>${shape.name}</strong> &middot; ${matType.name} ${this.state.behandlungTitle || (color ? color.name : '')}<br>
       ${dimStr} &middot;
       ${edge ? edge.name : 'Gerade Kante'}${extras}
       ${this.state.zwLegName ? `<br>Tischgestell: ${this.state.zwLegName}` : (legLabel ? `<br>Tischgestell: ${legLabel}` : '')}
