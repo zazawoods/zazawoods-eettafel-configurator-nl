@@ -1,0 +1,180 @@
+{%- comment -%}
+  Zaza Woods — Esstisch-Konfigurator: «Konfigurator öffnen» button
+  --------------------------------------------------------------
+  Drop this snippet into the product-template (or render it inside
+  `sections/main-product.liquid` next to the existing Picknick
+  selbst-erstellen-button).
+
+  Behaviour mirrors the Picknick button 1:1:
+   • Renders ONLY on the 6 Esstisch products linked to our configurator
+     (or whenever the template suffix is "esstisch-konfigurator")
+   • Picks up the currently-selected length (Maße / Länge option)
+   • Picks up the live edge choice (Kantenbearbeitung), if the page
+     has a custom edge picker — falls back to standaard
+   • Live-updates the URL whenever the user changes a variant option
+   • Sends the user to our Railway configurator with shape + length
+     preselected:  https://…/?shape=rectangle&length=240
+{%- endcomment -%}
+
+{%- assign suffix = template.suffix | downcase -%}
+{%- assign show = false -%}
+{%- assign init_shape = '' -%}
+
+{%- comment -%} 1) handle whitelist → which shape to preselect {%- endcomment -%}
+{%- assign h = product.handle | downcase -%}
+{%- if h == 'rechteckiger-esstisch-milano-aus-massiver-eichenholz-mit-baumstammkanten' -%}
+  {%- assign init_shape = 'rectangle' -%}{%- assign show = true -%}
+{%- elsif h == 'ovaler-esstisch-danilo-aus-massiver-eichenholz-mit-schweizer-kante' -%}
+  {%- assign init_shape = 'oval' -%}{%- assign show = true -%}
+{%- elsif h == 'danisch-ovaler-esstisch-aus-massivem-eichenholz-andreas-mit-abgeschragter-kante' -%}
+  {%- assign init_shape = 'danish-oval' -%}{%- assign show = true -%}
+{%- elsif h == 'runder-esstisch-romano-aus-massiver-eichenholz' -%}
+  {%- assign init_shape = 'round' -%}{%- assign show = true -%}
+{%- elsif h == 'esstisch-milano-aus-massivem-eichenholz-mit-baumstammkanten-copy' -%}
+  {%- assign init_shape = 'kiezel' -%}{%- assign show = true -%}
+{%- elsif h == 'halbkreisform-esstisch-aus-massivem-eichenholz' -%}
+  {%- assign init_shape = 'halfrond' -%}{%- assign show = true -%}
+{%- elsif suffix == 'esstisch-konfigurator' -%}
+  {%- assign init_shape = 'rectangle' -%}{%- assign show = true -%}
+{%- endif -%}
+
+{%- if show -%}
+
+{%- assign init_length = '' -%}
+{%- for opt in product.options_with_values -%}
+  {%- assign oname = opt.name | downcase | strip -%}
+  {%- assign val   = opt.selected_value | default: '' | downcase | strip -%}
+  {%- if val == '' -%}{%- continue -%}{%- endif -%}
+
+  {%- if oname contains 'maß' or oname contains 'länge' or oname contains 'lange'
+        or oname contains 'durchmesser' or oname contains 'size' or oname contains 'length' -%}
+    {%- assign digits = val | replace: 'cm', ' ' | replace: 'x', ' ' | replace: '×', ' ' -%}
+    {%- assign parts = digits | split: ' ' -%}
+    {%- for p in parts -%}
+      {%- assign n = p | strip | times: 1 -%}
+      {%- if n > 0 and init_length == '' -%}
+        {%- assign init_length = n -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- assign target_url = 'https://zazawoods-esstisch-konfigurator-production.up.railway.app/?shape=' | append: init_shape -%}
+{%- if init_length != '' -%}
+  {%- assign target_url = target_url | append: '&length=' | append: init_length -%}
+{%- endif -%}
+
+<a href="{{ target_url }}"
+   class="zw-konfig-btn"
+   id="zw-esstisch-konfig-btn-{{ product.id }}"
+   data-zw-esstisch-konfig="1"
+   target="_top"
+   aria-label="Konfigurator öffnen">
+  <span class="zw-konfig-btn__ic" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="7" height="7" rx="1"/>
+      <rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/>
+      <rect x="14" y="14" width="7" height="7" rx="1"/>
+    </svg>
+  </span>
+  <span class="zw-konfig-btn__t">Konfigurator öffnen</span>
+</a>
+
+<style>
+  .zw-konfig-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 10px; width: 100%;
+    height: 47px; min-height: 47px;
+    padding: 0 30px; margin: 16px 0;
+    background: #577476; color: #fff;
+    font-family: 'Switzer', -apple-system, "Segoe UI", Arial, sans-serif;
+    font-size: 15px; font-weight: 400; line-height: 1; letter-spacing: 0;
+    text-transform: none; text-decoration: none;
+    border: 0; border-radius: 5px; box-shadow: none;
+    cursor: pointer; transition: background .15s, transform .08s;
+    box-sizing: border-box;
+  }
+  .zw-konfig-btn:hover  { background: #486264; }
+  .zw-konfig-btn:active { transform: scale(.99); }
+  .zw-konfig-btn:focus-visible { outline: 2px solid #577476; outline-offset: 2px; }
+  .zw-konfig-btn__ic { display: inline-flex; width: 18px; height: 18px; flex: none; }
+  .zw-konfig-btn__ic svg { width: 100%; height: 100%; }
+  .zw-konfig-btn__t { white-space: nowrap; }
+  @media (max-width: 749px) {
+    .zw-konfig-btn { height: 44px; min-height: 44px; font-size: 14.5px; margin: 12px 0; }
+  }
+</style>
+
+<script>
+(function () {
+  var btn = document.getElementById('zw-esstisch-konfig-btn-{{ product.id }}');
+  if (!btn) return;
+
+  var INIT_SHAPE = {{ init_shape | json }};
+  var BASE_URL = 'https://zazawoods-esstisch-konfigurator-production.up.railway.app/';
+
+  function firstInt(s) {
+    var m = (s || '').match(/\d+/);
+    return m ? parseInt(m[0], 10) : null;
+  }
+  function readSelectedOptions() {
+    var picked = {};
+    var pickers = document.querySelectorAll('variant-selects, variant-radios');
+    pickers.forEach(function (p) {
+      p.querySelectorAll('select').forEach(function (s) {
+        var m = (s.name || '').match(/options\[(.+)\]/);
+        if (m) picked[m[1]] = s.value;
+      });
+      p.querySelectorAll('input[type="radio"]:checked').forEach(function (r) {
+        var m = (r.name || '').match(/options\[(.+)\]/);
+        if (m) picked[m[1]] = r.value;
+      });
+    });
+    document.querySelectorAll('input[name^="options["], select[name^="options["]').forEach(function (el) {
+      var m = (el.name || '').match(/options\[(.+)\]/);
+      if (!m) return;
+      if (picked[m[1]]) return;
+      if (el.tagName === 'SELECT') {
+        picked[m[1]] = el.value;
+      } else if (el.type === 'radio' && el.checked) {
+        picked[m[1]] = el.value;
+      } else if (el.type !== 'radio' && el.type !== 'checkbox') {
+        picked[m[1]] = el.value;
+      }
+    });
+    return picked;
+  }
+  function refresh() {
+    try {
+      var picked = readSelectedOptions();
+      var length = null;
+      Object.keys(picked).forEach(function (k) {
+        var nameLower = k.toLowerCase();
+        if (/maß|länge|lange|durchmesser|size|length/.test(nameLower)) {
+          var L = firstInt(picked[k]);
+          if (L) length = L;
+        }
+      });
+      var url = BASE_URL + '?shape=' + encodeURIComponent(INIT_SHAPE);
+      if (length) url += '&length=' + length;
+      btn.setAttribute('href', url);
+    } catch (e) {}
+  }
+  document.addEventListener('change', function (ev) {
+    var t = ev.target;
+    if (!t) return;
+    var name = t.name || '';
+    var isOpt = name === 'id' || name.indexOf('options[') === 0;
+    var inPicker = t.closest && t.closest('variant-selects, variant-radios');
+    if (isOpt || inPicker) setTimeout(refresh, 30);
+  }, true);
+  ['variant:change', 'variantChange', 'product:variantChange', 'on:variant:change'].forEach(function (ev) {
+    document.addEventListener(ev, function () { setTimeout(refresh, 30); }, true);
+  });
+  setTimeout(refresh, 200);
+  setTimeout(refresh, 1200);
+})();
+</script>
+
+{%- endif -%}
