@@ -3105,7 +3105,8 @@ class TableConfigurator {
     const container = document.getElementById('shape-options');
     if (!container) return;
 
-    if (this.state.shape === 'rectangle') {
+    if (false && this.state.shape === 'rectangle') {
+      // ── Rectangle radius UI hidden per design request (internal state.radius=0 default kept) ──
       container.innerHTML = `
         <div class="shape-sub-option">
           <div class="dim-section-label">Radius</div>
@@ -3155,7 +3156,8 @@ class TableConfigurator {
 
     // Add Variant option for shapes that support it
     const shape = TABLE_SHAPES.find(s => s.id === this.state.shape);
-    if (shape && shape.hasVariant) {
+    if (false && shape && shape.hasVariant) {
+      // ── Variant A/B UI hidden per design request (defaults to 'a', internal logic kept) ──
       if (!this.state.variant) this.state.variant = 'a';
       const variantHTML = `
         <div class="shape-sub-option">
