@@ -110,7 +110,6 @@ export const MATERIAL_TYPES = {
       { id: 'mist',        name: 'Mist',        file: `${BASE_PATH}/Textures/Oak wood colors/3_OIL_PLUS_2C_OAK_MIST_5.jpg`,      swatch: '#b5a899' },
       { id: 'vanilla',     name: 'Vanilla',     file: `${BASE_PATH}/Textures/Oak wood colors/4_OIL_PLUS_2C_OAK_VANILLA.jpg`,     swatch: '#d4c5a9' },
       { id: 'pure',        name: 'Pure',        file: `${BASE_PATH}/Textures/Oak wood colors/5_OIL_PLUS_2C_OAK_PURE - Copy.jpg`, swatch: '#dcc99d' },
-      { id: 'golden-hour', name: 'Golden Hour', file: `${BASE_PATH}/Textures/Oak wood colors/6_OIL_PLUS_2C_OAK_GOLDEN_HOUR.jpg`, swatch: '#c09a52' },
       { id: 'macchiato',   name: 'Macchiato',   file: `${BASE_PATH}/Textures/Oak wood colors/7_OIL_PLUS_2C_OAK_MACCHIATO.jpg`,   swatch: '#8b6f52' },
       { id: 'charcoal',    name: 'Charcoal',    file: `${BASE_PATH}/Textures/Oak wood colors/10_OIL_PLUS_2C_OAK_CHARCOAL.jpg`,   swatch: '#3a3632' },
       { id: 'shell-grey',  name: 'Shell Grey',  file: `${BASE_PATH}/Textures/Oak wood colors/8_OIL_PLUS_2C_OAK_SHELL_GREY.jpg`,  swatch: '#9e9589' },

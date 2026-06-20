@@ -88,7 +88,13 @@ const BEHANDLUNG_TEXTURE_MAP = {
   'Macchiato':               'macchiato',
   'Smoke':                   'charcoal',
   'Dulce':                   'vanilla',
-  'Walnut':                  'walnut'
+  'Walnut':                  'walnut',
+  // 5 new ZW Behandlung products (added 2026-06-20)
+  'Natural':                 'natural',
+  'Mist':                    'mist',
+  'Vanilla':                 'vanilla',
+  'Charcoal':                'charcoal',
+  'Yakisugi':                'yakisugi'
 };
 
 
