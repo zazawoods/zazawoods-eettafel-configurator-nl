@@ -7,6 +7,17 @@ const path = require('path');
 
 const app = express();
 
+// Hide Express signature for less info-leak
+app.disable('x-powered-by');
+
+// Extra security hardening
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  next();
+});
+
 // Gzip/deflate compression for all responses
 app.use(compression());
 const PORT = process.env.PORT || 3000;
