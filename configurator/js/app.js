@@ -2086,7 +2086,10 @@ class TableConfigurator {
   switchLeg(index) {
     if (index === this.activeLegIndex || index >= this.legObjects.length) return;
 
-    this.legObjects[this.activeLegIndex].object.visible = false;
+    // Guard: when coming from a no-model state, activeLegIndex is -1
+    if (this.activeLegIndex >= 0 && this.legObjects[this.activeLegIndex]?.object) {
+      this.legObjects[this.activeLegIndex].object.visible = false;
+    }
 
     this.activeLegIndex = index;
     this.legObjects[index].object.visible = true;
