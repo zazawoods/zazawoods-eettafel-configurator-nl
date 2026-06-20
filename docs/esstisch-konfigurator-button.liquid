@@ -146,6 +146,21 @@
   });
   setTimeout(refresh, 200);
   setTimeout(refresh, 1200);
+
+  // Bulletproof: re-build the URL synchronously when the user clicks.
+  // This catches the case where someone changes Maße and immediately clicks
+  // before the 'change' event has had time to fire.
+  btn.addEventListener('mousedown', refresh, true);
+  btn.addEventListener('touchstart', refresh, { capture: true, passive: true });
+  btn.addEventListener('click', refresh, true);
+
+  // Observe DOM mutations (some themes swap variant pickers entirely)
+  if ('MutationObserver' in window) {
+    var mo = new MutationObserver(function () { refresh(); });
+    document.querySelectorAll('variant-selects, variant-radios, [data-product-form]').forEach(function (el) {
+      mo.observe(el, { subtree: true, attributes: true, attributeFilter: ['value','selected','checked'] });
+    });
+  }
 })();
 </script>
 
