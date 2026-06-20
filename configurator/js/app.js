@@ -4415,10 +4415,13 @@ class TableConfigurator {
         legAddon = product.addons.Tischgestell.find(a => a.title === this.state.zwLegName);
         if (legAddon) total += legAddon.price;
       }
+      // Preserve any already-picked Behandlung variant (price is €0 so it doesn't affect total)
+      const prevBehandlung = this._selectedVariants?.behandlung;
       this._selectedVariants = {
         base: baseVariant?.id,
         edge: edgeAddon?.variantId,
-        leg:  legAddon?.variantId
+        leg:  legAddon?.variantId,
+        behandlung: prevBehandlung
       };
       total = total / 100; // ZW data is in cents; legacy formatPrice expects EUR units
     } else {
