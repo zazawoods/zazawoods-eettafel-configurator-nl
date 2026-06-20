@@ -839,7 +839,8 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 14px 8px 12px;
+  padding: 14px 6px 12px;
+  min-width: 0;        /* allow 1fr columns to be equal even with long single words */
   min-height: 96px;
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -848,6 +849,7 @@ body {
   transition: var(--transition);
   text-align: center;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .edge-option:hover {
@@ -891,6 +893,9 @@ body {
   color: var(--color-text);
   line-height: 1.25;
   min-height: 30px;
+  word-break: break-word;
+  hyphens: auto;
+  width: 100%;
 }
 
 .edge-option.active .edge-option-name {
