@@ -1711,31 +1711,31 @@ class TableConfigurator {
     // Display name mapping
     const nameMap = {
       '4 Legs On Pole': 'Vera',
-      'A Shape': 'A-vorm',
+      'A Shape': 'A-Form',
       'Diagonal Pole': 'Diago',
-      'V Shape': 'V-vorm',
+      'V Shape': 'V-Form',
       'X Modern': 'Ekso',
-      'X Shape': 'X-vorm',
+      'X Shape': 'X-Form',
       'Flat Dining V': 'Vedo',
       'Half Spider': 'Lara',
       'Kolom Plus': 'Pluto',
-      'Kolom Oval': 'Ovaal Kolom',
+      'Kolom Oval': 'Oval-Säule',
       'Flach Stahl': 'Pedro',
       'Vn Tafelpoot': 'VN',
       'Conisch': 'Cona',
       'Halve Plus': 'Positivo',
-      'Kolom Rod': 'Ronde Kolom',
+      'Kolom Rod': 'Rund-Säule',
       'Pillars': 'Pilares',
       'Butterfly Wood': 'Hannah',
-      'Fluted': 'Golvend Kolom',
+      'Fluted': 'Wellen-Säule',
       'Column In Middle': 'Diablo',
       'Pilaar': 'Ferdo',
       'Gerond': 'Rondo',
       'Schuin 25': 'Bernard',
-      'Double Fluted': 'Golvend Duo',
+      'Double Fluted': 'Wellen-Duo',
       'Klassiek Midden': 'Moda',
       'Twist Tafelpoot Rond': 'Twist',
-      'Round Fluted': 'Golvend Rond'
+      'Round Fluted': 'Wellen-Rund'
     };
     if (nameMap[name]) name = nameMap[name];
 
@@ -1749,10 +1749,10 @@ class TableConfigurator {
   isCentralLeg(displayName) {
     // Central legs: single pedestal/column in the middle
     const centralLegs = [
-      'Ovaal Kolom', 'Pluto', 'Kolom Kiezel', 'Kolom Organic', 'Ronde Kolom',
-      'Diablo', 'Golvend Kolom', 'Positivo',
+      'Oval-Säule', 'Pluto', 'Kolom Kiezel', 'Kolom Organic', 'Rund-Säule',
+      'Diablo', 'Wellen-Säule', 'Positivo',
       'Konische Spider', 'Hannah', 'Lara',
-      'Vera', 'V-vorm', 'Matrix', 'Stative',
+      'Vera', 'V-Form', 'Matrix', 'Stative',
       'Vedo', 'Thore', 'Criss Cross', 'Tapse Spin'
     ];
     return centralLegs.some(n => displayName.toLowerCase() === n.toLowerCase());
@@ -1763,10 +1763,10 @@ class TableConfigurator {
     const setLegs = [
       // Hout
       'Pilares', 'Ferdo', 'Blok', 'Schuin', 'Rondo', 'Bernard',
-      'Demi Lune', 'Hapa', 'Base', 'Golvend Duo', 'Moda',
+      'Demi Lune', 'Hapa', 'Base', 'Wellen-Duo', 'Moda',
       // Metaal
-      'A-vorm', 'Butterfly', 'Diago', 'Walrus', 'Ekso',
-      'X-vorm', 'Hairpin', 'Pedro', 'VN', 'Cona'
+      'A-Form', 'Butterfly', 'Diago', 'Walrus', 'Ekso',
+      'X-Form', 'Hairpin', 'Pedro', 'VN', 'Cona'
     ];
     return setLegs.some(n => displayName.toLowerCase() === n.toLowerCase());
   }
@@ -2499,11 +2499,11 @@ class TableConfigurator {
 
       if (isCentral) {
         // Some central legs should not be stretched (pedestal/column types)
-        const noStretchLegs = ['Positivo', 'Ronde Kolom', 'Ovaal Kolom', 'Pluto', 'Kolom Kiezel', 'Kolom Organic', 'Diablo', 'Golvend Kolom'];
+        const noStretchLegs = ['Positivo', 'Rund-Säule', 'Oval-Säule', 'Pluto', 'Kolom Kiezel', 'Kolom Organic', 'Diablo', 'Wellen-Säule'];
         const allowStretch = !noStretchLegs.includes(leg.displayName);
 
         // Extra stretch at 350+ for specific legs
-        const longTableLegs = ['Stative', 'Konische Spider', 'Thore', 'Matrix', 'V-vorm', 'Vera', 'Diablo'];
+        const longTableLegs = ['Stative', 'Konische Spider', 'Thore', 'Matrix', 'V-Form', 'Vera', 'Diablo'];
         let longTableScale = 1;
         if (currentLength >= 350 && longTableLegs.includes(leg.displayName)) {
           longTableScale = 1.30;
@@ -3194,12 +3194,12 @@ class TableConfigurator {
     const shape = TABLE_SHAPES.find(s => s.id === this.state.shape);
     const excludeLegs = shape?.excludeLegs || [];
     const ceramicExclude = isCeramic ? [
-      'Walrus', 'Ekso', 'X-vorm', 'A-vorm', 'Butterfly', 'Diago',
-      'Hairpin', 'Lara', 'Pluto', 'Pedro', 'VN', 'Cona', 'Ronde Kolom'
+      'Walrus', 'Ekso', 'X-Form', 'A-Form', 'Butterfly', 'Diago',
+      'Hairpin', 'Lara', 'Pluto', 'Pedro', 'VN', 'Cona', 'Rund-Säule'
     ] : [];
     // Hide legs that are too large for small tables (length ≤ 200)
     const tableLength = this.state.length || this.state.diameter || 240;
-    const smallTableExclude = tableLength <= 200 ? ['Ronde Kolom', 'Moda'] : [];
+    const smallTableExclude = tableLength <= 200 ? ['Rund-Säule', 'Moda'] : [];
     // Hide legs too large for small round tables (Ø ≤ 120)
     const smallRoundExclude = (this.state.shape === 'round' && tableLength <= 120)
       ? ['Pilares', 'Ferdo'] : [];
@@ -3223,7 +3223,7 @@ class TableConfigurator {
       'Konische Spider': 'Konische Spider.png',
       'Pilares': 'Pillars.png',
       'Hannah': 'Butterfly wood.png',
-      'Golvend Kolom': 'Fluted.png',
+      'Wellen-Säule': 'Fluted.png',
       'Lara': null, // handled specially for wood/metal
       'Diablo': 'Column in Middle.png',
       'Ferdo': 'Pilaar.png',
@@ -3234,18 +3234,18 @@ class TableConfigurator {
       'Blok': 'Blok.png',
       'Hapa': 'Hapa.png',
       'Base': 'Base.png',
-      'Golvend Duo': 'Double Fluted.png',
-      'Golvend Rond': 'Double Fluted.png',
+      'Wellen-Duo': 'Double Fluted.png',
+      'Wellen-Rund': 'Double Fluted.png',
       'Moda': 'Klassiek Midden.png',
       // ─── METAAL ───
       'Vera': '4 Legs on pole.png',
-      'A-vorm': 'A shape.png',
+      'A-Form': 'A shape.png',
       'Butterfly': 'Butterfly.png',
       'Diago': 'Diagonal Pole.png',
-      'V-vorm': 'V shape.png',
+      'V-Form': 'V shape.png',
       'Walrus': 'Walrus.png',
       'Ekso': 'X modern.png',
-      'X-vorm': 'X modern.png',
+      'X-Form': 'X modern.png',
       'Hairpin': 'Hairpin.png',
       'Matrix': 'Matrix.png',
       'Stative': 'Stative.png',
@@ -3253,13 +3253,13 @@ class TableConfigurator {
       'Thore': 'Thore.png',
       'Criss Cross': 'Cris Cross.png',
       'Pluto': 'Kolom Plus.png',
-      'Ovaal Kolom': 'Kolom Oval.png',
+      'Oval-Säule': 'Kolom Oval.png',
       'Tapse Spin': 'Tapse Spin.png',
       'Pedro': 'Flach Stahl.png',
       'VN': 'VN Tafelpoot.png',
       'Cona': 'Conisch.png',
       'Positivo': 'Halve Plus.png',
-      'Ronde Kolom': 'Kolom Rod.png',
+      'Rund-Säule': 'Kolom Rod.png',
       'Twist': 'Twist Tafelpoot Rond.png',
       'Vierpoot': 'Vierpoot.png',
     };
