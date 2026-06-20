@@ -4,6 +4,49 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE } from './config.js?v=3cc5e8c';
+
+// ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
+// model = { name, isWood }  → green card, clicking loads 3D model
+// model = null               → red card, clicking selects the name but renders no 3D leg
+const ZW_LEG_LIST = [
+  // Metal Tischbeine + Gestelle (top of zaza-woods table)
+  { uiName: 'Spider Tischbein (L)',                   model: null },
+  { uiName: 'Spider Tischbein (M)',                   model: null },
+  { uiName: 'Spider Tischbein (S)',                   model: { name: 'Matrix', isWood: false } },
+  { uiName: 'Konisches Spidertischbein',              model: { name: 'Konische Spider', isWood: false } },
+  { uiName: 'Drone Tischbeine (Satz)',                model: null },
+  { uiName: 'Aeris Tischbein',                        model: { name: 'Lara', isWood: false } },
+  { uiName: 'Doppel V-Tischbein',                     model: { name: 'Vedo', isWood: false } },
+  { uiName: 'V-Tischbein',                            model: { name: 'V-Form', isWood: false } },
+  { uiName: 'Thorn Tischbeine (Satz)',                model: { name: 'Pedro', isWood: false } },
+  { uiName: 'Felix Tischbein',                        model: { name: 'Stative', isWood: false } },
+  { uiName: 'Vario Tischbein',                        model: { name: 'Thore', isWood: false } },
+  { uiName: 'Spider Tischbein – Schmal (Rund)',       model: null },
+  { uiName: 'Spider Gestell (rund)',                  model: null },
+  { uiName: 'X Tischgestell (Satz)',                  model: { name: 'X-Form', isWood: false } },
+  { uiName: 'X Bank- & Couchtischgestell (Satz)',     model: null },
+  { uiName: 'Trapezium Tischgestell (Satz)',          model: null },
+  { uiName: 'A Tischgestell (Satz)',                  model: { name: 'A-Form', isWood: false } },
+  { uiName: 'A Tischgestell (schmal) (Satz)',         model: null },
+  { uiName: 'U Tischgestell (Satz)',                  model: null },
+  { uiName: 'U Tischgestell (M) (Satz)',              model: null },
+  { uiName: 'U Tischgestell (schmal) (Satz)',         model: null },
+  { uiName: 'U Bank- & Couchtischgestell (Satz)',     model: null },
+  { uiName: 'Stahlwangen Tischgestell (Satz)',        model: null },
+  { uiName: 'Stahlwangen Tischgestell (S) (Satz)',    model: null },
+  { uiName: 'Bartisch Gestell',                       model: null },
+  { uiName: 'Spider Tischgestell Edelstahl',          model: null },
+  { uiName: 'Spider Tischgestell Edelstahl (S)',      model: null },
+  // Wood Tischbeine (bottom of zaza-woods table)
+  { uiName: 'Aeris Tischbein aus Eichenholz',                       model: { name: 'Lara', isWood: true } },
+  { uiName: 'Ovale Holzsäule aus Eiche-Stäbchenholz',               model: { name: 'Wellen-Säule', isWood: true } },
+  { uiName: 'Runde Holzsäule aus Eiche-Stäbchenholz',               model: { name: 'Wellen-Rund', isWood: true } },
+  { uiName: 'Ovale Tischbeine aus Eiche-Stäbchenholz (Satz)',       model: { name: 'Wellen-Duo', isWood: true } },
+  { uiName: 'Ovale Tischbeine aus Eichenholz (Satz)',               model: null },
+  { uiName: 'Butterfly Tischbeine aus Eichenholz (Satz)',           model: null },
+  { uiName: 'Runde Holzsäule aus Eichenholz (Satz)',                model: { name: 'Pilares', isWood: true } },
+  { uiName: 'Halbrunde Tischbeine aus Eichenholz (Satz)',           model: { name: 'Hapa',    isWood: true } }
+];
 import { fetchAllPrices, calculateTotal, getLineItems, formatPrice, addToCart } from './shopify.js?v=3cc5e8c';
 
 class TableConfigurator {
@@ -652,7 +695,7 @@ class TableConfigurator {
     if (this.legObjects.length > 0) {
       const activeLeg = this.legObjects[this.activeLegIndex] || this.legObjects[0];
       document.getElementById('val-legs').textContent =
-        `${activeLeg.displayName}${activeLeg.isWood ? ' (Holz)' : ''}`;
+        this.state.zwLegName || `${activeLeg.displayName}${activeLeg.isWood ? ' (Holz)' : ''}`;
       this.state.legId = activeLeg.rawName;
     }
   }
@@ -1971,7 +2014,7 @@ class TableConfigurator {
     const leg = this.legObjects[index];
     this.state.legId = leg.rawName;
     document.getElementById('val-legs').textContent =
-      `${leg.displayName}${leg.isWood ? ' (Holz)' : ''}`;
+      this.state.zwLegName || `${leg.displayName}${leg.isWood ? ' (Holz)' : ''}`;
 
     this.updatePowderSectionVisibility();
     this.updateLegSectionIcon();
@@ -3185,38 +3228,6 @@ class TableConfigurator {
   renderLegGrid() {
     const grid = document.getElementById('leg-grid');
 
-    if (this.legObjects.length === 0) {
-      grid.innerHTML = '<p style="font-size:12px;color:#999;padding:8px 0;">Keine Untergestelle verfügbar</p>';
-      return;
-    }
-
-    const isCeramic = this.state.materialType === 'ceramic';
-    const shape = TABLE_SHAPES.find(s => s.id === this.state.shape);
-    const excludeLegs = shape?.excludeLegs || [];
-    const ceramicExclude = isCeramic ? [
-      'Walrus', 'Ekso', 'X-Form', 'A-Form', 'Butterfly', 'Diago',
-      'Hairpin', 'Lara', 'Pluto', 'Pedro', 'VN', 'Cona', 'Rund-Säule'
-    ] : [];
-    // Hide legs that are too large for small tables (length ≤ 200)
-    const tableLength = this.state.length || this.state.diameter || 240;
-    const smallTableExclude = tableLength <= 200 ? ['Rund-Säule', 'Moda'] : [];
-    // Hide legs too large for small round tables (Ø ≤ 120)
-    const smallRoundExclude = (this.state.shape === 'round' && tableLength <= 120)
-      ? ['Pilares', 'Ferdo'] : [];
-    const allLegs = this.legObjects.map((leg, i) => ({...leg, index: i}))
-      .filter(l => !excludeLegs.includes(l.displayName) && !ceramicExclude.includes(l.displayName) && !smallTableExclude.includes(l.displayName) && !smallRoundExclude.includes(l.displayName));
-    const woodLegs = allLegs.filter(l => l.isWood);
-    const metalLegs = allLegs.filter(l => !l.isWood);
-
-    // If current leg is excluded (ceramic, size, or shape), switch to first available leg
-    const activeLegName = this.legObjects[this.activeLegIndex]?.displayName;
-    const activeIsExcluded = (isCeramic && (this.legObjects[this.activeLegIndex]?.isWood || ceramicExclude.includes(activeLegName)))
-      || smallTableExclude.includes(activeLegName) || smallRoundExclude.includes(activeLegName);
-    if (activeIsExcluded && allLegs.length > 0) {
-      const fallback = isCeramic ? metalLegs[0] : allLegs[0];
-      if (fallback) this.switchLeg(fallback.index);
-    }
-
     // Image swatches for each leg type, mapped by display name
     const legSwatchFiles = {
       // ─── HOUT ───
@@ -3276,33 +3287,54 @@ class TableConfigurator {
       return `<svg viewBox="0 0 60 50" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="6" x2="55" y2="6"/><line x1="14" y1="6" x2="14" y2="46"/><line x1="46" y1="6" x2="46" y2="46"/></svg>`;
     };
 
-    const renderLegBtn = (leg) => `
-      <button class="leg-option ${leg.index === this.activeLegIndex ? 'active' : ''}" data-leg-index="${leg.index}">
-        <div class="leg-swatch-img">${getLegSwatch(leg.displayName, leg.isWood)}</div>
-        <div>${leg.displayName}</div>
-      </button>
-    `;
+    // Sync zwLegName from current GLB leg if not yet set
+    if (!this.state.zwLegName && this.legObjects.length) {
+      const cur = this.legObjects[this.activeLegIndex];
+      if (cur) {
+        const m = ZW_LEG_LIST.find(z => z.model && z.model.name === cur.displayName && z.model.isWood === cur.isWood);
+        if (m) this.state.zwLegName = m.uiName;
+      }
+    }
 
-    let html = '';
-    // Hide wood legs when ceramic is selected
-    if (woodLegs.length > 0 && !isCeramic) {
-      html += `<div class="leg-category-label">Holz</div>
-               <div class="leg-category-grid">${woodLegs.map(renderLegBtn).join('')}</div>`;
-    }
-    if (metalLegs.length > 0) {
-      html += `<div class="leg-category-label">Metall</div>
-               <div class="leg-category-grid">${metalLegs.map(renderLegBtn).join('')}</div>`;
-    }
-    grid.innerHTML = html;
+    const renderBtn = (item, idx) => {
+      let hasModel = false, legIdx = -1;
+      if (item.model) {
+        legIdx = this.legObjects.findIndex(l => l.displayName === item.model.name && l.isWood === item.model.isWood);
+        if (legIdx >= 0) hasModel = true;
+      }
+      const active = this.state.zwLegName === item.uiName;
+      const swatch = hasModel
+        ? getLegSwatch(item.model.name, item.model.isWood)
+        : `<svg viewBox="0 0 60 50" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="5" y1="6" x2="55" y2="6"/><line x1="15" y1="6" x2="15" y2="46"/><line x1="45" y1="6" x2="45" y2="46"/></svg>`;
+      return `
+        <button class="leg-option ${hasModel ? 'has-model' : 'no-model'} ${active ? 'active' : ''}" data-zw-index="${idx}" data-leg-index="${legIdx}">
+          <div class="leg-swatch-img">${swatch}</div>
+          <div>${item.uiName}</div>
+        </button>
+      `;
+    };
+
+    grid.innerHTML = `<div class="leg-category-grid">${ZW_LEG_LIST.map(renderBtn).join('')}</div>`;
 
     grid.onclick = (e) => {
       const btn = e.target.closest('.leg-option');
       if (!btn) return;
-      const index = parseInt(btn.dataset.legIndex);
-      this.switchLeg(index);
+      const zwIdx = parseInt(btn.dataset.zwIndex);
+      const legIdx = parseInt(btn.dataset.legIndex);
+      const item = ZW_LEG_LIST[zwIdx];
+      this.state.zwLegName = item.uiName;
 
+      if (legIdx >= 0) {
+        this.switchLeg(legIdx);
+      } else {
+        // No 3D model — hide every leg, keep tabletop
+        this.legObjects.forEach(l => { if (l.object) l.object.visible = false; });
+        this.activeLegIndex = -1;
+      }
       grid.querySelectorAll('.leg-option').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      document.getElementById('val-legs').textContent = item.uiName;
+      this.updateSummary();
       this.updateLegSectionIcon();
     };
 
@@ -3750,7 +3782,7 @@ class TableConfigurator {
       lines.push(`${this.state.length} × ${this.state.height || 76} cm`);
     }
     lines.push(`Kantenprofil: ${edgeNames[this.state.edge] || this.state.edge}`);
-    if (activeLeg) lines.push(`Untergestell: ${activeLeg.displayName}${activeLeg.isWood ? ' (Holz)' : ' (Metall)'}`);
+    if (this.state.zwLegName) lines.push(`Untergestell: ${this.state.zwLegName}`); else if (activeLeg) lines.push(`Untergestell: ${activeLeg.displayName}${activeLeg.isWood ? ' (Holz)' : ' (Metall)'}`);
     return lines;
   }
 
@@ -4229,7 +4261,7 @@ class TableConfigurator {
       <strong>${shape.name}</strong> &middot; ${matType.name} ${color ? color.name : ''}<br>
       ${dimStr} &middot;
       ${edge ? edge.name : 'Gerade Kante'}${extras}
-      ${legLabel ? `<br>Untergestell: ${legLabel}` : ''}
+      ${this.state.zwLegName ? `<br>Untergestell: ${this.state.zwLegName}` : (legLabel ? `<br>Untergestell: ${legLabel}` : '')}
     `;
 
     // Update live price

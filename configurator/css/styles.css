@@ -1326,3 +1326,19 @@ body {
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+
+/* Untergestell whitelist indicators (green = has 3D model, red = no model) */
+.leg-option { position: relative; }
+.leg-option.has-model::after,
+.leg-option.no-model::after {
+  content: '';
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1.5px #fff;
+  z-index: 1;
+}
+.leg-option.has-model::after { background: #2d9c4c; }
+.leg-option.no-model::after  { background: #d4453b; }
