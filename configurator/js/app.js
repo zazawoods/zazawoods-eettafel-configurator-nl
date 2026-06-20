@@ -1926,7 +1926,7 @@ class TableConfigurator {
       else if (lengthCm <= 120) dist += 9;
       else if (lengthCm <= 130) dist += 7;
       else if (lengthCm <= 140) dist += 6;
-    } else if (shapeId === 'kiezel') {
+    } else if (shapeId === 'organic') {
       if (lengthCm < 300) dist += 13;
     } else if (shapeId === 'organic') {
       if (lengthCm <= 200) dist += 10;

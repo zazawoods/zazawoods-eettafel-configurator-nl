@@ -68,13 +68,12 @@ export const TABLE_SHAPES = [
     lengths: [100, 110, 120, 130, 140, 150, 160, 170, 180]
   },
   {
-    id: 'kiezel',
-    name: 'Kiesel',
+    id: 'organic',
+    name: 'Organisch',
     shopifyHandle: 'esstisch-milano-aus-massivem-eichenholz-mit-baumstammkanten-copy',
-    glbFile: `${BASE_PATH}/glb files tables and legs/Kiezel.glb`,
-    icon: `<img src="Swatches/Vorm/Kiezel.png" alt="Kiesel"/>`,
-    meshPrefix: ['Kiezel'],
-    hasVariant: true,
+    glbFile: `${BASE_PATH}/glb files tables and legs/Organic.glb`,
+    icon: `<img src="Swatches/Vorm/Organisch.png" alt="Organisch"/>`,
+    meshPrefix: ['Organic'],
     defaultLength: 240,
     defaultWidth: 120,
     fixedDimensions: [
