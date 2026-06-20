@@ -3401,13 +3401,8 @@ class TableConfigurator {
   }
 
   updateMaterialSectionIcon() {
-    const icon = document.getElementById('material-section-icon');
-    if (!icon) return;
-    const matType = MATERIAL_TYPES[this.state.materialType];
-    const color = matType?.colors?.find(c => c.id === this.state.color);
-    if (!color) return;
-    const bg = color.file ? `background-image:url('${color.file}');background-size:cover;` : `background-color:${color.swatch};`;
-    icon.innerHTML = `<div style="width:100%;height:100%;border-radius:50%;${bg}"></div>`;
+    // Static SVG icon kept (set in HTML); no runtime override per design request.
+    return;
   }
 
   updateMaterialLabel() {
