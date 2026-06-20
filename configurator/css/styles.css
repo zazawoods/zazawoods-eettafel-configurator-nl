@@ -1374,3 +1374,12 @@ body {
   border-radius: 4px;
   pointer-events: none;
 }
+
+
+/* ZW Behandlung swatch labels */
+.color-swatch { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.color-swatch-name {
+  display: block; font-size: 9.5px; line-height: 1.15; color: var(--color-text);
+  text-align: center; max-width: 100%; word-break: break-word;
+}
+.color-swatch.active .color-swatch-name { color: var(--color-accent); font-weight: 600; }

@@ -72,6 +72,26 @@ const EDGE_TITLE_MAP = {
   boomstam:  ['Baumstammkanten']
 };
 
+// ZW Behandlung name → our local oak color id (for 3D texture lookup)
+const BEHANDLUNG_TEXTURE_MAP = {
+  'Pure':                    'pure',
+  'Unsichtbarer Skylt-Lack': 'natural',
+  'Chocolate':               'chocolate',
+  'Cocoa':                   'cocoa',
+  'Cortado':                 'macchiato',
+  'Shell Grey':              'shell-grey',
+  'Black':                   'yakisugi',
+  'Deep Black':              'deep-black',
+  'Super White':             'white5',
+  'White':                   'white5',
+  'White 5%':                'white5',
+  'Macchiato':               'macchiato',
+  'Smoke':                   'charcoal',
+  'Dulce':                   'vanilla',
+  'Walnut':                  'walnut'
+};
+
+
 // Map ZW Tischgestell title → 3D model in our GLBs (name + isWood).
 // Titles not in the map are still rendered as a card, but as a 'no-model' red entry.
 const ZW_LEG_MODEL_MAP = {
@@ -236,7 +256,7 @@ class TableConfigurator {
     this._pricesReady = false;
     fetchAllPrices().then(() => {
       this._pricesReady = true;
-      loadZWProducts().then(() => { this.updatePrice(); this.renderLegGrid(); });
+      loadZWProducts().then(() => { this.updatePrice(); this.renderLegGrid(); this.updateColorSwatches(); });
       this.updatePrice();
     });
     this.loadModel(this.state.shape);
@@ -3145,26 +3165,34 @@ class TableConfigurator {
 
   bindAddToCart() {
     const cartHandler = () => {
-      const activeLeg = this.legObjects[this.activeLegIndex];
-      const priceState = {
-        ...this.state,
-        _activeLeg: activeLeg ? {
-          displayName: activeLeg.displayName,
-          isWood: activeLeg.isWood
-        } : null
-      };
-      // Phase 2: build a zazawoods.de cart permalink with all selected variants
+      // Block redirect if user has not actively picked all 3 required components
+      const missing = [];
+      if (!this.state.userPickedBehandlung) missing.push('Behandlung');
+      if (!this.state.userPickedEdge)       missing.push('Kantenprofil');
+      if (!this.state.userPickedLeg)        missing.push('Untergestell');
+      if (missing.length > 0) {
+        this.showToast('Bitte wähle: ' + missing.join(', '));
+        // Visually expand the first missing section so the user sees it
+        const map = { Behandlung: 'material', Kantenprofil: 'edge', Untergestell: 'legs' };
+        const sectionId = map[missing[0]];
+        const sec = document.querySelector(`[data-section='${sectionId}']`);
+        if (sec && !sec.classList.contains('active')) sec.querySelector('.section-header')?.click();
+        sec?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      // Build cart permalink with ALL 4 line items: base table + Behandlung + edge + leg
       const v = this._selectedVariants || {};
       const items = [];
-      if (v.base) items.push(v.base + ':1');
-      if (v.edge) items.push(v.edge + ':1');
-      if (v.leg)  items.push(v.leg  + ':1');
+      if (v.base)       items.push(v.base       + ':1');
+      if (v.behandlung) items.push(v.behandlung + ':1');
+      if (v.edge)       items.push(v.edge       + ':1');
+      if (v.leg)        items.push(v.leg        + ':1');
       if (items.length === 0) {
-        addToCart(priceState); // legacy fallback
+        this.showToast('Konfiguration unvollständig — bitte erneut auswählen');
         return;
       }
       const cartUrl = 'https://zazawoods.de/cart/' + items.join(',');
-      // Open in the same tab so the user lands on the live cart with all items
       window.location.href = cartUrl;
     };
     const btn = document.getElementById('btn-add-to-cart');
@@ -3409,6 +3437,7 @@ class TableConfigurator {
       const legIdx = parseInt(btn.dataset.legIndex);
       const item = tischgestellList[zwIdx];
       this.state.zwLegName = item.title;
+      this.state.userPickedLeg = true;
 
       if (legIdx >= 0) {
         this.switchLeg(legIdx);
@@ -3478,44 +3507,51 @@ class TableConfigurator {
 
   updateColorSwatches() {
     const container = document.getElementById('color-swatches');
-    const matType = MATERIAL_TYPES[this.state.materialType];
+    if (!container) return;
+    const product = ZW_PRODUCTS_DATA && ZW_PRODUCTS_DATA[this.state.shape];
+    const behandlungs = product?.addons?.Behandlung || [];
+    if (behandlungs.length === 0) {
+      container.innerHTML = '<p style="font-size:12px;color:#999;padding:8px 0;">Lade Farben…</p>';
+      return;
+    }
+    const matType = MATERIAL_TYPES.oak;
+    container.innerHTML = behandlungs.map(b => {
+      const oakId = BEHANDLUNG_TEXTURE_MAP[b.title] || 'natural';
+      const oakColor = matType.colors.find(c => c.id === oakId) || matType.colors[0];
+      const fileUrl = oakColor.file;
+      const isActive = this.state.behandlungTitle === b.title;
+      return `
+        <button class="color-swatch ${isActive ? 'active' : ''}"
+                data-behandlung-title="${b.title.replace(/"/g,'&quot;')}"
+                data-variant-id="${b.variantId}"
+                data-oak-id="${oakColor.id}"
+                title="${b.title}">
+          <div class="color-swatch-img" style="background-image:url('${fileUrl}');background-size:cover;background-position:center;"></div>
+          <span class="color-swatch-name">${b.title}</span>
+        </button>
+      `;
+    }).join('');
 
-    container.innerHTML = matType.colors.map(color => `
-      <button class="swatch ${color.id === this.state.color ? 'active' : ''}"
-              data-color="${color.id}">
-        <div class="swatch-preview" style="background-image: url('${color.file}'); background-color: ${color.swatch}"></div>
-        <span class="swatch-name">${color.name}</span>
-      </button>
-    `).join('');
-
-    // Avoid accumulating listeners — only add once
-    if (!container._hasClickListener) {
-    container._hasClickListener = true;
-    container.addEventListener('click', (e) => {
-      const btn = e.target.closest('.swatch');
+    container.onclick = (e) => {
+      const btn = e.target.closest('.color-swatch');
       if (!btn) return;
-
-      const colorId = btn.dataset.color;
-      if (colorId === this.state.color) return;
-
-      this.state.color = colorId;
-
-      container.querySelectorAll('.swatch').forEach(b => b.classList.remove('active'));
+      const title = btn.dataset.behandlungTitle;
+      const variantId = btn.dataset.variantId;
+      const oakId = btn.dataset.oakId;
+      this.state.behandlungTitle = title;
+      this.state.color = oakId;
+      this.state.userPickedBehandlung = true;
+      this._selectedVariants = this._selectedVariants || {};
+      this._selectedVariants.behandlung = variantId;
+      container.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-
-      this.applyTopMaterial(this.state.materialType, colorId);
-      this.renderThicknessOptions(); // update locked thicknesses per color
-      this.applyDimensions(); // reapply in case thickness changed
+      this.applyTopMaterial('oak', oakId);
       this.updateMaterialLabel();
       this.updateMaterialSectionIcon();
-      this.updateDimensionDisplay();
       this.updateSummary();
-    });
-    } // end if !_hasClickListener
-
-    // Set initial material section icon
-    this.updateMaterialSectionIcon();
+    };
   }
+
 
   updateMaterialSectionIcon() {
     // Static SVG icon kept (set in HTML); no runtime override per design request.
@@ -3583,6 +3619,7 @@ class TableConfigurator {
 
       const edgeId = btn.dataset.edge;
       this.state.edge = edgeId;
+      this.state.userPickedEdge = true;
 
       container.querySelectorAll('.edge-option').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
