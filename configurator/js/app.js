@@ -779,19 +779,49 @@ class TableConfigurator {
     const enclosingThis = this;
     Object.entries(EXTERNAL_LEG_FILES).forEach(([title, file]) => {
       const registerLoaded = (sceneObj) => {
-        const inst = sceneObj.clone(true);
-        inst.visible = false;
-        model.add(inst);
+        // Wrap each external leg in a Group — for U/Trapezium we add TWO instances
+        // (one at each end of the table), for everyone else just one centered.
+        const group = new THREE.Group();
+        group.name = '__ext_group__' + title;
+        const isPair = /^U Tischgestell|^Trapezium Tischgestell/i.test(title);
+        const placements = isPair
+          ? [{ x: -0.75 }, { x: 0.75 }]    // two instances at ±75cm along length (works for 200-300cm tables)
+          : [{ x: 0 }];                       // single centered instance
+        for (const pl of placements) {
+          const inst = sceneObj.clone(true);
+          // Most external GLBs were modelled with Z-axis as length, but our tables
+          // use X-axis as length. Rotate them 90° so the long side aligns.
+          inst.rotation.y = Math.PI / 2;
+          inst.position.x = pl.x;
+          // Edelstahl variants: brushed-steel look instead of black
+          if (/Edelstahl/i.test(title)) {
+            inst.traverse(ch => {
+              if (ch.isMesh && ch.material) {
+                const mats = Array.isArray(ch.material) ? ch.material : [ch.material];
+                for (const m of mats) {
+                  m.color = new THREE.Color(0xb8babd);   // brushed-steel grey
+                  m.metalness = 0.9;
+                  m.roughness = 0.35;
+                  if ('emissive' in m) m.emissive = new THREE.Color(0x000000);
+                  m.needsUpdate = true;
+                }
+              }
+            });
+          }
+          group.add(inst);
+        }
+        group.visible = false;
+        model.add(group);
         const isWood = /Eichenholz|Stäbchenholz|Holzsäule/i.test(title);
         enclosingThis.legObjects.push({
-          object: inst,
+          object: group,
           rawName: '__external__' + title,
           displayName: title,
           isWood,
           external: true,
-          originalScale: inst.scale.clone(),
-          originalPosition: inst.position.clone(),
-          childOrigScales: inst.children.map(ch => ch.scale.clone()),
+          originalScale: group.scale.clone(),
+          originalPosition: group.position.clone(),
+          childOrigScales: group.children.map(ch => ch.scale.clone()),
           geomCenterX: null
         });
         // Re-render leg grid so the green dot appears
