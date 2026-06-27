@@ -124,7 +124,15 @@ const ZW_LEG_MODEL_MAP = {
   'Spider Gestell (rund)':                              { name: 'Spider Gestell (rund)',                        isWood: false },
   'Spider Gestell - Schmal (Rund)':                     { name: 'Spider Gestell - Schmal (Rund)',               isWood: false },
   'Butterfly Tischbeine aus Eichenholz (Satz) (A)':     { name: 'Hannah',          isWood: true  },
-  'Ovale Tischgestelle aus Eichenholz (Satz)':          { name: 'Ovale Tischgestelle aus Eichenholz (Satz)',    isWood: true  }
+  'Ovale Tischgestelle aus Eichenholz (Satz)':          { name: 'Wellen-Duo',      isWood: true  },
+  'Aeris Tischbein':                                    { name: 'Lara',            isWood: false },
+  'Doppel V-Tischbein':                                 { name: 'Vedo',            isWood: false },
+  'Felix Tischbein':                                    { name: 'Stative',         isWood: false },
+  'Vario Tischbein':                                    { name: 'Thore',           isWood: false },
+  'Drone Tischbeine (Satz)':                            { name: 'Drone Tischbeine (Satz)',                    isWood: false },
+  'U Tischgestell (schmal) (Satz)':                     { name: 'U Tischgestell (schmal) (Satz)',             isWood: false },
+  'Stahlwangen Tischgestell (Satz)':                    { name: 'Stahlwangen Tischgestell (Satz)',            isWood: false },
+  'Stahlwangen Tischgestell (S) (Satz)':                { name: 'Stahlwangen Tischgestell (S) (Satz)',        isWood: false }
 };
 
 // External standalone leg GLBs (user-supplied 2026-06-27)
@@ -139,10 +147,26 @@ const EXTERNAL_LEG_FILES = {
   'Trapezium Tischgestell (Satz)':                    'Trapezium Tischgestell (Satz).glb',
   'U Tischgestell (Satz)':                            'U Tischgestell (Satz).glb',
   'U Tischgestell (M) (Satz)':                        'U Tischgestell (M) (Satz).glb'
+  'Drone Tischbeine (Satz)':                          'Drone Tischbeine (Satz).glb',
+  'U Tischgestell (schmal) (Satz)':                   'U Tischgestell (schmal) (Satz).glb',
+  'Stahlwangen Tischgestell (Satz)':                  'Stahlwangen Tischgestell (Satz).glb',
+  'Stahlwangen Tischgestell (S) (Satz)':              'Stahlwangen Tischgestell (S) (Satz).glb',
 };
 
 // Persistent cache of loaded external leg gltf.scene clones — reused across shape switches.
 const EXTERNAL_LEG_CACHE = new Map();
+
+// Catalog-only legs from /collections/tischgestelle that aren't sold as addons on any Esstisch.
+const CATALOG_ONLY_LEGS = [
+  { title: 'Aeris Tischbein',                     variantId: '51070961680650', price: 37500 },
+  { title: 'Doppel V-Tischbein',                  variantId: '51070965317898', price: 57500 },
+  { title: 'Felix Tischbein',                     variantId: '51070954012938', price: 57500 },
+  { title: 'Vario Tischbein',                     variantId: '51070958502154', price: 37500 },
+  { title: 'Drone Tischbeine (Satz)',             variantId: '51011118039306', price: 34500 },
+  { title: 'U Tischgestell (schmal) (Satz)',      variantId: '43838180393226', price: 11900 },
+  { title: 'Stahlwangen Tischgestell (Satz)',     variantId: '44218834026762', price: 56000 },
+  { title: 'Stahlwangen Tischgestell (S) (Satz)', variantId: '44218853032202', price: 56000 }
+];
 
 
 // Exclusion patterns: never show items whose ZW title matches these (per user)
@@ -3511,6 +3535,10 @@ class TableConfigurator {
       }
     }
     let unionLegs = Array.from(unionByTitle.values());
+    // Add catalog-only legs that aren't addons on any product
+    for (const cat of CATALOG_ONLY_LEGS) {
+      if (!unionByTitle.has(cat.title)) unionLegs.push(cat);
+    }
     // Always drop user-excluded patterns (Bank / Couchtisch / Bartisch)
     unionLegs = unionLegs.filter(a => !LEG_TITLE_EXCLUDE.test(a.title));
 
