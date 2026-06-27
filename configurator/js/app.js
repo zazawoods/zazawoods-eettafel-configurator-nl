@@ -805,7 +805,7 @@ class TableConfigurator {
         // (one at each end of the table), for everyone else just one centered.
         const group = new THREE.Group();
         group.name = '__ext_group__' + title;
-        const isPair = /^U Tischgestell|^Trapezium Tischgestell|^Stahlwangen Tischgestell/i.test(title);
+        const isPair = /^U Tischgestell|^Trapezium Tischgestell|^Stahlwangen Tischgestell|^Drone Tischbeine/i.test(title);
         const placements = isPair
           ? [{ x: -0.75 }, { x: 0.75 }]    // two instances at ±75cm along length (works for 200-300cm tables)
           : [{ x: 0 }];                       // single centered instance
