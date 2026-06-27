@@ -77,215 +77,244 @@
       }
     ],
     "addons": {
-      "Behandlung": [
-        {
-          "title": "Pure",
-          "price": 0,
-          "variantId": "36823095050406"
-        },
-        {
-          "title": "Unsichtbarer Skylt-Lack",
-          "price": 0,
-          "variantId": "36823097409702"
-        },
-        {
-          "title": "Chocolate",
-          "price": 0,
-          "variantId": "51411501187338"
-        },
-        {
-          "title": "Cocoa",
-          "price": 0,
-          "variantId": "51412105658634"
-        },
-        {
-          "title": "Cortado",
-          "price": 0,
-          "variantId": "51925952332042"
-        },
-        {
-          "title": "Shell Grey",
-          "price": 0,
-          "variantId": "51925954887946"
-        },
-        {
-          "title": "Deep Black",
-          "price": 0,
-          "variantId": "52554148315402"
-        },
-        {
-          "title": "Super White",
-          "price": 0,
-          "variantId": "51412172177674"
-        },
-        {
-          "title": "White",
-          "price": 0,
-          "variantId": "51411506823434"
-        },
-        {
-          "title": "White 5%",
-          "price": 0,
-          "variantId": "51412146225418"
-        },
-        {
-          "title": "Macchiato",
-          "price": 0,
-          "variantId": "51411483099402"
-        },
-        {
-          "title": "Smoke",
-          "price": 0,
-          "variantId": "51411505676554"
-        },
-        {
-          "title": "Dulce",
-          "price": 0,
-          "variantId": "51411494863114"
-        },
-        {
-          "title": "Walnut",
-          "price": 0,
-          "variantId": "51412131152138"
-        },
-        {
-          "title": "Natural",
-          "price": 0,
-          "variantId": "53239134880010"
-        },
-        {
-          "title": "Mist",
-          "price": 0,
-          "variantId": "53239133995274"
-        },
-        {
-          "title": "Vanilla",
-          "price": 0,
-          "variantId": "53239134945546"
-        },
-        {
-          "title": "Charcoal",
-          "price": 0,
-          "variantId": "53239133700362"
-        },
-        {
-          "title": "Yakisugi",
-          "price": 0,
-          "variantId": "53239135174922"
-        }
-      ],
-      "Kantenbearbeitung": [
-        {
-          "title": "Baumstammkanten",
-          "price": 0,
-          "variantId": "43736478482698"
-        },
-        {
-          "title": "Schweizer Kanten",
-          "price": 0,
-          "variantId": "43736479039754"
-        },
-        {
-          "title": "Gerade Kanten",
-          "price": 0,
-          "variantId": "43736479301898"
-        }
-      ],
       "Tischgestell": [
         {
           "title": "Spider Tischgestell (L)",
-          "price": 0,
-          "variantId": "40669726441638"
+          "variantId": "40669726441638",
+          "price": 0
         },
         {
           "title": "Spider Tischgestell (M)",
-          "price": 0,
-          "variantId": "44707879125258"
+          "variantId": "44707879125258",
+          "price": 0
         },
         {
           "title": "Spider Tischgestell (S)",
-          "price": 0,
-          "variantId": "40669736239270"
+          "variantId": "40669736239270",
+          "price": 0
         },
         {
           "title": "Konisches Spidertischgestell",
-          "price": 0,
-          "variantId": "51527174553866"
+          "variantId": "51527174553866",
+          "price": 18500
         },
         {
           "title": "Thorn Tischgestelle (Satz)",
-          "price": 0,
-          "variantId": "51527177502986"
+          "variantId": "51527177502986",
+          "price": 17500
         },
         {
           "title": "V Tischgestell",
-          "price": 0,
-          "variantId": "44795273609482"
+          "variantId": "44795273609482",
+          "price": 19500
         },
         {
           "title": "Spider Tischgestell Edelstahl",
-          "price": 0,
-          "variantId": "43839005786378"
+          "variantId": "43839005786378",
+          "price": 36000
         },
         {
           "title": "Spider Tischgestell Edelstahl (S)",
-          "price": 0,
-          "variantId": "43736525897994"
+          "variantId": "43736525897994",
+          "price": 36000
         },
         {
           "title": "U Tischgestell (Satz)",
-          "price": 0,
-          "variantId": "40669512302758"
+          "variantId": "40669512302758",
+          "price": 0
         },
         {
           "title": "U Tischgestell (M) (Satz)",
-          "price": 0,
-          "variantId": "40669578756262"
+          "variantId": "40669578756262",
+          "price": 0
         },
         {
           "title": "X Tischgestell (Satz)",
-          "price": 0,
-          "variantId": "40669646028966"
+          "variantId": "40669646028966",
+          "price": 0
         },
         {
           "title": "A Tischgestell (Satz)",
-          "price": 0,
-          "variantId": "40669470752934"
+          "variantId": "40669470752934",
+          "price": 0
         },
         {
           "title": "Trapezium Tischgestell (Satz)",
-          "price": 0,
-          "variantId": "40669598023846"
+          "variantId": "40669598023846",
+          "price": 0
         },
         {
           "title": "Aeris Tischgestell aus Eichenholz",
-          "price": 0,
-          "variantId": "52553822896394"
+          "variantId": "52553822896394",
+          "price": 54000
         },
         {
           "title": "Ovale Holzsäule aus Stäbchenholz, Eiche",
-          "price": 0,
-          "variantId": "52553810542858"
+          "variantId": "52553810542858",
+          "price": 54000
         },
         {
           "title": "Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)",
-          "price": 0,
-          "variantId": "52553828958474"
+          "variantId": "52553828958474",
+          "price": 44000
         },
         {
           "title": "Ovale Tischgestelle aus Eichenholz (Satz)",
-          "price": 0,
-          "variantId": "52553817030922"
+          "variantId": "52553817030922",
+          "price": 44000
         },
         {
           "title": "Butterfly Tischbeine aus Eichenholz (Satz) (A)",
-          "price": 0,
-          "variantId": "52554397548810"
+          "variantId": "52554397548810",
+          "price": 44000
         },
         {
           "title": "Halbrunde Tischbeine aus Eichenholz (Satz) (A)",
-          "price": 0,
-          "variantId": "52725568274698"
+          "variantId": "52725568274698",
+          "price": 44000
+        },
+        {
+          "title": "Spider Tischbein (M)",
+          "variantId": "44218773963018",
+          "price": 19500
+        },
+        {
+          "title": "X Tischgestell (Satz)",
+          "variantId": "43838186029322",
+          "price": 17500
+        },
+        {
+          "title": "Trapezium Tischgestell (Satz)",
+          "variantId": "43838179246346",
+          "price": 17500
+        },
+        {
+          "title": "A Tischgestell (Satz)",
+          "variantId": "43838160634122",
+          "price": 17500
+        },
+        {
+          "title": "A Tischgestell (Satz)",
+          "variantId": "45056174752010",
+          "price": 10900
+        },
+        {
+          "title": "U Tischgestell (Satz)",
+          "variantId": "43838179934474",
+          "price": 17500
+        },
+        {
+          "title": "U Tischgestell (M) (Satz)",
+          "variantId": "43838182031626",
+          "price": 15900
+        },
+        {
+          "title": "U Tischgestell (schmal) (Satz)",
+          "variantId": "43838180393226",
+          "price": 11900
+        },
+        {
+          "title": "Stahlwangen Tischgestell (Satz)",
+          "variantId": "44218834026762",
+          "price": 56000
+        },
+        {
+          "title": "Stahlwangen Tischgestell (S) (Satz)",
+          "variantId": "44218853032202",
+          "price": 56000
+        },
+        {
+          "title": "Bartisch Gestell",
+          "variantId": "44218880131338",
+          "price": 58000
+        },
+        {
+          "title": "Spider Tischgestell Edelstahl",
+          "variantId": "43839013716234",
+          "price": 66000
+        },
+        {
+          "title": "Spider Tischgestell Edelstahl (S)",
+          "variantId": "43838173151498",
+          "price": 66000
+        }
+      ],
+      "Kantenbearbeitung": [],
+      "Behandlung": [
+        {
+          "title": "Pure",
+          "variantId": "36823095050406",
+          "price": 0
+        },
+        {
+          "title": "Unsichtbarer Skylt-Lack",
+          "variantId": "36823097409702",
+          "price": 0
+        },
+        {
+          "title": "Chocolate",
+          "variantId": "51411501187338",
+          "price": 0
+        },
+        {
+          "title": "Cocoa",
+          "variantId": "51412105658634",
+          "price": 0
+        },
+        {
+          "title": "Cortado",
+          "variantId": "51925952332042",
+          "price": 0
+        },
+        {
+          "title": "Shell Grey",
+          "variantId": "51925954887946",
+          "price": 0
+        },
+        {
+          "title": "Black",
+          "variantId": "51412155203850",
+          "price": 0
+        },
+        {
+          "title": "Deep Black",
+          "variantId": "52554148315402",
+          "price": 0
+        },
+        {
+          "title": "Super White",
+          "variantId": "51412172177674",
+          "price": 0
+        },
+        {
+          "title": "White",
+          "variantId": "51411506823434",
+          "price": 0
+        },
+        {
+          "title": "White 5%",
+          "variantId": "51412146225418",
+          "price": 0
+        },
+        {
+          "title": "Macchiato",
+          "variantId": "51411483099402",
+          "price": 0
+        },
+        {
+          "title": "Smoke",
+          "variantId": "51411505676554",
+          "price": 0
+        },
+        {
+          "title": "Dulce",
+          "variantId": "51411494863114",
+          "price": 0
+        },
+        {
+          "title": "Walnut",
+          "variantId": "51412131152138",
+          "price": 0
         }
       ]
     }
@@ -368,175 +397,209 @@
       }
     ],
     "addons": {
-      "Behandlung": [
-        {
-          "title": "Pure",
-          "price": 0,
-          "variantId": "36823095050406"
-        },
-        {
-          "title": "Unsichtbarer Skylt-Lack",
-          "price": 0,
-          "variantId": "36823097409702"
-        },
-        {
-          "title": "Chocolate",
-          "price": 0,
-          "variantId": "51411501187338"
-        },
-        {
-          "title": "Cocoa",
-          "price": 0,
-          "variantId": "51412105658634"
-        },
-        {
-          "title": "Cortado",
-          "price": 0,
-          "variantId": "51925952332042"
-        },
-        {
-          "title": "Shell Grey",
-          "price": 0,
-          "variantId": "51925954887946"
-        },
-        {
-          "title": "Deep Black",
-          "price": 0,
-          "variantId": "52554148315402"
-        },
-        {
-          "title": "Super White",
-          "price": 0,
-          "variantId": "51412172177674"
-        },
-        {
-          "title": "White",
-          "price": 0,
-          "variantId": "51411506823434"
-        },
-        {
-          "title": "White 5%",
-          "price": 0,
-          "variantId": "51412146225418"
-        },
-        {
-          "title": "Macchiato",
-          "price": 0,
-          "variantId": "51411483099402"
-        },
-        {
-          "title": "Smoke",
-          "price": 0,
-          "variantId": "51411505676554"
-        },
-        {
-          "title": "Dulce",
-          "price": 0,
-          "variantId": "51411494863114"
-        },
-        {
-          "title": "Walnut",
-          "price": 0,
-          "variantId": "51412131152138"
-        },
-        {
-          "title": "Natural",
-          "price": 0,
-          "variantId": "53239134880010"
-        },
-        {
-          "title": "Mist",
-          "price": 0,
-          "variantId": "53239133995274"
-        },
-        {
-          "title": "Vanilla",
-          "price": 0,
-          "variantId": "53239134945546"
-        },
-        {
-          "title": "Charcoal",
-          "price": 0,
-          "variantId": "53239133700362"
-        },
-        {
-          "title": "Yakisugi",
-          "price": 0,
-          "variantId": "53239135174922"
-        }
-      ],
-      "Kantenbearbeitung": [
-        {
-          "title": "Gerade Kanten",
-          "price": 0,
-          "variantId": "43736479301898"
-        },
-        {
-          "title": "Schweizer Kanten",
-          "price": 0,
-          "variantId": "43736479039754"
-        }
-      ],
       "Tischgestell": [
         {
           "title": "Spider Tischgestell (L)",
-          "price": 0,
-          "variantId": "40669726441638"
+          "variantId": "40669726441638",
+          "price": 0
         },
         {
           "title": "Spider Tischgestell (M)",
-          "price": 0,
-          "variantId": "44707879125258"
+          "variantId": "44707879125258",
+          "price": 0
         },
         {
           "title": "Spider Tischgestell (S)",
-          "price": 0,
-          "variantId": "40669736239270"
+          "variantId": "40669736239270",
+          "price": 0
         },
         {
           "title": "Konisches Spidertischgestell",
-          "price": 0,
-          "variantId": "51527174553866"
+          "variantId": "51527174553866",
+          "price": 18500
         },
         {
           "title": "Spider Tischgestell Edelstahl",
-          "price": 0,
-          "variantId": "43839005786378"
+          "variantId": "43839005786378",
+          "price": 36000
         },
         {
           "title": "Spider Tischgestell Edelstahl (S)",
-          "price": 0,
-          "variantId": "43736525897994"
+          "variantId": "43736525897994",
+          "price": 36000
         },
         {
           "title": "Aeris Tischgestell aus Eichenholz",
-          "price": 0,
-          "variantId": "52553822896394"
+          "variantId": "52553822896394",
+          "price": 54000
         },
         {
           "title": "Ovale Holzsäule aus Stäbchenholz, Eiche",
-          "price": 0,
-          "variantId": "52553810542858"
+          "variantId": "52553810542858",
+          "price": 54000
         },
         {
           "title": "Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)",
-          "price": 0,
-          "variantId": "52553828958474"
+          "variantId": "52553828958474",
+          "price": 44000
         },
         {
           "title": "Ovale Tischgestelle aus Eichenholz (Satz)",
-          "price": 0,
-          "variantId": "52553817030922"
+          "variantId": "52553817030922",
+          "price": 44000
         },
         {
           "title": "Butterfly Tischbeine aus Eichenholz (Satz) (A)",
-          "price": 0,
-          "variantId": "52554397548810"
+          "variantId": "52554397548810",
+          "price": 44000
         },
         {
           "title": "Halbrunde Tischbeine aus Eichenholz (Satz) (A)",
-          "price": 0,
-          "variantId": "52725568274698"
+          "variantId": "52725568274698",
+          "price": 44000
+        },
+        {
+          "title": "Spider Tischbein (M)",
+          "variantId": "44218773963018",
+          "price": 19500
+        },
+        {
+          "title": "X Tischgestell (Satz)",
+          "variantId": "43838186029322",
+          "price": 17500
+        },
+        {
+          "title": "Trapezium Tischgestell (Satz)",
+          "variantId": "43838179246346",
+          "price": 17500
+        },
+        {
+          "title": "A Tischgestell (Satz)",
+          "variantId": "43838160634122",
+          "price": 17500
+        },
+        {
+          "title": "A Tischgestell (Satz)",
+          "variantId": "45056174752010",
+          "price": 10900
+        },
+        {
+          "title": "U Tischgestell (Satz)",
+          "variantId": "43838179934474",
+          "price": 17500
+        },
+        {
+          "title": "U Tischgestell (M) (Satz)",
+          "variantId": "43838182031626",
+          "price": 15900
+        },
+        {
+          "title": "U Tischgestell (schmal) (Satz)",
+          "variantId": "43838180393226",
+          "price": 11900
+        },
+        {
+          "title": "Stahlwangen Tischgestell (Satz)",
+          "variantId": "44218834026762",
+          "price": 56000
+        },
+        {
+          "title": "Stahlwangen Tischgestell (S) (Satz)",
+          "variantId": "44218853032202",
+          "price": 56000
+        },
+        {
+          "title": "Bartisch Gestell",
+          "variantId": "44218880131338",
+          "price": 58000
+        },
+        {
+          "title": "Spider Tischgestell Edelstahl",
+          "variantId": "43839013716234",
+          "price": 66000
+        },
+        {
+          "title": "Spider Tischgestell Edelstahl (S)",
+          "variantId": "43838173151498",
+          "price": 66000
+        }
+      ],
+      "Kantenbearbeitung": [],
+      "Behandlung": [
+        {
+          "title": "Pure",
+          "variantId": "36823095050406",
+          "price": 0
+        },
+        {
+          "title": "Unsichtbarer Skylt-Lack",
+          "variantId": "36823097409702",
+          "price": 0
+        },
+        {
+          "title": "Chocolate",
+          "variantId": "51411501187338",
+          "price": 0
+        },
+        {
+          "title": "Cocoa",
+          "variantId": "51412105658634",
+          "price": 0
+        },
+        {
+          "title": "Cortado",
+          "variantId": "51925952332042",
+          "price": 0
+        },
+        {
+          "title": "Shell Grey",
+          "variantId": "51925954887946",
+          "price": 0
+        },
+        {
+          "title": "Black",
+          "variantId": "51412155203850",
+          "price": 0
+        },
+        {
+          "title": "Deep Black",
+          "variantId": "52554148315402",
+          "price": 0
+        },
+        {
+          "title": "Super White",
+          "variantId": "51412172177674",
+          "price": 0
+        },
+        {
+          "title": "White",
+          "variantId": "51411506823434",
+          "price": 0
+        },
+        {
+          "title": "White 5%",
+          "variantId": "51412146225418",
+          "price": 0
+        },
+        {
+          "title": "Macchiato",
+          "variantId": "51411483099402",
+          "price": 0
+        },
+        {
+          "title": "Smoke",
+          "variantId": "51411505676554",
+          "price": 0
+        },
+        {
+          "title": "Dulce",
+          "variantId": "51411494863114",
+          "price": 0
+        },
+        {
+          "title": "Walnut",
+          "variantId": "51412131152138",
+          "price": 0
         }
       ]
     }
@@ -619,199 +682,244 @@
       }
     ],
     "addons": {
-      "Behandlung": [
-        {
-          "title": "Pure",
-          "price": 0,
-          "variantId": "36823095050406"
-        },
-        {
-          "title": "Unsichtbarer Skylt-Lack",
-          "price": 0,
-          "variantId": "36823097409702"
-        },
-        {
-          "title": "Chocolate",
-          "price": 0,
-          "variantId": "51411501187338"
-        },
-        {
-          "title": "Cocoa",
-          "price": 0,
-          "variantId": "51412105658634"
-        },
-        {
-          "title": "Cortado",
-          "price": 0,
-          "variantId": "51925952332042"
-        },
-        {
-          "title": "Shell Grey",
-          "price": 0,
-          "variantId": "51925954887946"
-        },
-        {
-          "title": "Deep Black",
-          "price": 0,
-          "variantId": "52554148315402"
-        },
-        {
-          "title": "Super White",
-          "price": 0,
-          "variantId": "51412172177674"
-        },
-        {
-          "title": "White",
-          "price": 0,
-          "variantId": "51411506823434"
-        },
-        {
-          "title": "White 5%",
-          "price": 0,
-          "variantId": "51412146225418"
-        },
-        {
-          "title": "Macchiato",
-          "price": 0,
-          "variantId": "51411483099402"
-        },
-        {
-          "title": "Smoke",
-          "price": 0,
-          "variantId": "51411505676554"
-        },
-        {
-          "title": "Dulce",
-          "price": 0,
-          "variantId": "51411494863114"
-        },
-        {
-          "title": "Walnut",
-          "price": 0,
-          "variantId": "51412131152138"
-        },
-        {
-          "title": "Natural",
-          "price": 0,
-          "variantId": "53239134880010"
-        },
-        {
-          "title": "Mist",
-          "price": 0,
-          "variantId": "53239133995274"
-        },
-        {
-          "title": "Vanilla",
-          "price": 0,
-          "variantId": "53239134945546"
-        },
-        {
-          "title": "Charcoal",
-          "price": 0,
-          "variantId": "53239133700362"
-        },
-        {
-          "title": "Yakisugi",
-          "price": 0,
-          "variantId": "53239135174922"
-        }
-      ],
-      "Kantenbearbeitung": [],
       "Tischgestell": [
         {
           "title": "Spider Tischgestell (L)",
-          "price": 0,
-          "variantId": "40669726441638"
+          "variantId": "40669726441638",
+          "price": 0
         },
         {
           "title": "Spider Tischgestell (M)",
-          "price": 0,
-          "variantId": "44707879125258"
+          "variantId": "44707879125258",
+          "price": 0
         },
         {
           "title": "Spider Tischgestell (S)",
-          "price": 0,
-          "variantId": "40669736239270"
+          "variantId": "40669736239270",
+          "price": 0
         },
         {
           "title": "Konisches Spidertischgestell",
-          "price": 0,
-          "variantId": "51527174553866"
+          "variantId": "51527174553866",
+          "price": 18500
         },
         {
           "title": "Thorn Tischgestelle (Satz)",
-          "price": 0,
-          "variantId": "51527177502986"
+          "variantId": "51527177502986",
+          "price": 17500
         },
         {
           "title": "V Tischgestell",
-          "price": 0,
-          "variantId": "44795273609482"
+          "variantId": "44795273609482",
+          "price": 19500
         },
         {
           "title": "Spider Tischgestell Edelstahl",
-          "price": 0,
-          "variantId": "43839005786378"
+          "variantId": "43839005786378",
+          "price": 36000
         },
         {
           "title": "Spider Tischgestell Edelstahl (S)",
-          "price": 0,
-          "variantId": "43736525897994"
+          "variantId": "43736525897994",
+          "price": 36000
         },
         {
           "title": "U Tischgestell (Satz)",
-          "price": 0,
-          "variantId": "40669512302758"
+          "variantId": "40669512302758",
+          "price": 0
         },
         {
           "title": "U Tischgestell (M) (Satz)",
-          "price": 0,
-          "variantId": "40669578756262"
+          "variantId": "40669578756262",
+          "price": 0
         },
         {
           "title": "A Tischgestell (Satz)",
-          "price": 0,
-          "variantId": "40669470752934"
+          "variantId": "40669470752934",
+          "price": 0
         },
         {
           "title": "X Tischgestell (Satz)",
-          "price": 0,
-          "variantId": "40669646028966"
+          "variantId": "40669646028966",
+          "price": 0
         },
         {
           "title": "Trapezium Tischgestell (Satz)",
-          "price": 0,
-          "variantId": "40669598023846"
+          "variantId": "40669598023846",
+          "price": 0
         },
         {
           "title": "Aeris Tischgestell aus Eichenholz",
-          "price": 0,
-          "variantId": "52553822896394"
+          "variantId": "52553822896394",
+          "price": 54000
         },
         {
           "title": "Ovale Holzsäule aus Stäbchenholz, Eiche",
-          "price": 0,
-          "variantId": "52553810542858"
+          "variantId": "52553810542858",
+          "price": 54000
         },
         {
           "title": "Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)",
-          "price": 0,
-          "variantId": "52553828958474"
+          "variantId": "52553828958474",
+          "price": 44000
         },
         {
           "title": "Ovale Tischgestelle aus Eichenholz (Satz)",
-          "price": 0,
-          "variantId": "52553817030922"
+          "variantId": "52553817030922",
+          "price": 44000
         },
         {
           "title": "Butterfly Tischbeine aus Eichenholz (Satz) (A)",
-          "price": 0,
-          "variantId": "52554397548810"
+          "variantId": "52554397548810",
+          "price": 44000
         },
         {
           "title": "Halbrunde Tischbeine aus Eichenholz (Satz) (A)",
-          "price": 0,
-          "variantId": "52725568274698"
+          "variantId": "52725568274698",
+          "price": 44000
+        },
+        {
+          "title": "Spider Tischbein (M)",
+          "variantId": "44218773963018",
+          "price": 19500
+        },
+        {
+          "title": "X Tischgestell (Satz)",
+          "variantId": "43838186029322",
+          "price": 17500
+        },
+        {
+          "title": "Trapezium Tischgestell (Satz)",
+          "variantId": "43838179246346",
+          "price": 17500
+        },
+        {
+          "title": "A Tischgestell (Satz)",
+          "variantId": "43838160634122",
+          "price": 17500
+        },
+        {
+          "title": "A Tischgestell (Satz)",
+          "variantId": "45056174752010",
+          "price": 10900
+        },
+        {
+          "title": "U Tischgestell (Satz)",
+          "variantId": "43838179934474",
+          "price": 17500
+        },
+        {
+          "title": "U Tischgestell (M) (Satz)",
+          "variantId": "43838182031626",
+          "price": 15900
+        },
+        {
+          "title": "U Tischgestell (schmal) (Satz)",
+          "variantId": "43838180393226",
+          "price": 11900
+        },
+        {
+          "title": "Stahlwangen Tischgestell (Satz)",
+          "variantId": "44218834026762",
+          "price": 56000
+        },
+        {
+          "title": "Stahlwangen Tischgestell (S) (Satz)",
+          "variantId": "44218853032202",
+          "price": 56000
+        },
+        {
+          "title": "Bartisch Gestell",
+          "variantId": "44218880131338",
+          "price": 58000
+        },
+        {
+          "title": "Spider Tischgestell Edelstahl",
+          "variantId": "43839013716234",
+          "price": 66000
+        },
+        {
+          "title": "Spider Tischgestell Edelstahl (S)",
+          "variantId": "43838173151498",
+          "price": 66000
+        }
+      ],
+      "Kantenbearbeitung": [],
+      "Behandlung": [
+        {
+          "title": "Pure",
+          "variantId": "36823095050406",
+          "price": 0
+        },
+        {
+          "title": "Unsichtbarer Skylt-Lack",
+          "variantId": "36823097409702",
+          "price": 0
+        },
+        {
+          "title": "Chocolate",
+          "variantId": "51411501187338",
+          "price": 0
+        },
+        {
+          "title": "Cocoa",
+          "variantId": "51412105658634",
+          "price": 0
+        },
+        {
+          "title": "Cortado",
+          "variantId": "51925952332042",
+          "price": 0
+        },
+        {
+          "title": "Shell Grey",
+          "variantId": "51925954887946",
+          "price": 0
+        },
+        {
+          "title": "Black",
+          "variantId": "51412155203850",
+          "price": 0
+        },
+        {
+          "title": "Deep Black",
+          "variantId": "52554148315402",
+          "price": 0
+        },
+        {
+          "title": "Super White",
+          "variantId": "51412172177674",
+          "price": 0
+        },
+        {
+          "title": "White",
+          "variantId": "51411506823434",
+          "price": 0
+        },
+        {
+          "title": "White 5%",
+          "variantId": "51412146225418",
+          "price": 0
+        },
+        {
+          "title": "Macchiato",
+          "variantId": "51411483099402",
+          "price": 0
+        },
+        {
+          "title": "Smoke",
+          "variantId": "51411505676554",
+          "price": 0
+        },
+        {
+          "title": "Dulce",
+          "variantId": "51411494863114",
+          "price": 0
+        },
+        {
+          "title": "Walnut",
+          "variantId": "51412131152138",
+          "price": 0
         }
       ]
     }
@@ -894,135 +1002,169 @@
       }
     ],
     "addons": {
-      "Behandlung": [
-        {
-          "title": "Pure",
-          "price": 0,
-          "variantId": "36823095050406"
-        },
-        {
-          "title": "Unsichtbarer Skylt-Lack",
-          "price": 0,
-          "variantId": "36823097409702"
-        },
-        {
-          "title": "Chocolate",
-          "price": 0,
-          "variantId": "51411501187338"
-        },
-        {
-          "title": "Cocoa",
-          "price": 0,
-          "variantId": "51412105658634"
-        },
-        {
-          "title": "Cortado",
-          "price": 0,
-          "variantId": "51925952332042"
-        },
-        {
-          "title": "Shell Grey",
-          "price": 0,
-          "variantId": "51925954887946"
-        },
-        {
-          "title": "Deep Black",
-          "price": 0,
-          "variantId": "52554148315402"
-        },
-        {
-          "title": "Super White",
-          "price": 0,
-          "variantId": "51412172177674"
-        },
-        {
-          "title": "White",
-          "price": 0,
-          "variantId": "51411506823434"
-        },
-        {
-          "title": "White 5%",
-          "price": 0,
-          "variantId": "51412146225418"
-        },
-        {
-          "title": "Macchiato",
-          "price": 0,
-          "variantId": "51411483099402"
-        },
-        {
-          "title": "Smoke",
-          "price": 0,
-          "variantId": "51411505676554"
-        },
-        {
-          "title": "Dulce",
-          "price": 0,
-          "variantId": "51411494863114"
-        },
-        {
-          "title": "Walnut",
-          "price": 0,
-          "variantId": "51412131152138"
-        },
-        {
-          "title": "Natural",
-          "price": 0,
-          "variantId": "53239134880010"
-        },
-        {
-          "title": "Mist",
-          "price": 0,
-          "variantId": "53239133995274"
-        },
-        {
-          "title": "Vanilla",
-          "price": 0,
-          "variantId": "53239134945546"
-        },
-        {
-          "title": "Charcoal",
-          "price": 0,
-          "variantId": "53239133700362"
-        },
-        {
-          "title": "Yakisugi",
-          "price": 0,
-          "variantId": "53239135174922"
-        }
-      ],
-      "Kantenbearbeitung": [
-        {
-          "title": "Gerade Kanten",
-          "price": 0,
-          "variantId": "43736479301898"
-        },
-        {
-          "title": "Schweizer Kanten",
-          "price": 0,
-          "variantId": "43736479039754"
-        }
-      ],
       "Tischgestell": [
         {
           "title": "Spider Gestell - Schmal (Rund)",
-          "price": 0,
-          "variantId": "43737818595594"
+          "variantId": "43737818595594",
+          "price": 0
         },
         {
           "title": "Spider Gestell (rund)",
-          "price": 0,
-          "variantId": "40669778084006"
+          "variantId": "40669778084006",
+          "price": 0
         },
         {
           "title": "Runde Holzsäule aus Stäbchenholz, Eiche",
-          "price": 0,
-          "variantId": "52553826009354"
+          "variantId": "52553826009354",
+          "price": 44000
         },
         {
           "title": "Runde Holzsäule aus Eichenholz (Satz) (A)",
-          "price": 0,
-          "variantId": "52554401317130"
+          "variantId": "52554401317130",
+          "price": 44000
+        },
+        {
+          "title": "Spider Tischbein (M)",
+          "variantId": "44218773963018",
+          "price": 19500
+        },
+        {
+          "title": "X Tischgestell (Satz)",
+          "variantId": "43838186029322",
+          "price": 17500
+        },
+        {
+          "title": "Trapezium Tischgestell (Satz)",
+          "variantId": "43838179246346",
+          "price": 17500
+        },
+        {
+          "title": "A Tischgestell (Satz)",
+          "variantId": "43838160634122",
+          "price": 17500
+        },
+        {
+          "title": "A Tischgestell (Satz)",
+          "variantId": "45056174752010",
+          "price": 10900
+        },
+        {
+          "title": "U Tischgestell (Satz)",
+          "variantId": "43838179934474",
+          "price": 17500
+        },
+        {
+          "title": "U Tischgestell (M) (Satz)",
+          "variantId": "43838182031626",
+          "price": 15900
+        },
+        {
+          "title": "U Tischgestell (schmal) (Satz)",
+          "variantId": "43838180393226",
+          "price": 11900
+        },
+        {
+          "title": "Stahlwangen Tischgestell (Satz)",
+          "variantId": "44218834026762",
+          "price": 56000
+        },
+        {
+          "title": "Stahlwangen Tischgestell (S) (Satz)",
+          "variantId": "44218853032202",
+          "price": 56000
+        },
+        {
+          "title": "Bartisch Gestell",
+          "variantId": "44218880131338",
+          "price": 58000
+        },
+        {
+          "title": "Spider Tischgestell Edelstahl",
+          "variantId": "43839013716234",
+          "price": 66000
+        },
+        {
+          "title": "Spider Tischgestell Edelstahl (S)",
+          "variantId": "43838173151498",
+          "price": 66000
+        }
+      ],
+      "Kantenbearbeitung": [],
+      "Behandlung": [
+        {
+          "title": "Pure",
+          "variantId": "36823095050406",
+          "price": 0
+        },
+        {
+          "title": "Unsichtbarer Skylt-Lack",
+          "variantId": "36823097409702",
+          "price": 0
+        },
+        {
+          "title": "Chocolate",
+          "variantId": "51411501187338",
+          "price": 0
+        },
+        {
+          "title": "Cocoa",
+          "variantId": "51412105658634",
+          "price": 0
+        },
+        {
+          "title": "Cortado",
+          "variantId": "51925952332042",
+          "price": 0
+        },
+        {
+          "title": "Shell Grey",
+          "variantId": "51925954887946",
+          "price": 0
+        },
+        {
+          "title": "Black",
+          "variantId": "51412155203850",
+          "price": 0
+        },
+        {
+          "title": "Deep Black",
+          "variantId": "52554148315402",
+          "price": 0
+        },
+        {
+          "title": "Super White",
+          "variantId": "51412172177674",
+          "price": 0
+        },
+        {
+          "title": "White",
+          "variantId": "51411506823434",
+          "price": 0
+        },
+        {
+          "title": "White 5%",
+          "variantId": "51412146225418",
+          "price": 0
+        },
+        {
+          "title": "Macchiato",
+          "variantId": "51411483099402",
+          "price": 0
+        },
+        {
+          "title": "Smoke",
+          "variantId": "51411505676554",
+          "price": 0
+        },
+        {
+          "title": "Dulce",
+          "variantId": "51411494863114",
+          "price": 0
+        },
+        {
+          "title": "Walnut",
+          "variantId": "51412131152138",
+          "price": 0
         }
       ]
     }
@@ -1081,210 +1223,244 @@
       }
     ],
     "addons": {
-      "Behandlung": [
-        {
-          "title": "Pure",
-          "price": 0,
-          "variantId": "36823095050406"
-        },
-        {
-          "title": "Unsichtbarer Skylt-Lack",
-          "price": 0,
-          "variantId": "36823097409702"
-        },
-        {
-          "title": "Chocolate",
-          "price": 0,
-          "variantId": "51411501187338"
-        },
-        {
-          "title": "Cocoa",
-          "price": 0,
-          "variantId": "51412105658634"
-        },
-        {
-          "title": "Cortado",
-          "price": 0,
-          "variantId": "51925952332042"
-        },
-        {
-          "title": "Shell Grey",
-          "price": 0,
-          "variantId": "51925954887946"
-        },
-        {
-          "title": "Deep Black",
-          "price": 0,
-          "variantId": "52554148315402"
-        },
-        {
-          "title": "Super White",
-          "price": 0,
-          "variantId": "51412172177674"
-        },
-        {
-          "title": "White",
-          "price": 0,
-          "variantId": "51411506823434"
-        },
-        {
-          "title": "White 5%",
-          "price": 0,
-          "variantId": "51412146225418"
-        },
-        {
-          "title": "Macchiato",
-          "price": 0,
-          "variantId": "51411483099402"
-        },
-        {
-          "title": "Smoke",
-          "price": 0,
-          "variantId": "51411505676554"
-        },
-        {
-          "title": "Dulce",
-          "price": 0,
-          "variantId": "51411494863114"
-        },
-        {
-          "title": "Walnut",
-          "price": 0,
-          "variantId": "51412131152138"
-        },
-        {
-          "title": "Natural",
-          "price": 0,
-          "variantId": "53239134880010"
-        },
-        {
-          "title": "Mist",
-          "price": 0,
-          "variantId": "53239133995274"
-        },
-        {
-          "title": "Vanilla",
-          "price": 0,
-          "variantId": "53239134945546"
-        },
-        {
-          "title": "Charcoal",
-          "price": 0,
-          "variantId": "53239133700362"
-        },
-        {
-          "title": "Yakisugi",
-          "price": 0,
-          "variantId": "53239135174922"
-        }
-      ],
-      "Kantenbearbeitung": [
-        {
-          "title": "Gerade Kanten",
-          "price": 0,
-          "variantId": "43736479301898"
-        },
-        {
-          "title": "Schweizer Kanten",
-          "price": 0,
-          "variantId": "43736479039754"
-        }
-      ],
       "Tischgestell": [
         {
           "title": "Spider Tischgestell (L)",
-          "price": 0,
-          "variantId": "40669726441638"
+          "variantId": "40669726441638",
+          "price": 0
         },
         {
           "title": "Spider Tischgestell (M)",
-          "price": 0,
-          "variantId": "44707879125258"
+          "variantId": "44707879125258",
+          "price": 0
         },
         {
           "title": "Spider Tischgestell (S)",
-          "price": 0,
-          "variantId": "40669736239270"
+          "variantId": "40669736239270",
+          "price": 0
         },
         {
           "title": "Konisches Spidertischgestell",
-          "price": 0,
-          "variantId": "51527174553866"
+          "variantId": "51527174553866",
+          "price": 18500
         },
         {
           "title": "Thorn Tischgestelle (Satz)",
-          "price": 0,
-          "variantId": "51527177502986"
+          "variantId": "51527177502986",
+          "price": 17500
         },
         {
           "title": "V Tischgestell",
-          "price": 0,
-          "variantId": "44795273609482"
+          "variantId": "44795273609482",
+          "price": 19500
         },
         {
           "title": "Spider Tischgestell Edelstahl",
-          "price": 0,
-          "variantId": "43839005786378"
+          "variantId": "43839005786378",
+          "price": 36000
         },
         {
           "title": "Spider Tischgestell Edelstahl (S)",
-          "price": 0,
-          "variantId": "43736525897994"
+          "variantId": "43736525897994",
+          "price": 36000
         },
         {
           "title": "U Tischgestell (Satz)",
-          "price": 0,
-          "variantId": "40669512302758"
+          "variantId": "40669512302758",
+          "price": 0
         },
         {
           "title": "U Tischgestell (M) (Satz)",
-          "price": 0,
-          "variantId": "40669578756262"
+          "variantId": "40669578756262",
+          "price": 0
         },
         {
           "title": "X Tischgestell (Satz)",
-          "price": 0,
-          "variantId": "40669646028966"
+          "variantId": "40669646028966",
+          "price": 0
         },
         {
           "title": "A Tischgestell (Satz)",
-          "price": 0,
-          "variantId": "40669470752934"
+          "variantId": "40669470752934",
+          "price": 0
         },
         {
           "title": "Trapezium Tischgestell (Satz)",
-          "price": 0,
-          "variantId": "40669598023846"
+          "variantId": "40669598023846",
+          "price": 0
         },
         {
           "title": "Aeris Tischgestell aus Eichenholz",
-          "price": 0,
-          "variantId": "52553822896394"
+          "variantId": "52553822896394",
+          "price": 54000
         },
         {
           "title": "Ovale Holzsäule aus Stäbchenholz, Eiche",
-          "price": 0,
-          "variantId": "52553810542858"
+          "variantId": "52553810542858",
+          "price": 54000
         },
         {
           "title": "Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)",
-          "price": 0,
-          "variantId": "52553828958474"
+          "variantId": "52553828958474",
+          "price": 44000
         },
         {
           "title": "Ovale Tischgestelle aus Eichenholz (Satz)",
-          "price": 0,
-          "variantId": "52553817030922"
+          "variantId": "52553817030922",
+          "price": 44000
         },
         {
           "title": "Butterfly Tischbeine aus Eichenholz (Satz) (A)",
-          "price": 0,
-          "variantId": "52554397548810"
+          "variantId": "52554397548810",
+          "price": 44000
         },
         {
           "title": "Halbrunde Tischbeine aus Eichenholz (Satz) (A)",
-          "price": 0,
-          "variantId": "52725568274698"
+          "variantId": "52725568274698",
+          "price": 44000
+        },
+        {
+          "title": "Spider Tischbein (M)",
+          "variantId": "44218773963018",
+          "price": 19500
+        },
+        {
+          "title": "X Tischgestell (Satz)",
+          "variantId": "43838186029322",
+          "price": 17500
+        },
+        {
+          "title": "Trapezium Tischgestell (Satz)",
+          "variantId": "43838179246346",
+          "price": 17500
+        },
+        {
+          "title": "A Tischgestell (Satz)",
+          "variantId": "43838160634122",
+          "price": 17500
+        },
+        {
+          "title": "A Tischgestell (Satz)",
+          "variantId": "45056174752010",
+          "price": 10900
+        },
+        {
+          "title": "U Tischgestell (Satz)",
+          "variantId": "43838179934474",
+          "price": 17500
+        },
+        {
+          "title": "U Tischgestell (M) (Satz)",
+          "variantId": "43838182031626",
+          "price": 15900
+        },
+        {
+          "title": "U Tischgestell (schmal) (Satz)",
+          "variantId": "43838180393226",
+          "price": 11900
+        },
+        {
+          "title": "Stahlwangen Tischgestell (Satz)",
+          "variantId": "44218834026762",
+          "price": 56000
+        },
+        {
+          "title": "Stahlwangen Tischgestell (S) (Satz)",
+          "variantId": "44218853032202",
+          "price": 56000
+        },
+        {
+          "title": "Bartisch Gestell",
+          "variantId": "44218880131338",
+          "price": 58000
+        },
+        {
+          "title": "Spider Tischgestell Edelstahl",
+          "variantId": "43839013716234",
+          "price": 66000
+        },
+        {
+          "title": "Spider Tischgestell Edelstahl (S)",
+          "variantId": "43838173151498",
+          "price": 66000
+        }
+      ],
+      "Kantenbearbeitung": [],
+      "Behandlung": [
+        {
+          "title": "Pure",
+          "variantId": "36823095050406",
+          "price": 0
+        },
+        {
+          "title": "Unsichtbarer Skylt-Lack",
+          "variantId": "36823097409702",
+          "price": 0
+        },
+        {
+          "title": "Chocolate",
+          "variantId": "51411501187338",
+          "price": 0
+        },
+        {
+          "title": "Cocoa",
+          "variantId": "51412105658634",
+          "price": 0
+        },
+        {
+          "title": "Cortado",
+          "variantId": "51925952332042",
+          "price": 0
+        },
+        {
+          "title": "Shell Grey",
+          "variantId": "51925954887946",
+          "price": 0
+        },
+        {
+          "title": "Black",
+          "variantId": "51412155203850",
+          "price": 0
+        },
+        {
+          "title": "Deep Black",
+          "variantId": "52554148315402",
+          "price": 0
+        },
+        {
+          "title": "Super White",
+          "variantId": "51412172177674",
+          "price": 0
+        },
+        {
+          "title": "White",
+          "variantId": "51411506823434",
+          "price": 0
+        },
+        {
+          "title": "White 5%",
+          "variantId": "51412146225418",
+          "price": 0
+        },
+        {
+          "title": "Macchiato",
+          "variantId": "51411483099402",
+          "price": 0
+        },
+        {
+          "title": "Smoke",
+          "variantId": "51411505676554",
+          "price": 0
+        },
+        {
+          "title": "Dulce",
+          "variantId": "51411494863114",
+          "price": 0
+        },
+        {
+          "title": "Walnut",
+          "variantId": "51412131152138",
+          "price": 0
         }
       ]
     }
@@ -1511,210 +1687,244 @@
       }
     ],
     "addons": {
-      "Behandlung": [
-        {
-          "title": "Pure",
-          "price": 0,
-          "variantId": "36823095050406"
-        },
-        {
-          "title": "Unsichtbarer Skylt-Lack",
-          "price": 0,
-          "variantId": "36823097409702"
-        },
-        {
-          "title": "Chocolate",
-          "price": 0,
-          "variantId": "51411501187338"
-        },
-        {
-          "title": "Cocoa",
-          "price": 0,
-          "variantId": "51412105658634"
-        },
-        {
-          "title": "Cortado",
-          "price": 0,
-          "variantId": "51925952332042"
-        },
-        {
-          "title": "Shell Grey",
-          "price": 0,
-          "variantId": "51925954887946"
-        },
-        {
-          "title": "Deep Black",
-          "price": 0,
-          "variantId": "52554148315402"
-        },
-        {
-          "title": "Super White",
-          "price": 0,
-          "variantId": "51412172177674"
-        },
-        {
-          "title": "White",
-          "price": 0,
-          "variantId": "51411506823434"
-        },
-        {
-          "title": "White 5%",
-          "price": 0,
-          "variantId": "51412146225418"
-        },
-        {
-          "title": "Macchiato",
-          "price": 0,
-          "variantId": "51411483099402"
-        },
-        {
-          "title": "Smoke",
-          "price": 0,
-          "variantId": "51411505676554"
-        },
-        {
-          "title": "Dulce",
-          "price": 0,
-          "variantId": "51411494863114"
-        },
-        {
-          "title": "Walnut",
-          "price": 0,
-          "variantId": "51412131152138"
-        },
-        {
-          "title": "Natural",
-          "price": 0,
-          "variantId": "53239134880010"
-        },
-        {
-          "title": "Mist",
-          "price": 0,
-          "variantId": "53239133995274"
-        },
-        {
-          "title": "Vanilla",
-          "price": 0,
-          "variantId": "53239134945546"
-        },
-        {
-          "title": "Charcoal",
-          "price": 0,
-          "variantId": "53239133700362"
-        },
-        {
-          "title": "Yakisugi",
-          "price": 0,
-          "variantId": "53239135174922"
-        }
-      ],
-      "Kantenbearbeitung": [
-        {
-          "title": "Gerade Kanten",
-          "price": 0,
-          "variantId": "43736479301898"
-        },
-        {
-          "title": "Schweizer Kanten",
-          "price": 0,
-          "variantId": "43736479039754"
-        }
-      ],
       "Tischgestell": [
         {
           "title": "Spider Tischgestell (L)",
-          "price": 0,
-          "variantId": "40669726441638"
+          "variantId": "40669726441638",
+          "price": 0
         },
         {
           "title": "Spider Tischgestell (M)",
-          "price": 0,
-          "variantId": "44707879125258"
+          "variantId": "44707879125258",
+          "price": 0
         },
         {
           "title": "Spider Tischgestell (S)",
-          "price": 0,
-          "variantId": "40669736239270"
+          "variantId": "40669736239270",
+          "price": 0
         },
         {
           "title": "Konisches Spidertischgestell",
-          "price": 0,
-          "variantId": "51527174553866"
+          "variantId": "51527174553866",
+          "price": 18500
         },
         {
           "title": "Thorn Tischgestelle (Satz)",
-          "price": 0,
-          "variantId": "51527177502986"
+          "variantId": "51527177502986",
+          "price": 17500
         },
         {
           "title": "V Tischgestell",
-          "price": 0,
-          "variantId": "44795273609482"
+          "variantId": "44795273609482",
+          "price": 19500
         },
         {
           "title": "Spider Tischgestell Edelstahl",
-          "price": 0,
-          "variantId": "43839005786378"
+          "variantId": "43839005786378",
+          "price": 36000
         },
         {
           "title": "Spider Tischgestell Edelstahl (S)",
-          "price": 0,
-          "variantId": "43736525897994"
+          "variantId": "43736525897994",
+          "price": 36000
         },
         {
           "title": "U Tischgestell (Satz)",
-          "price": 0,
-          "variantId": "40669512302758"
+          "variantId": "40669512302758",
+          "price": 0
         },
         {
           "title": "U Tischgestell (M) (Satz)",
-          "price": 0,
-          "variantId": "40669578756262"
+          "variantId": "40669578756262",
+          "price": 0
         },
         {
           "title": "X Tischgestell (Satz)",
-          "price": 0,
-          "variantId": "40669646028966"
+          "variantId": "40669646028966",
+          "price": 0
         },
         {
           "title": "A Tischgestell (Satz)",
-          "price": 0,
-          "variantId": "40669470752934"
+          "variantId": "40669470752934",
+          "price": 0
         },
         {
           "title": "Trapezium Tischgestell (Satz)",
-          "price": 0,
-          "variantId": "40669598023846"
+          "variantId": "40669598023846",
+          "price": 0
         },
         {
           "title": "Aeris Tischgestell aus Eichenholz",
-          "price": 0,
-          "variantId": "52553822896394"
+          "variantId": "52553822896394",
+          "price": 54000
         },
         {
           "title": "Ovale Holzsäule aus Stäbchenholz, Eiche",
-          "price": 0,
-          "variantId": "52553810542858"
+          "variantId": "52553810542858",
+          "price": 54000
         },
         {
           "title": "Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)",
-          "price": 0,
-          "variantId": "52553828958474"
+          "variantId": "52553828958474",
+          "price": 44000
         },
         {
           "title": "Ovale Tischgestelle aus Eichenholz (Satz)",
-          "price": 0,
-          "variantId": "52553817030922"
+          "variantId": "52553817030922",
+          "price": 44000
         },
         {
           "title": "Butterfly Tischbeine aus Eichenholz (Satz) (A)",
-          "price": 0,
-          "variantId": "52554397548810"
+          "variantId": "52554397548810",
+          "price": 44000
         },
         {
           "title": "Halbrunde Tischbeine aus Eichenholz (Satz) (A)",
-          "price": 0,
-          "variantId": "52725568274698"
+          "variantId": "52725568274698",
+          "price": 44000
+        },
+        {
+          "title": "Spider Tischbein (M)",
+          "variantId": "44218773963018",
+          "price": 19500
+        },
+        {
+          "title": "X Tischgestell (Satz)",
+          "variantId": "43838186029322",
+          "price": 17500
+        },
+        {
+          "title": "Trapezium Tischgestell (Satz)",
+          "variantId": "43838179246346",
+          "price": 17500
+        },
+        {
+          "title": "A Tischgestell (Satz)",
+          "variantId": "43838160634122",
+          "price": 17500
+        },
+        {
+          "title": "A Tischgestell (Satz)",
+          "variantId": "45056174752010",
+          "price": 10900
+        },
+        {
+          "title": "U Tischgestell (Satz)",
+          "variantId": "43838179934474",
+          "price": 17500
+        },
+        {
+          "title": "U Tischgestell (M) (Satz)",
+          "variantId": "43838182031626",
+          "price": 15900
+        },
+        {
+          "title": "U Tischgestell (schmal) (Satz)",
+          "variantId": "43838180393226",
+          "price": 11900
+        },
+        {
+          "title": "Stahlwangen Tischgestell (Satz)",
+          "variantId": "44218834026762",
+          "price": 56000
+        },
+        {
+          "title": "Stahlwangen Tischgestell (S) (Satz)",
+          "variantId": "44218853032202",
+          "price": 56000
+        },
+        {
+          "title": "Bartisch Gestell",
+          "variantId": "44218880131338",
+          "price": 58000
+        },
+        {
+          "title": "Spider Tischgestell Edelstahl",
+          "variantId": "43839013716234",
+          "price": 66000
+        },
+        {
+          "title": "Spider Tischgestell Edelstahl (S)",
+          "variantId": "43838173151498",
+          "price": 66000
+        }
+      ],
+      "Kantenbearbeitung": [],
+      "Behandlung": [
+        {
+          "title": "Pure",
+          "variantId": "36823095050406",
+          "price": 0
+        },
+        {
+          "title": "Unsichtbarer Skylt-Lack",
+          "variantId": "36823097409702",
+          "price": 0
+        },
+        {
+          "title": "Chocolate",
+          "variantId": "51411501187338",
+          "price": 0
+        },
+        {
+          "title": "Cocoa",
+          "variantId": "51412105658634",
+          "price": 0
+        },
+        {
+          "title": "Cortado",
+          "variantId": "51925952332042",
+          "price": 0
+        },
+        {
+          "title": "Shell Grey",
+          "variantId": "51925954887946",
+          "price": 0
+        },
+        {
+          "title": "Black",
+          "variantId": "51412155203850",
+          "price": 0
+        },
+        {
+          "title": "Deep Black",
+          "variantId": "52554148315402",
+          "price": 0
+        },
+        {
+          "title": "Super White",
+          "variantId": "51412172177674",
+          "price": 0
+        },
+        {
+          "title": "White",
+          "variantId": "51411506823434",
+          "price": 0
+        },
+        {
+          "title": "White 5%",
+          "variantId": "51412146225418",
+          "price": 0
+        },
+        {
+          "title": "Macchiato",
+          "variantId": "51411483099402",
+          "price": 0
+        },
+        {
+          "title": "Smoke",
+          "variantId": "51411505676554",
+          "price": 0
+        },
+        {
+          "title": "Dulce",
+          "variantId": "51411494863114",
+          "price": 0
+        },
+        {
+          "title": "Walnut",
+          "variantId": "51412131152138",
+          "price": 0
         }
       ]
     }
