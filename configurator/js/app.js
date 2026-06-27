@@ -2427,15 +2427,21 @@ class TableConfigurator {
     const leg = this.legObjects[this.activeLegIndex];
     if (!leg || leg.isWood) return;
 
-    const powder = POWDER_COAT_COLORS.find(c => c.id === this.state.powderCoat);
-    if (!powder) return;
-
-    const metalMaterial = new THREE.MeshStandardMaterial({
-      color: new THREE.Color(powder.swatch),
-      roughness: 0.35,
-      metalness: 0.6,
-      envMapIntensity: 0.5
-    });
+    // External Edelstahl legs get brushed steel, not black powder coat
+    const isEdelstahl = leg.external && /Edelstahl/i.test(leg.displayName);
+    const metalMaterial = isEdelstahl
+      ? new THREE.MeshStandardMaterial({
+          color: new THREE.Color(0xb8babd),
+          roughness: 0.32,
+          metalness: 0.9,
+          envMapIntensity: 0.9
+        })
+      : new THREE.MeshStandardMaterial({
+          color: new THREE.Color((POWDER_COAT_COLORS.find(c => c.id === this.state.powderCoat) || {swatch:'#1a1a1a'}).swatch),
+          roughness: 0.35,
+          metalness: 0.6,
+          envMapIntensity: 0.5
+        });
 
     leg.object.traverse((child) => {
       if (child.isMesh) {
