@@ -4614,14 +4614,12 @@ class TableConfigurator {
       let legAddon = null;
       if (this.state.zwLegName) {
         legAddon = product.addons.Tischgestell.find(a => a.title === this.state.zwLegName);
-        // Note: leg surcharge is intentionally NOT added to the bottom-displayed total —
-        // user requested. It still ships to cart via _selectedVariants below.
+        if (legAddon) total += legAddon.price;
       }
-      // Also: catalog-only legs (standalone purchases) are included in cart but not in
-      // displayed total. Look up by title from CATALOG_ONLY_LEGS list.
+      // Catalog-only legs (standalone purchases) — add their full catalog price too
       if (!legAddon && this.state.zwLegName) {
         const catLeg = CATALOG_ONLY_LEGS.find(c => c.title === this.state.zwLegName);
-        if (catLeg) legAddon = { variantId: catLeg.variantId };
+        if (catLeg) { legAddon = { variantId: catLeg.variantId, price: catLeg.price }; total += catLeg.price; }
       }
       // Preserve any already-picked Behandlung variant (price is €0 so it doesn't affect total)
       const prevBehandlung = this._selectedVariants?.behandlung;

@@ -1354,15 +1354,12 @@ body {
 
 /* Small surcharge tag inside leg card */
 .leg-price {
-  position: absolute;
-  bottom: 4px;
-  right: 6px;
+  display: block;
+  margin-top: 2px;
   font-size: 10px;
   font-weight: 600;
   color: var(--color-accent);
-  background: var(--color-white);
-  padding: 1px 4px;
-  border-radius: 4px;
+  text-align: center;
   pointer-events: none;
 }
 
