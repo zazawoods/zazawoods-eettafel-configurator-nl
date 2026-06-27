@@ -146,7 +146,7 @@ const EXTERNAL_LEG_FILES = {
   'Spider Tischgestell Edelstahl (S)':                'Spider Tischgestell Edelstahl (S).glb',
   'Trapezium Tischgestell (Satz)':                    'Trapezium Tischgestell (Satz).glb',
   'U Tischgestell (Satz)':                            'U Tischgestell (Satz).glb',
-  'U Tischgestell (M) (Satz)':                        'U Tischgestell (M) (Satz).glb'
+  'U Tischgestell (M) (Satz)':                        'U Tischgestell (M) (Satz).glb',
   'Drone Tischbeine (Satz)':                          'Drone Tischbeine (Satz).glb',
   'U Tischgestell (schmal) (Satz)':                   'U Tischgestell (schmal) (Satz).glb',
   'Stahlwangen Tischgestell (Satz)':                  'Stahlwangen Tischgestell (Satz).glb',
