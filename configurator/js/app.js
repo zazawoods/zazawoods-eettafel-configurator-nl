@@ -774,23 +774,16 @@ class TableConfigurator {
       }
     }
 
-    // Load external standalone leg GLBs and register as additional legObjects
-    for (const [title, file] of Object.entries(EXTERNAL_LEG_FILES)) {
-      try {
-        let cached = EXTERNAL_LEG_CACHE.get(title);
-        if (!cached) {
-          const url = `${BASE_PATH}/glb files tables and legs/external-legs/${encodeURIComponent(file)}`;
-          const gltf = await new Promise((resolve, reject) => {
-            this.loader.load(url, resolve, undefined, reject);
-          });
-          cached = gltf.scene;
-          EXTERNAL_LEG_CACHE.set(title, cached);
-        }
-        const inst = cached.clone(true);
+    // Load external standalone leg GLBs and register as additional legObjects.
+    // Fire-and-forget (no await) — re-render leg grid as each completes.
+    const enclosingThis = this;
+    Object.entries(EXTERNAL_LEG_FILES).forEach(([title, file]) => {
+      const registerLoaded = (sceneObj) => {
+        const inst = sceneObj.clone(true);
         inst.visible = false;
         model.add(inst);
         const isWood = /Eichenholz|Stäbchenholz|Holzsäule/i.test(title);
-        this.legObjects.push({
+        enclosingThis.legObjects.push({
           object: inst,
           rawName: '__external__' + title,
           displayName: title,
@@ -801,10 +794,18 @@ class TableConfigurator {
           childOrigScales: inst.children.map(ch => ch.scale.clone()),
           geomCenterX: null
         });
-      } catch (e) {
-        console.warn('[ZW] external leg load failed:', title, e);
-      }
-    }
+        // Re-render leg grid so the green dot appears
+        if (typeof enclosingThis.renderLegGrid === 'function') enclosingThis.renderLegGrid();
+      };
+      const cached = EXTERNAL_LEG_CACHE.get(title);
+      if (cached) { registerLoaded(cached); return; }
+      const url = `${BASE_PATH}/glb files tables and legs/external-legs/${encodeURIComponent(file)}`;
+      enclosingThis.loader.load(url,
+        (gltf) => { EXTERNAL_LEG_CACHE.set(title, gltf.scene); registerLoaded(gltf.scene); },
+        undefined,
+        (err) => { console.warn('[ZW] external leg load failed:', title, err?.message || err); }
+      );
+    });
 
     // Sort legs: wood first, then metal; within each group sort by position distance
     // from origin (legs closer to tabletop center look better as default)
