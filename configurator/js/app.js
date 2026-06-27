@@ -123,15 +123,13 @@ const ZW_LEG_MODEL_MAP = {
   'Trapezium Tischgestell (Satz)':                      { name: 'Trapezium Tischgestell (Satz)',                isWood: false },
   'Spider Gestell (rund)':                              { name: 'Spider Gestell (rund)',                        isWood: false },
   'Spider Gestell - Schmal (Rund)':                     { name: 'Spider Gestell - Schmal (Rund)',               isWood: false },
-  'Butterfly Tischbeine aus Eichenholz (Satz) (A)':     { name: 'Butterfly Tischbeine aus Eichenholz (Satz) (A)', isWood: true  },
+  'Butterfly Tischbeine aus Eichenholz (Satz) (A)':     { name: 'Hannah',          isWood: true  },
   'Ovale Tischgestelle aus Eichenholz (Satz)':          { name: 'Ovale Tischgestelle aus Eichenholz (Satz)',    isWood: true  }
 };
 
 // External standalone leg GLBs (user-supplied 2026-06-27)
 const EXTERNAL_LEG_FILES = {
   'A Tischgestell (Satz)':                            'A Tischgestell (Satz).glb',
-  'Butterfly Tischbeine aus Eichenholz (Satz) (A)':   'Butterfly Tischbeine aus Eichenholz (Satz).glb',
-  'Ovale Tischgestelle aus Eichenholz (Satz)':        'Ovale Tischbeine aus Eichenholz (Satz).glb',
   'Spider Gestell (rund)':                            'Spider Gestell (rund) 100x100cm.glb',
   'Spider Gestell - Schmal (Rund)':                   'Spider Tischbein - Schmal (Rund).glb',
   'Spider Tischgestell (L)':                          'Spider Tischbein (L).glb',
