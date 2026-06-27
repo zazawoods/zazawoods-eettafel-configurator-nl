@@ -2164,11 +2164,11 @@ class TableConfigurator {
       this.tabletopObject.visible = true;
     }
 
+    const leg = this.legObjects[index];
     this.applyActiveLegMaterial();
     // Skip tabletop-alignment for external legs (they're standalone GLBs)
     if (!leg.external) this.alignTabletopToLeg();
 
-    const leg = this.legObjects[index];
     this.state.legId = leg.rawName;
     document.getElementById('val-legs').textContent =
       this.state.zwLegName || `${leg.displayName}${leg.isWood ? ' (Holz)' : ''}`;
