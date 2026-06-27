@@ -799,7 +799,7 @@ class TableConfigurator {
       };
       const cached = EXTERNAL_LEG_CACHE.get(title);
       if (cached) { registerLoaded(cached); return; }
-      const url = `${BASE_PATH}/glb files tables and legs/external-legs/${encodeURIComponent(file)}`;
+      const url = '../glb files tables and legs/external-legs/' + encodeURIComponent(file);
       enclosingThis.loader.load(url,
         (gltf) => { EXTERNAL_LEG_CACHE.set(title, gltf.scene); registerLoaded(gltf.scene); },
         undefined,
@@ -2165,7 +2165,8 @@ class TableConfigurator {
     }
 
     this.applyActiveLegMaterial();
-    this.alignTabletopToLeg();
+    // Skip tabletop-alignment for external legs (they're standalone GLBs)
+    if (!leg.external) this.alignTabletopToLeg();
 
     const leg = this.legObjects[index];
     this.state.legId = leg.rawName;
