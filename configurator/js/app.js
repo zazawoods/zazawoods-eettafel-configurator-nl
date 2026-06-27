@@ -805,7 +805,7 @@ class TableConfigurator {
         // (one at each end of the table), for everyone else just one centered.
         const group = new THREE.Group();
         group.name = '__ext_group__' + title;
-        const isPair = /^U Tischgestell|^Trapezium Tischgestell/i.test(title);
+        const isPair = /^U Tischgestell|^Trapezium Tischgestell|^Stahlwangen Tischgestell/i.test(title);
         const placements = isPair
           ? [{ x: -0.75 }, { x: 0.75 }]    // two instances at ±75cm along length (works for 200-300cm tables)
           : [{ x: 0 }];                       // single centered instance
@@ -4614,7 +4614,14 @@ class TableConfigurator {
       let legAddon = null;
       if (this.state.zwLegName) {
         legAddon = product.addons.Tischgestell.find(a => a.title === this.state.zwLegName);
-        if (legAddon) total += legAddon.price;
+        // Note: leg surcharge is intentionally NOT added to the bottom-displayed total —
+        // user requested. It still ships to cart via _selectedVariants below.
+      }
+      // Also: catalog-only legs (standalone purchases) are included in cart but not in
+      // displayed total. Look up by title from CATALOG_ONLY_LEGS list.
+      if (!legAddon && this.state.zwLegName) {
+        const catLeg = CATALOG_ONLY_LEGS.find(c => c.title === this.state.zwLegName);
+        if (catLeg) legAddon = { variantId: catLeg.variantId };
       }
       // Preserve any already-picked Behandlung variant (price is €0 so it doesn't affect total)
       const prevBehandlung = this._selectedVariants?.behandlung;

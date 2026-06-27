@@ -18,7 +18,7 @@
       }
     })();
   </script>
-  <link rel="stylesheet" href="css/styles.css?v=ec5b143">
+  <link rel="stylesheet" href="css/styles.css?v=f9b3d6c">
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -267,14 +267,14 @@
         </div>
         <div class="price-divider"></div>
         <div class="price-bar">
-          <span class="price-label">Gesamtpreis:</span>
+          <span class="price-label">Gesamtpreis: <small style="font-weight:400;color:var(--color-text-muted);font-size:11px;">(inkl. Lieferung)</small></span>
           <span id="total-price" class="price-loading">Preis wird berechnet…</span>
         </div>
-        <div class="free-shipping">Kostenlose Lieferung &amp; Montage</div>
+        <div class="free-shipping" style="display:none">Kostenlose Lieferung &amp; Montage</div>
         <div class="mobile-price-row">
           <div class="mobile-price-info">
             <span id="total-price-mobile" class="price-loading">€ ...</span>
-            <span class="mobile-shipping">Kostenlose Lieferung<br>&amp; Montage</span>
+            <span class="mobile-shipping" style="display:none">Kostenlose Lieferung<br>&amp; Montage</span>
           </div>
           <button class="cta-button cta-mobile" id="btn-add-to-cart-mobile">
             Bestellen
@@ -297,6 +297,6 @@
     Konfigurieren
   </button>
 
-  <script type="module" src="js/app.js?v=ec5b143"></script>
+  <script type="module" src="js/app.js?v=f9b3d6c"></script>
 </body>
 </html>
