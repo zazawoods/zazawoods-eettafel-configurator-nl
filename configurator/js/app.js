@@ -112,8 +112,40 @@ const ZW_LEG_MODEL_MAP = {
   'Runde Holzsäule aus Stäbchenholz, Eiche':            { name: 'Wellen-Rund',     isWood: true  },
   'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)':  { name: 'Wellen-Duo',      isWood: true  },
   'Runde Holzsäule aus Eichenholz (Satz) (A)':          { name: 'Pilares',         isWood: true  },
-  'Halbrunde Tischbeine aus Eichenholz (Satz) (A)':     { name: 'Hapa',            isWood: true  }
+  'Halbrunde Tischbeine aus Eichenholz (Satz) (A)':     { name: 'Hapa',            isWood: true  },
+  // External GLB legs — name matches the legObject.displayName loaded from external file
+  'Spider Tischgestell (L)':                            { name: 'Spider Tischgestell (L)',                      isWood: false },
+  'Spider Tischgestell (M)':                            { name: 'Spider Tischgestell (M)',                      isWood: false },
+  'Spider Tischgestell Edelstahl':                      { name: 'Spider Tischgestell Edelstahl',                isWood: false },
+  'Spider Tischgestell Edelstahl (S)':                  { name: 'Spider Tischgestell Edelstahl (S)',            isWood: false },
+  'U Tischgestell (Satz)':                              { name: 'U Tischgestell (Satz)',                        isWood: false },
+  'U Tischgestell (M) (Satz)':                          { name: 'U Tischgestell (M) (Satz)',                    isWood: false },
+  'Trapezium Tischgestell (Satz)':                      { name: 'Trapezium Tischgestell (Satz)',                isWood: false },
+  'Spider Gestell (rund)':                              { name: 'Spider Gestell (rund)',                        isWood: false },
+  'Spider Gestell - Schmal (Rund)':                     { name: 'Spider Gestell - Schmal (Rund)',               isWood: false },
+  'Butterfly Tischbeine aus Eichenholz (Satz) (A)':     { name: 'Butterfly Tischbeine aus Eichenholz (Satz) (A)', isWood: true  },
+  'Ovale Tischgestelle aus Eichenholz (Satz)':          { name: 'Ovale Tischgestelle aus Eichenholz (Satz)',    isWood: true  }
 };
+
+// External standalone leg GLBs (user-supplied 2026-06-27)
+const EXTERNAL_LEG_FILES = {
+  'A Tischgestell (Satz)':                            'A Tischgestell (Satz).glb',
+  'Butterfly Tischbeine aus Eichenholz (Satz) (A)':   'Butterfly Tischbeine aus Eichenholz (Satz).glb',
+  'Ovale Tischgestelle aus Eichenholz (Satz)':        'Ovale Tischbeine aus Eichenholz (Satz).glb',
+  'Spider Gestell (rund)':                            'Spider Gestell (rund) 100x100cm.glb',
+  'Spider Gestell - Schmal (Rund)':                   'Spider Tischbein - Schmal (Rund).glb',
+  'Spider Tischgestell (L)':                          'Spider Tischbein (L).glb',
+  'Spider Tischgestell (M)':                          'Spider Tischbein (M).glb',
+  'Spider Tischgestell Edelstahl':                    'Spider Tischgestell Edelstahl.glb',
+  'Spider Tischgestell Edelstahl (S)':                'Spider Tischgestell Edelstahl (S).glb',
+  'Trapezium Tischgestell (Satz)':                    'Trapezium Tischgestell (Satz).glb',
+  'U Tischgestell (Satz)':                            'U Tischgestell (Satz).glb',
+  'U Tischgestell (M) (Satz)':                        'U Tischgestell (M) (Satz).glb'
+};
+
+// Persistent cache of loaded external leg gltf.scene clones — reused across shape switches.
+const EXTERNAL_LEG_CACHE = new Map();
+
 
 // Exclusion patterns: never show items whose ZW title matches these (per user)
 const LEG_TITLE_EXCLUDE = /Bank-|Couchtisch|Bartisch/i;
@@ -739,6 +771,38 @@ class TableConfigurator {
           childOrigScales: clonedObj.children.map(ch => ch.scale.clone()),
           geomCenterX: null
         });
+      }
+    }
+
+    // Load external standalone leg GLBs and register as additional legObjects
+    for (const [title, file] of Object.entries(EXTERNAL_LEG_FILES)) {
+      try {
+        let cached = EXTERNAL_LEG_CACHE.get(title);
+        if (!cached) {
+          const url = `${BASE_PATH}/glb files tables and legs/external-legs/${encodeURIComponent(file)}`;
+          const gltf = await new Promise((resolve, reject) => {
+            this.loader.load(url, resolve, undefined, reject);
+          });
+          cached = gltf.scene;
+          EXTERNAL_LEG_CACHE.set(title, cached);
+        }
+        const inst = cached.clone(true);
+        inst.visible = false;
+        model.add(inst);
+        const isWood = /Eichenholz|Stäbchenholz|Holzsäule/i.test(title);
+        this.legObjects.push({
+          object: inst,
+          rawName: '__external__' + title,
+          displayName: title,
+          isWood,
+          external: true,
+          originalScale: inst.scale.clone(),
+          originalPosition: inst.position.clone(),
+          childOrigScales: inst.children.map(ch => ch.scale.clone()),
+          geomCenterX: null
+        });
+      } catch (e) {
+        console.warn('[ZW] external leg load failed:', title, e);
       }
     }
 
