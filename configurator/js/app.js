@@ -817,8 +817,15 @@ class TableConfigurator {
     // Load external standalone leg GLBs and register as additional legObjects.
     // Fire-and-forget (no await) — re-render leg grid as each completes.
     const enclosingThis = this;
+    // Capture the load token this discoverModelParts run belongs to.
+    // If the user switches shape mid-load, any async external-leg callback that fires
+    // AFTER the new shape took over will see a mismatch and skip — preventing stale
+    // dead-reference legs from polluting the new shape's legObjects array.
+    const ownerToken = enclosingThis._loadToken;
     Object.entries(EXTERNAL_LEG_FILES).forEach(([title, file]) => {
       const registerLoaded = (sceneObj) => {
+        // Stale-load guard
+        if (enclosingThis._loadToken !== ownerToken) return;
         // Wrap each external leg in a Group — for U/Trapezium we add TWO instances
         // (one at each end of the table), for everyone else just one centered.
         const group = new THREE.Group();
