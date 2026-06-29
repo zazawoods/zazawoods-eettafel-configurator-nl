@@ -1400,3 +1400,8 @@ body {
 .leg-option > * { pointer-events: none; }
 .leg-option { -webkit-tap-highlight-color: rgba(200,150,90,0.15); }
 .leg-option:active { transform: scale(0.985); }
+
+
+/* Visual feedback when user clicks a shape while a load is in progress */
+@keyframes zw-loader-pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
+.loader-pulse { animation: zw-loader-pulse 0.2s ease-out; }

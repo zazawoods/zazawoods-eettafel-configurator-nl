@@ -499,6 +499,11 @@ class TableConfigurator {
     const shape = TABLE_SHAPES.find(s => s.id === shapeId);
     if (!shape) return;
 
+    // Load-token: if a newer loadModel() is called before this one finishes,
+    // we abort silently so we never overwrite the newer state with stale data.
+    const myToken = (this._loadToken = (this._loadToken || 0) + 1);
+    const isStale = () => this._loadToken !== myToken;
+
     this.isLoading = true;
     this.showLoader();
 
@@ -511,8 +516,10 @@ class TableConfigurator {
         gltf = this.modelCache[shapeId];
       } else {
         gltf = await this.loadGLTF(shape.glbFile);
+        if (isStale()) { return; }  // newer load took over — drop this result
         this.modelCache[shapeId] = gltf;
       }
+      if (isStale()) { return; }
 
       // Now remove the old model (new one is about to be added)
       if (previousModel) {
@@ -680,14 +687,18 @@ class TableConfigurator {
 
     } catch (err) {
       console.error('Error loading model:', err);
-      // Clean up previous model on error
-      if (previousModel && !this.currentModel) {
-        this.scene.remove(previousModel);
+      // On error, keep the previous model visible — don't leave an empty scene.
+      // If previousModel was already removed during the success path before the error,
+      // re-add it so the user still sees something.
+      if (previousModel && !this.scene.children.includes(previousModel)) {
+        this.scene.add(previousModel);
+        this.currentModel = previousModel;
       }
+    } finally {
+      // Always clear the loading flag, even if the load was stale or errored
+      this.isLoading = false;
+      this.hideLoader();
     }
-
-    this.isLoading = false;
-    this.hideLoader();
     // Refresh price now that leg is known (prices may have loaded while model was loading)
     this.updatePrice();
 
@@ -699,18 +710,19 @@ class TableConfigurator {
   }
 
   async preloadAllModels() {
-    // Load all models in parallel for much faster preloading
+    // Load one at a time so we never compete with a user-triggered loadModel
+    // for bandwidth or the GLTFLoader's DRACO worker.
     const toLoad = TABLE_SHAPES.filter(s => !this.modelCache[s.id]);
-    await Promise.allSettled(
-      toLoad.map(async (shape) => {
-        try {
-          const gltf = await this.loadGLTF(shape.glbFile);
-          this.modelCache[shape.id] = gltf;
-        } catch (e) {
-          // Silently skip failed preloads
-        }
-      })
-    );
+    for (const shape of toLoad) {
+      try {
+        // Yield to any pending user click first
+        await new Promise(r => setTimeout(r, 0));
+        const gltf = await this.loadGLTF(shape.glbFile, { silent: true });
+        this.modelCache[shape.id] = gltf;
+      } catch (e) {
+        // Silently skip failed preloads
+      }
+    }
   }
 
   discoverModelParts(model, shape) {
@@ -847,8 +859,12 @@ class TableConfigurator {
           childOrigScales: group.children.map(ch => ch.scale.clone()),
           geomCenterX: null
         });
-        // Re-render leg grid so the green dot appears
-        if (typeof enclosingThis.renderLegGrid === 'function') enclosingThis.renderLegGrid();
+        // Re-render leg grid — debounced so we run at most once per 50ms,
+        // not once per external leg (12 in a row was killing the UI thread).
+        if (typeof enclosingThis.renderLegGrid === 'function') {
+          clearTimeout(enclosingThis._legGridTimer);
+          enclosingThis._legGridTimer = setTimeout(() => enclosingThis.renderLegGrid(), 50);
+        }
       };
       const cached = EXTERNAL_LEG_CACHE.get(title);
       if (cached) { registerLoaded(cached); return; }
@@ -2495,30 +2511,39 @@ class TableConfigurator {
     });
   }
 
-  loadGLTF(url) {
+  loadGLTF(url, opts = {}) {
+    const silent = !!opts.silent;
     return new Promise((resolve, reject) => {
       // Simulate smooth progress since servers often don't send Content-Length
       let simPct = 0;
-      const simInterval = setInterval(() => {
-        // Accelerate to ~90%, then slow down (waiting for actual load)
-        if (simPct < 70) simPct += 3;
-        else if (simPct < 90) simPct += 1;
-        this.updateLoaderProgress(simPct);
-      }, 100);
+      let simInterval = null;
+      if (!silent) {
+        simInterval = setInterval(() => {
+          if (simPct < 70) simPct += 3;
+          else if (simPct < 90) simPct += 1;
+          this.updateLoaderProgress(simPct);
+        }, 100);
+      }
+      // Hard timeout — 25s — so a stuck network never freezes the UI
+      const timeout = setTimeout(() => {
+        if (simInterval) clearInterval(simInterval);
+        reject(new Error('GLB load timed out: ' + url));
+      }, 25000);
 
       this.loader.load(url, (result) => {
-        clearInterval(simInterval);
-        this.updateLoaderProgress(100);
+        clearTimeout(timeout);
+        if (simInterval) clearInterval(simInterval);
+        if (!silent) this.updateLoaderProgress(100);
         resolve(result);
       }, (progress) => {
-        // Use real progress if available
-        if (progress.total > 0) {
-          clearInterval(simInterval);
+        if (!silent && progress.total > 0) {
+          if (simInterval) clearInterval(simInterval);
           const pct = Math.round((progress.loaded / progress.total) * 100);
           this.updateLoaderProgress(pct);
         }
       }, (err) => {
-        clearInterval(simInterval);
+        clearTimeout(timeout);
+        if (simInterval) clearInterval(simInterval);
         reject(err);
       });
     });
@@ -3347,10 +3372,20 @@ class TableConfigurator {
 
     grid.addEventListener('click', (e) => {
       const btn = e.target.closest('.shape-option');
-      if (!btn || this.isLoading) return;
+      if (!btn) return;
 
       const shapeId = btn.dataset.shape;
       if (shapeId === this.state.shape) return;
+
+      // If another load is in flight, queue the latest shape as the next one
+      // (load-token in loadModel makes the older one bail out cleanly).
+      // Do NOT silently ignore — that's what made the UI feel broken.
+      if (this.isLoading) {
+        // visual feedback: pulse the loader text
+        const lt = document.getElementById('loader-text');
+        if (lt) lt.classList.add('loader-pulse');
+        setTimeout(() => { if (lt) lt.classList.remove('loader-pulse'); }, 200);
+      }
 
       this.state.shape = shapeId;
       this.state.variant = 'a'; // reset variant on shape change

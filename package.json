@@ -6,6 +6,7 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "acorn": "^8.17.0",
     "compression": "^1.8.1",
     "express": "^4.21.0"
   }
