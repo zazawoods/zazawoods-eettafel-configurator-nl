@@ -695,10 +695,16 @@ class TableConfigurator {
         this.currentModel = previousModel;
       }
     } finally {
-      // Always clear the loading flag, even if the load was stale or errored
-      this.isLoading = false;
-      this.hideLoader();
+      // Only clear loading state if we're STILL the latest load.
+      // If we're stale, the newer load owns isLoading + the loader UI.
+      if (this._loadToken === myToken) {
+        this.isLoading = false;
+        this.hideLoader();
+      }
     }
+    // Stop here if we got superseded — don't run price/preload for stale load
+    if (this._loadToken !== myToken) return;
+
     // Refresh price now that leg is known (prices may have loaded while model was loading)
     this.updatePrice();
 
