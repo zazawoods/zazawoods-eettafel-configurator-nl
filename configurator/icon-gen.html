@@ -80,7 +80,17 @@ async function main() {
     setStatus(`rendering ${i+1}/${items.length}: ${items[i].name}`);
     try {
       const png = await renderItem(items[i]);
-      results.push({ name: items[i].name, png });
+      // POST to server for persistence
+      const b64 = png.substring('data:image/png;base64,'.length);
+      const bin = atob(b64);
+      const bytes = new Uint8Array(bin.length);
+      for (let j = 0; j < bin.length; j++) bytes[j] = bin.charCodeAt(j);
+      await fetch('/api/upload-icon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/octet-stream', 'X-Icon-Name': items[i].name + '.png' },
+        body: bytes
+      });
+      results.push({ name: items[i].name, ok: true });
     } catch (e) {
       results.push({ name: items[i].name, err: e.message });
     }

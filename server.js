@@ -92,6 +92,54 @@ app.post('/api/upload-glb', async (req, res) => {
   }
 });
 
+// API: upload-icon (POST) — persists rendered PNG icons to /tmp/icons/
+app.post('/api/upload-icon', async (req, res) => {
+  try {
+    const chunks = [];
+    for await (const chunk of req) chunks.push(chunk);
+    const buffer = Buffer.concat(chunks);
+    if (buffer.length < 100 || buffer.length > 2 * 1024 * 1024) {
+      return res.status(400).json({ error: 'Invalid PNG size' });
+    }
+    const name = req.headers['x-icon-name'];
+    if (!name || !/^[a-zA-Z0-9 _()äöüÄÖÜß,-]+\.png$/i.test(name)) {
+      return res.status(400).json({ error: 'Invalid name header' });
+    }
+    const dir = '/tmp/icons';
+    if (!existsSync(dir)) await mkdir(dir, { recursive: true });
+    await writeFile(`${dir}/${name}`, buffer);
+    return res.status(200).json({ ok: true, name, size: buffer.length });
+  } catch (err) {
+    console.error('upload-icon error:', err);
+    return res.status(500).json({ error: 'Upload failed' });
+  }
+});
+
+// API: get icon file
+app.get('/api/icon/:name', async (req, res) => {
+  try {
+    const name = req.params.name;
+    if (!/^[a-zA-Z0-9 _()äöüÄÖÜß,-]+\.png$/i.test(name)) {
+      return res.status(400).json({ error: 'Invalid name' });
+    }
+    const data = await readFile(`/tmp/icons/${name}`);
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Cache-Control', 'no-cache');
+    return res.status(200).send(data);
+  } catch {
+    return res.status(404).json({ error: 'Icon not found' });
+  }
+});
+
+// API: list icons
+app.get('/api/icons', async (req, res) => {
+  try {
+    const { readdir } = require('fs/promises');
+    const list = await readdir('/tmp/icons').catch(() => []);
+    return res.status(200).json({ icons: list });
+  } catch { return res.status(200).json({ icons: [] }); }
+});
+
 // Serve static files from /configurator (HTML/CSS/JS: no-cache, must revalidate every request)
 app.use(express.static(path.join(__dirname, 'configurator'), {
   maxAge: 0,
