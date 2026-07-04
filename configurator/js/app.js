@@ -3518,10 +3518,10 @@ class TableConfigurator {
     // Image swatches for each leg type, mapped by display name
     const legSwatchFiles = {
       // ─── HOUT ───
-      'Konische Spider': 'Konische Spider.png',
-      'Pilares': 'Pillars.png',
-      'Hannah': 'Butterfly wood.png',
-      'Wellen-Säule': 'Fluted.png',
+      'Konische Spider': 'Konisches Spidertischgestell.png',
+      'Pilares': 'Runde Holzsäule aus Eichenholz (Satz) (A).png',
+      'Hannah': 'Butterfly Tischbeine aus Eichenholz (Satz) (A).png',
+      'Wellen-Säule': 'Ovale Holzsäule aus Stäbchenholz, Eiche.png',
       'Lara': null, // handled specially for wood/metal
       'Diablo': 'Column in Middle.png',
       'Ferdo': 'Pilaar.png',
@@ -3530,22 +3530,22 @@ class TableConfigurator {
       'Bernard': 'Schuin 2.5.png',
       'Demi Lune': 'Demi Lune.png',
       'Blok': 'Blok.png',
-      'Hapa': 'Hapa.png',
+      'Hapa': 'Halbrunde Tischbeine aus Eichenholz (Satz) (A).png',
       'Base': 'Base.png',
-      'Wellen-Duo': 'Double Fluted.png',
-      'Wellen-Rund': 'Double Fluted.png',
+      'Wellen-Duo': 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz).png',
+      'Wellen-Rund': 'Runde Holzsäule aus Stäbchenholz, Eiche.png',
       'Moda': 'Klassiek Midden.png',
       // ─── METAAL ───
       'Vera': '4 Legs on pole.png',
-      'A-Form': 'A shape.png',
+      'A-Form': 'A Tischgestell (Satz).png',
       'Butterfly': 'Butterfly.png',
       'Diago': 'Diagonal Pole.png',
-      'V-Form': 'V shape.png',
+      'V-Form': 'V Tischgestell.png',
       'Walrus': 'Walrus.png',
       'Ekso': 'X modern.png',
-      'X-Form': 'X modern.png',
+      'X-Form': 'X Tischgestell (Satz).png',
       'Hairpin': 'Hairpin.png',
-      'Matrix': 'Matrix.png',
+      'Matrix': 'Spider Tischgestell (S).png',
       'Stative': 'Stative.png',
       'Vedo': 'Flat Dining V.png',
       'Thore': 'Thore.png',
@@ -3553,7 +3553,7 @@ class TableConfigurator {
       'Pluto': 'Kolom Plus.png',
       'Oval-Säule': 'Kolom Oval.png',
       'Tapse Spin': 'Tapse Spin.png',
-      'Pedro': 'Flach Stahl.png',
+      'Pedro': 'Thorn Tischgestelle (Satz).png',
       'VN': 'VN Tafelpoot.png',
       'Cona': 'Conisch.png',
       'Positivo': 'Halve Plus.png',
@@ -3580,7 +3580,8 @@ class TableConfigurator {
     const getLegSwatch = (name, isWood) => {
       // Special handling for Lara (different images for wood/metal)
       if (name === 'Lara') {
-        const file = isWood ? 'Half spider wood.png' : 'Half spider metal.png';
+        const file = 'Aeris Tischgestell aus Eichenholz.png';  // isWood ignored — always use ZW photo
+        void isWood;
         return `<img src="Swatches/Onderstel/${file}" alt="${name}"/>`;
       }
       const file = legSwatchFiles[name];
