@@ -116,6 +116,7 @@ const ZW_LEG_MODEL_MAP = {
   // External GLB legs — name matches the legObject.displayName loaded from external file
   'Spider Tischgestell (L)':                            { name: 'Spider Tischgestell (L)',                      isWood: false },
   'Spider Tischgestell (M)':                            { name: 'Spider Tischgestell (M)',                      isWood: false },
+  'Spider Tischbein (M)':                               { name: 'Spider Tischgestell (M)',                      isWood: false },   // same 3D as 'Spider Tischgestell (M)'
   'Spider Tischgestell Edelstahl':                      { name: 'Spider Tischgestell Edelstahl',                isWood: false },
   'Spider Tischgestell Edelstahl (S)':                  { name: 'Spider Tischgestell Edelstahl (S)',            isWood: false },
   'U Tischgestell (Satz)':                              { name: 'U Tischgestell (Satz)',                        isWood: false },
@@ -170,7 +171,7 @@ const CATALOG_ONLY_LEGS = [
 
 
 // Exclusion patterns: never show items whose ZW title matches these (per user)
-const LEG_TITLE_EXCLUDE = /Bank-|Couchtisch|Bartisch/i;
+const LEG_TITLE_EXCLUDE = /Bank-|Couchtisch/i;  // Bartisch is intentionally kept (bulk-edit addon)
 
 
 function buildZWSizeKey(shape, state) {

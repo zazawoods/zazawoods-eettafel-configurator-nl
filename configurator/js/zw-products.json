@@ -81,122 +81,146 @@
         {
           "title": "Spider Tischgestell (L)",
           "variantId": "40669726441638",
-          "price": 0
+          "price": 0,
+          "handle": "kopie-van-spider-gestell-fur-rechteckigen-tisch-10cm-x-10cm-1"
         },
         {
           "title": "Spider Tischgestell (M)",
           "variantId": "44707879125258",
-          "price": 0
+          "price": 0,
+          "handle": "spider-tischgestell-m-1"
         },
         {
           "title": "Spider Tischgestell (S)",
           "variantId": "40669736239270",
-          "price": 0
+          "price": 0,
+          "handle": "spider-tischgestell-fur-rechteckigen-tisch-schmal-10cm-x-5cm-pulverbeschichtet-stahl"
         },
         {
           "title": "Konisches Spidertischgestell",
           "variantId": "51527174553866",
-          "price": 18500
+          "price": 18500,
+          "handle": "konisches-spidertischbein"
         },
         {
           "title": "Thorn Tischgestelle (Satz)",
           "variantId": "51527177502986",
-          "price": 17500
+          "price": 17500,
+          "handle": "thorn-tischbeine-satz"
         },
         {
           "title": "V Tischgestell",
           "variantId": "44795273609482",
-          "price": 19500
+          "price": 19500,
+          "handle": "kopie-van-a-tischgestell-2"
         },
         {
           "title": "Spider Tischgestell Edelstahl",
           "variantId": "43839005786378",
-          "price": 36000
+          "price": 36000,
+          "handle": "spidergestell-edelstahl-l140cm-b70cm"
         },
         {
           "title": "Spider Tischgestell Edelstahl (S)",
           "variantId": "43736525897994",
-          "price": 36000
+          "price": 36000,
+          "handle": "spidergestell-tischbein-aus-edelstahl-l-135cm-x-b-70cm-x-h-72cm"
         },
         {
           "title": "U Tischgestell (Satz)",
-          "variantId": "40669512302758",
-          "price": 0
+          "variantId": "43838179934474",
+          "price": 17500,
+          "handle": "kopie-van-u-tischgestell"
         },
         {
           "title": "U Tischgestell (M) (Satz)",
-          "variantId": "40669578756262",
-          "price": 0
+          "variantId": "43838182031626",
+          "price": 15900,
+          "handle": "kopie-van-u-tischgestell-schmal-10cm-x-5cm"
         },
         {
           "title": "X Tischgestell (Satz)",
-          "variantId": "40669646028966",
-          "price": 0
+          "variantId": "43838186029322",
+          "price": 17500,
+          "handle": "kopie-van-x-tischgestell-angebot"
         },
         {
           "title": "A Tischgestell (Satz)",
-          "variantId": "40669470752934",
-          "price": 0
+          "variantId": "45056174752010",
+          "price": 10900,
+          "handle": "a-tischgestell"
         },
         {
           "title": "Trapezium Tischgestell (Satz)",
-          "variantId": "40669598023846",
-          "price": 0
+          "variantId": "43838179246346",
+          "price": 17500,
+          "handle": "kopie-van-trapezium-tischgestell"
         },
         {
           "title": "Aeris Tischgestell aus Eichenholz",
           "variantId": "52553822896394",
-          "price": 54000
+          "price": 54000,
+          "handle": "aeris-tischgestell-aus-eichenholz"
         },
         {
           "title": "Ovale Holzsäule aus Stäbchenholz, Eiche",
           "variantId": "52553810542858",
-          "price": 54000
+          "price": 54000,
+          "handle": "ovale-holzsaule-aus-stabchenholz-eiche"
         },
         {
           "title": "Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)",
           "variantId": "52553828958474",
-          "price": 44000
+          "price": 44000,
+          "handle": "ovale-tischgestelle-aus-eiche-stabchenholz-satz"
         },
         {
           "title": "Ovale Tischgestelle aus Eichenholz (Satz)",
           "variantId": "52553817030922",
-          "price": 44000
+          "price": 44000,
+          "handle": "ovale-tischgestelle-aus-eichenholz-satz"
         },
         {
           "title": "Butterfly Tischbeine aus Eichenholz (Satz) (A)",
           "variantId": "52554397548810",
-          "price": 44000
+          "price": 44000,
+          "handle": "butterfly-tischgestelle-aus-eichenholz-satz"
         },
         {
           "title": "Halbrunde Tischbeine aus Eichenholz (Satz) (A)",
           "variantId": "52725568274698",
-          "price": 44000
+          "price": 44000,
+          "handle": "runde-holzsaule-aus-eichenholz-satz-a-copy"
         },
         {
           "title": "Spider Tischbein (M)",
           "variantId": "44218773963018",
-          "price": 19500
+          "price": 19500,
+          "handle": "spider-tischgestell-m"
         },
         {
           "title": "U Tischgestell (schmal) (Satz)",
           "variantId": "43838180393226",
-          "price": 11900
+          "price": 11900,
+          "handle": "kopie-van-u-tischgestell-schmal"
         },
         {
           "title": "Stahlwangen Tischgestell (Satz)",
           "variantId": "44218834026762",
-          "price": 56000
+          "price": 56000,
+          "handle": "stahlwangen-tischgestell"
         },
         {
           "title": "Stahlwangen Tischgestell (S) (Satz)",
           "variantId": "44218853032202",
-          "price": 56000
+          "price": 56000,
+          "handle": "stahlwangen-tischgestell-s"
         },
         {
           "title": "Bartisch Gestell",
           "variantId": "44218880131338",
-          "price": 58000
+          "price": 58000,
+          "handle": "kopie-van-a-tischgestell-1"
         }
       ],
       "Kantenbearbeitung": [],
@@ -361,112 +385,134 @@
         {
           "title": "Spider Tischgestell (L)",
           "variantId": "40669726441638",
-          "price": 0
+          "price": 0,
+          "handle": "kopie-van-spider-gestell-fur-rechteckigen-tisch-10cm-x-10cm-1"
         },
         {
           "title": "Spider Tischgestell (M)",
           "variantId": "44707879125258",
-          "price": 0
+          "price": 0,
+          "handle": "spider-tischgestell-m-1"
         },
         {
           "title": "Spider Tischgestell (S)",
           "variantId": "40669736239270",
-          "price": 0
+          "price": 0,
+          "handle": "spider-tischgestell-fur-rechteckigen-tisch-schmal-10cm-x-5cm-pulverbeschichtet-stahl"
         },
         {
           "title": "Konisches Spidertischgestell",
           "variantId": "51527174553866",
-          "price": 18500
+          "price": 18500,
+          "handle": "konisches-spidertischbein"
         },
         {
           "title": "Spider Tischgestell Edelstahl",
           "variantId": "43839005786378",
-          "price": 36000
+          "price": 36000,
+          "handle": "spidergestell-edelstahl-l140cm-b70cm"
         },
         {
           "title": "Spider Tischgestell Edelstahl (S)",
           "variantId": "43736525897994",
-          "price": 36000
+          "price": 36000,
+          "handle": "spidergestell-tischbein-aus-edelstahl-l-135cm-x-b-70cm-x-h-72cm"
         },
         {
           "title": "Aeris Tischgestell aus Eichenholz",
           "variantId": "52553822896394",
-          "price": 54000
+          "price": 54000,
+          "handle": "aeris-tischgestell-aus-eichenholz"
         },
         {
           "title": "Ovale Holzsäule aus Stäbchenholz, Eiche",
           "variantId": "52553810542858",
-          "price": 54000
+          "price": 54000,
+          "handle": "ovale-holzsaule-aus-stabchenholz-eiche"
         },
         {
           "title": "Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)",
           "variantId": "52553828958474",
-          "price": 44000
+          "price": 44000,
+          "handle": "ovale-tischgestelle-aus-eiche-stabchenholz-satz"
         },
         {
           "title": "Ovale Tischgestelle aus Eichenholz (Satz)",
           "variantId": "52553817030922",
-          "price": 44000
+          "price": 44000,
+          "handle": "ovale-tischgestelle-aus-eichenholz-satz"
         },
         {
           "title": "Butterfly Tischbeine aus Eichenholz (Satz) (A)",
           "variantId": "52554397548810",
-          "price": 44000
+          "price": 44000,
+          "handle": "butterfly-tischgestelle-aus-eichenholz-satz"
         },
         {
           "title": "Halbrunde Tischbeine aus Eichenholz (Satz) (A)",
           "variantId": "52725568274698",
-          "price": 44000
+          "price": 44000,
+          "handle": "runde-holzsaule-aus-eichenholz-satz-a-copy"
         },
         {
           "title": "Spider Tischbein (M)",
           "variantId": "44218773963018",
-          "price": 19500
+          "price": 19500,
+          "handle": "spider-tischgestell-m"
         },
         {
           "title": "X Tischgestell (Satz)",
           "variantId": "43838186029322",
-          "price": 17500
+          "price": 17500,
+          "handle": "kopie-van-x-tischgestell-angebot"
         },
         {
           "title": "Trapezium Tischgestell (Satz)",
           "variantId": "43838179246346",
-          "price": 17500
+          "price": 17500,
+          "handle": "kopie-van-trapezium-tischgestell"
         },
         {
           "title": "A Tischgestell (Satz)",
           "variantId": "45056174752010",
-          "price": 10900
+          "price": 10900,
+          "handle": "a-tischgestell"
         },
         {
           "title": "U Tischgestell (Satz)",
           "variantId": "43838179934474",
-          "price": 17500
+          "price": 17500,
+          "handle": "kopie-van-u-tischgestell"
         },
         {
           "title": "U Tischgestell (M) (Satz)",
           "variantId": "43838182031626",
-          "price": 15900
+          "price": 15900,
+          "handle": "kopie-van-u-tischgestell-schmal-10cm-x-5cm"
         },
         {
           "title": "U Tischgestell (schmal) (Satz)",
           "variantId": "43838180393226",
-          "price": 11900
+          "price": 11900,
+          "handle": "kopie-van-u-tischgestell-schmal"
         },
         {
           "title": "Stahlwangen Tischgestell (Satz)",
           "variantId": "44218834026762",
-          "price": 56000
+          "price": 56000,
+          "handle": "stahlwangen-tischgestell"
         },
         {
           "title": "Stahlwangen Tischgestell (S) (Satz)",
           "variantId": "44218853032202",
-          "price": 56000
+          "price": 56000,
+          "handle": "stahlwangen-tischgestell-s"
         },
         {
           "title": "Bartisch Gestell",
           "variantId": "44218880131338",
-          "price": 58000
+          "price": 58000,
+          "handle": "kopie-van-a-tischgestell-1"
         }
       ],
       "Kantenbearbeitung": [],
@@ -631,122 +677,146 @@
         {
           "title": "Spider Tischgestell (L)",
           "variantId": "40669726441638",
-          "price": 0
+          "price": 0,
+          "handle": "kopie-van-spider-gestell-fur-rechteckigen-tisch-10cm-x-10cm-1"
         },
         {
           "title": "Spider Tischgestell (M)",
           "variantId": "44707879125258",
-          "price": 0
+          "price": 0,
+          "handle": "spider-tischgestell-m-1"
         },
         {
           "title": "Spider Tischgestell (S)",
           "variantId": "40669736239270",
-          "price": 0
+          "price": 0,
+          "handle": "spider-tischgestell-fur-rechteckigen-tisch-schmal-10cm-x-5cm-pulverbeschichtet-stahl"
         },
         {
           "title": "Konisches Spidertischgestell",
           "variantId": "51527174553866",
-          "price": 18500
+          "price": 18500,
+          "handle": "konisches-spidertischbein"
         },
         {
           "title": "Thorn Tischgestelle (Satz)",
           "variantId": "51527177502986",
-          "price": 17500
+          "price": 17500,
+          "handle": "thorn-tischbeine-satz"
         },
         {
           "title": "V Tischgestell",
           "variantId": "44795273609482",
-          "price": 19500
+          "price": 19500,
+          "handle": "kopie-van-a-tischgestell-2"
         },
         {
           "title": "Spider Tischgestell Edelstahl",
           "variantId": "43839005786378",
-          "price": 36000
+          "price": 36000,
+          "handle": "spidergestell-edelstahl-l140cm-b70cm"
         },
         {
           "title": "Spider Tischgestell Edelstahl (S)",
           "variantId": "43736525897994",
-          "price": 36000
+          "price": 36000,
+          "handle": "spidergestell-tischbein-aus-edelstahl-l-135cm-x-b-70cm-x-h-72cm"
         },
         {
           "title": "U Tischgestell (Satz)",
-          "variantId": "40669512302758",
-          "price": 0
+          "variantId": "43838179934474",
+          "price": 17500,
+          "handle": "kopie-van-u-tischgestell"
         },
         {
           "title": "U Tischgestell (M) (Satz)",
-          "variantId": "40669578756262",
-          "price": 0
+          "variantId": "43838182031626",
+          "price": 15900,
+          "handle": "kopie-van-u-tischgestell-schmal-10cm-x-5cm"
         },
         {
           "title": "A Tischgestell (Satz)",
-          "variantId": "40669470752934",
-          "price": 0
+          "variantId": "45056174752010",
+          "price": 10900,
+          "handle": "a-tischgestell"
         },
         {
           "title": "X Tischgestell (Satz)",
-          "variantId": "40669646028966",
-          "price": 0
+          "variantId": "43838186029322",
+          "price": 17500,
+          "handle": "kopie-van-x-tischgestell-angebot"
         },
         {
           "title": "Trapezium Tischgestell (Satz)",
-          "variantId": "40669598023846",
-          "price": 0
+          "variantId": "43838179246346",
+          "price": 17500,
+          "handle": "kopie-van-trapezium-tischgestell"
         },
         {
           "title": "Aeris Tischgestell aus Eichenholz",
           "variantId": "52553822896394",
-          "price": 54000
+          "price": 54000,
+          "handle": "aeris-tischgestell-aus-eichenholz"
         },
         {
           "title": "Ovale Holzsäule aus Stäbchenholz, Eiche",
           "variantId": "52553810542858",
-          "price": 54000
+          "price": 54000,
+          "handle": "ovale-holzsaule-aus-stabchenholz-eiche"
         },
         {
           "title": "Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)",
           "variantId": "52553828958474",
-          "price": 44000
+          "price": 44000,
+          "handle": "ovale-tischgestelle-aus-eiche-stabchenholz-satz"
         },
         {
           "title": "Ovale Tischgestelle aus Eichenholz (Satz)",
           "variantId": "52553817030922",
-          "price": 44000
+          "price": 44000,
+          "handle": "ovale-tischgestelle-aus-eichenholz-satz"
         },
         {
           "title": "Butterfly Tischbeine aus Eichenholz (Satz) (A)",
           "variantId": "52554397548810",
-          "price": 44000
+          "price": 44000,
+          "handle": "butterfly-tischgestelle-aus-eichenholz-satz"
         },
         {
           "title": "Halbrunde Tischbeine aus Eichenholz (Satz) (A)",
           "variantId": "52725568274698",
-          "price": 44000
+          "price": 44000,
+          "handle": "runde-holzsaule-aus-eichenholz-satz-a-copy"
         },
         {
           "title": "Spider Tischbein (M)",
           "variantId": "44218773963018",
-          "price": 19500
+          "price": 19500,
+          "handle": "spider-tischgestell-m"
         },
         {
           "title": "U Tischgestell (schmal) (Satz)",
           "variantId": "43838180393226",
-          "price": 11900
+          "price": 11900,
+          "handle": "kopie-van-u-tischgestell-schmal"
         },
         {
           "title": "Stahlwangen Tischgestell (Satz)",
           "variantId": "44218834026762",
-          "price": 56000
+          "price": 56000,
+          "handle": "stahlwangen-tischgestell"
         },
         {
           "title": "Stahlwangen Tischgestell (S) (Satz)",
           "variantId": "44218853032202",
-          "price": 56000
+          "price": 56000,
+          "handle": "stahlwangen-tischgestell-s"
         },
         {
           "title": "Bartisch Gestell",
           "variantId": "44218880131338",
-          "price": 58000
+          "price": 58000,
+          "handle": "kopie-van-a-tischgestell-1"
         }
       ],
       "Kantenbearbeitung": [],
@@ -911,82 +981,98 @@
         {
           "title": "Spider Gestell - Schmal (Rund)",
           "variantId": "43737818595594",
-          "price": 0
+          "price": 0,
+          "handle": "spider-gestell-schmal-rund"
         },
         {
           "title": "Spider Gestell (rund)",
           "variantId": "40669778084006",
-          "price": 0
+          "price": 0,
+          "handle": "kopie-van-spider-gestell-fur-runden-tisch"
         },
         {
           "title": "Runde Holzsäule aus Stäbchenholz, Eiche",
           "variantId": "52553826009354",
-          "price": 44000
+          "price": 44000,
+          "handle": "runde-holzsaule-aus-stabchenholz-eiche"
         },
         {
           "title": "Runde Holzsäule aus Eichenholz (Satz) (A)",
           "variantId": "52554401317130",
-          "price": 44000
+          "price": 44000,
+          "handle": "runde-holzsaule-aus-eichenholz-satz-a"
         },
         {
           "title": "Spider Tischbein (M)",
           "variantId": "44218773963018",
-          "price": 19500
+          "price": 19500,
+          "handle": "spider-tischgestell-m"
         },
         {
           "title": "X Tischgestell (Satz)",
           "variantId": "43838186029322",
-          "price": 17500
+          "price": 17500,
+          "handle": "kopie-van-x-tischgestell-angebot"
         },
         {
           "title": "Trapezium Tischgestell (Satz)",
           "variantId": "43838179246346",
-          "price": 17500
+          "price": 17500,
+          "handle": "kopie-van-trapezium-tischgestell"
         },
         {
           "title": "A Tischgestell (Satz)",
           "variantId": "45056174752010",
-          "price": 10900
+          "price": 10900,
+          "handle": "a-tischgestell"
         },
         {
           "title": "U Tischgestell (Satz)",
           "variantId": "43838179934474",
-          "price": 17500
+          "price": 17500,
+          "handle": "kopie-van-u-tischgestell"
         },
         {
           "title": "U Tischgestell (M) (Satz)",
           "variantId": "43838182031626",
-          "price": 15900
+          "price": 15900,
+          "handle": "kopie-van-u-tischgestell-schmal-10cm-x-5cm"
         },
         {
           "title": "U Tischgestell (schmal) (Satz)",
           "variantId": "43838180393226",
-          "price": 11900
+          "price": 11900,
+          "handle": "kopie-van-u-tischgestell-schmal"
         },
         {
           "title": "Stahlwangen Tischgestell (Satz)",
           "variantId": "44218834026762",
-          "price": 56000
+          "price": 56000,
+          "handle": "stahlwangen-tischgestell"
         },
         {
           "title": "Stahlwangen Tischgestell (S) (Satz)",
           "variantId": "44218853032202",
-          "price": 56000
+          "price": 56000,
+          "handle": "stahlwangen-tischgestell-s"
         },
         {
           "title": "Bartisch Gestell",
           "variantId": "44218880131338",
-          "price": 58000
+          "price": 58000,
+          "handle": "kopie-van-a-tischgestell-1"
         },
         {
           "title": "Spider Tischgestell Edelstahl",
           "variantId": "43839005786378",
-          "price": 36000
+          "price": 36000,
+          "handle": "spidergestell-edelstahl-l140cm-b70cm"
         },
         {
           "title": "Spider Tischgestell Edelstahl (S)",
           "variantId": "43736525897994",
-          "price": 36000
+          "price": 36000,
+          "handle": "spidergestell-tischbein-aus-edelstahl-l-135cm-x-b-70cm-x-h-72cm"
         }
       ],
       "Kantenbearbeitung": [],
@@ -1127,122 +1213,146 @@
         {
           "title": "Spider Tischgestell (L)",
           "variantId": "40669726441638",
-          "price": 0
+          "price": 0,
+          "handle": "kopie-van-spider-gestell-fur-rechteckigen-tisch-10cm-x-10cm-1"
         },
         {
           "title": "Spider Tischgestell (M)",
           "variantId": "44707879125258",
-          "price": 0
+          "price": 0,
+          "handle": "spider-tischgestell-m-1"
         },
         {
           "title": "Spider Tischgestell (S)",
           "variantId": "40669736239270",
-          "price": 0
+          "price": 0,
+          "handle": "spider-tischgestell-fur-rechteckigen-tisch-schmal-10cm-x-5cm-pulverbeschichtet-stahl"
         },
         {
           "title": "Konisches Spidertischgestell",
           "variantId": "51527174553866",
-          "price": 18500
+          "price": 18500,
+          "handle": "konisches-spidertischbein"
         },
         {
           "title": "Thorn Tischgestelle (Satz)",
           "variantId": "51527177502986",
-          "price": 17500
+          "price": 17500,
+          "handle": "thorn-tischbeine-satz"
         },
         {
           "title": "V Tischgestell",
           "variantId": "44795273609482",
-          "price": 19500
+          "price": 19500,
+          "handle": "kopie-van-a-tischgestell-2"
         },
         {
           "title": "Spider Tischgestell Edelstahl",
           "variantId": "43839005786378",
-          "price": 36000
+          "price": 36000,
+          "handle": "spidergestell-edelstahl-l140cm-b70cm"
         },
         {
           "title": "Spider Tischgestell Edelstahl (S)",
           "variantId": "43736525897994",
-          "price": 36000
+          "price": 36000,
+          "handle": "spidergestell-tischbein-aus-edelstahl-l-135cm-x-b-70cm-x-h-72cm"
         },
         {
           "title": "U Tischgestell (Satz)",
-          "variantId": "40669512302758",
-          "price": 0
+          "variantId": "43838179934474",
+          "price": 17500,
+          "handle": "kopie-van-u-tischgestell"
         },
         {
           "title": "U Tischgestell (M) (Satz)",
-          "variantId": "40669578756262",
-          "price": 0
+          "variantId": "43838182031626",
+          "price": 15900,
+          "handle": "kopie-van-u-tischgestell-schmal-10cm-x-5cm"
         },
         {
           "title": "X Tischgestell (Satz)",
-          "variantId": "40669646028966",
-          "price": 0
+          "variantId": "43838186029322",
+          "price": 17500,
+          "handle": "kopie-van-x-tischgestell-angebot"
         },
         {
           "title": "A Tischgestell (Satz)",
-          "variantId": "40669470752934",
-          "price": 0
+          "variantId": "45056174752010",
+          "price": 10900,
+          "handle": "a-tischgestell"
         },
         {
           "title": "Trapezium Tischgestell (Satz)",
-          "variantId": "40669598023846",
-          "price": 0
+          "variantId": "43838179246346",
+          "price": 17500,
+          "handle": "kopie-van-trapezium-tischgestell"
         },
         {
           "title": "Aeris Tischgestell aus Eichenholz",
           "variantId": "52553822896394",
-          "price": 54000
+          "price": 54000,
+          "handle": "aeris-tischgestell-aus-eichenholz"
         },
         {
           "title": "Ovale Holzsäule aus Stäbchenholz, Eiche",
           "variantId": "52553810542858",
-          "price": 54000
+          "price": 54000,
+          "handle": "ovale-holzsaule-aus-stabchenholz-eiche"
         },
         {
           "title": "Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)",
           "variantId": "52553828958474",
-          "price": 44000
+          "price": 44000,
+          "handle": "ovale-tischgestelle-aus-eiche-stabchenholz-satz"
         },
         {
           "title": "Ovale Tischgestelle aus Eichenholz (Satz)",
           "variantId": "52553817030922",
-          "price": 44000
+          "price": 44000,
+          "handle": "ovale-tischgestelle-aus-eichenholz-satz"
         },
         {
           "title": "Butterfly Tischbeine aus Eichenholz (Satz) (A)",
           "variantId": "52554397548810",
-          "price": 44000
+          "price": 44000,
+          "handle": "butterfly-tischgestelle-aus-eichenholz-satz"
         },
         {
           "title": "Halbrunde Tischbeine aus Eichenholz (Satz) (A)",
           "variantId": "52725568274698",
-          "price": 44000
+          "price": 44000,
+          "handle": "runde-holzsaule-aus-eichenholz-satz-a-copy"
         },
         {
           "title": "Spider Tischbein (M)",
           "variantId": "44218773963018",
-          "price": 19500
+          "price": 19500,
+          "handle": "spider-tischgestell-m"
         },
         {
           "title": "U Tischgestell (schmal) (Satz)",
           "variantId": "43838180393226",
-          "price": 11900
+          "price": 11900,
+          "handle": "kopie-van-u-tischgestell-schmal"
         },
         {
           "title": "Stahlwangen Tischgestell (Satz)",
           "variantId": "44218834026762",
-          "price": 56000
+          "price": 56000,
+          "handle": "stahlwangen-tischgestell"
         },
         {
           "title": "Stahlwangen Tischgestell (S) (Satz)",
           "variantId": "44218853032202",
-          "price": 56000
+          "price": 56000,
+          "handle": "stahlwangen-tischgestell-s"
         },
         {
           "title": "Bartisch Gestell",
           "variantId": "44218880131338",
-          "price": 58000
+          "price": 58000,
+          "handle": "kopie-van-a-tischgestell-1"
         }
       ],
       "Kantenbearbeitung": [],
@@ -1551,122 +1661,146 @@
         {
           "title": "Spider Tischgestell (L)",
           "variantId": "40669726441638",
-          "price": 0
+          "price": 0,
+          "handle": "kopie-van-spider-gestell-fur-rechteckigen-tisch-10cm-x-10cm-1"
         },
         {
           "title": "Spider Tischgestell (M)",
           "variantId": "44707879125258",
-          "price": 0
+          "price": 0,
+          "handle": "spider-tischgestell-m-1"
         },
         {
           "title": "Spider Tischgestell (S)",
           "variantId": "40669736239270",
-          "price": 0
+          "price": 0,
+          "handle": "spider-tischgestell-fur-rechteckigen-tisch-schmal-10cm-x-5cm-pulverbeschichtet-stahl"
         },
         {
           "title": "Konisches Spidertischgestell",
           "variantId": "51527174553866",
-          "price": 18500
+          "price": 18500,
+          "handle": "konisches-spidertischbein"
         },
         {
           "title": "Thorn Tischgestelle (Satz)",
           "variantId": "51527177502986",
-          "price": 17500
+          "price": 17500,
+          "handle": "thorn-tischbeine-satz"
         },
         {
           "title": "V Tischgestell",
           "variantId": "44795273609482",
-          "price": 19500
+          "price": 19500,
+          "handle": "kopie-van-a-tischgestell-2"
         },
         {
           "title": "Spider Tischgestell Edelstahl",
           "variantId": "43839005786378",
-          "price": 36000
+          "price": 36000,
+          "handle": "spidergestell-edelstahl-l140cm-b70cm"
         },
         {
           "title": "Spider Tischgestell Edelstahl (S)",
           "variantId": "43736525897994",
-          "price": 36000
+          "price": 36000,
+          "handle": "spidergestell-tischbein-aus-edelstahl-l-135cm-x-b-70cm-x-h-72cm"
         },
         {
           "title": "U Tischgestell (Satz)",
-          "variantId": "40669512302758",
-          "price": 0
+          "variantId": "43838179934474",
+          "price": 17500,
+          "handle": "kopie-van-u-tischgestell"
         },
         {
           "title": "U Tischgestell (M) (Satz)",
-          "variantId": "40669578756262",
-          "price": 0
+          "variantId": "43838182031626",
+          "price": 15900,
+          "handle": "kopie-van-u-tischgestell-schmal-10cm-x-5cm"
         },
         {
           "title": "X Tischgestell (Satz)",
-          "variantId": "40669646028966",
-          "price": 0
+          "variantId": "43838186029322",
+          "price": 17500,
+          "handle": "kopie-van-x-tischgestell-angebot"
         },
         {
           "title": "A Tischgestell (Satz)",
-          "variantId": "40669470752934",
-          "price": 0
+          "variantId": "45056174752010",
+          "price": 10900,
+          "handle": "a-tischgestell"
         },
         {
           "title": "Trapezium Tischgestell (Satz)",
-          "variantId": "40669598023846",
-          "price": 0
+          "variantId": "43838179246346",
+          "price": 17500,
+          "handle": "kopie-van-trapezium-tischgestell"
         },
         {
           "title": "Aeris Tischgestell aus Eichenholz",
           "variantId": "52553822896394",
-          "price": 54000
+          "price": 54000,
+          "handle": "aeris-tischgestell-aus-eichenholz"
         },
         {
           "title": "Ovale Holzsäule aus Stäbchenholz, Eiche",
           "variantId": "52553810542858",
-          "price": 54000
+          "price": 54000,
+          "handle": "ovale-holzsaule-aus-stabchenholz-eiche"
         },
         {
           "title": "Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)",
           "variantId": "52553828958474",
-          "price": 44000
+          "price": 44000,
+          "handle": "ovale-tischgestelle-aus-eiche-stabchenholz-satz"
         },
         {
           "title": "Ovale Tischgestelle aus Eichenholz (Satz)",
           "variantId": "52553817030922",
-          "price": 44000
+          "price": 44000,
+          "handle": "ovale-tischgestelle-aus-eichenholz-satz"
         },
         {
           "title": "Butterfly Tischbeine aus Eichenholz (Satz) (A)",
           "variantId": "52554397548810",
-          "price": 44000
+          "price": 44000,
+          "handle": "butterfly-tischgestelle-aus-eichenholz-satz"
         },
         {
           "title": "Halbrunde Tischbeine aus Eichenholz (Satz) (A)",
           "variantId": "52725568274698",
-          "price": 44000
+          "price": 44000,
+          "handle": "runde-holzsaule-aus-eichenholz-satz-a-copy"
         },
         {
           "title": "Spider Tischbein (M)",
           "variantId": "44218773963018",
-          "price": 19500
+          "price": 19500,
+          "handle": "spider-tischgestell-m"
         },
         {
           "title": "U Tischgestell (schmal) (Satz)",
           "variantId": "43838180393226",
-          "price": 11900
+          "price": 11900,
+          "handle": "kopie-van-u-tischgestell-schmal"
         },
         {
           "title": "Stahlwangen Tischgestell (Satz)",
           "variantId": "44218834026762",
-          "price": 56000
+          "price": 56000,
+          "handle": "stahlwangen-tischgestell"
         },
         {
           "title": "Stahlwangen Tischgestell (S) (Satz)",
           "variantId": "44218853032202",
-          "price": 56000
+          "price": 56000,
+          "handle": "stahlwangen-tischgestell-s"
         },
         {
           "title": "Bartisch Gestell",
           "variantId": "44218880131338",
-          "price": 58000
+          "price": 58000,
+          "handle": "kopie-van-a-tischgestell-1"
         }
       ],
       "Kantenbearbeitung": [],
