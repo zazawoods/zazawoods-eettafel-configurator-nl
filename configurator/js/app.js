@@ -171,7 +171,7 @@ const CATALOG_ONLY_LEGS = [
 
 
 // Exclusion patterns: never show items whose ZW title matches these (per user)
-const LEG_TITLE_EXCLUDE = /Bank-|Couchtisch/i;  // Bartisch is intentionally kept (bulk-edit addon)
+const LEG_TITLE_EXCLUDE = /Bank-|Couchtisch|Bartisch/i;  // Bartisch excluded per user
 
 
 function buildZWSizeKey(shape, state) {
