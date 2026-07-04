@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Icon Gen</title>
+<style>
+  body { margin:0; background:#f5f4f0; font-family:sans-serif; }
+  canvas { display:block; }
+  #status { position:fixed; top:8px; left:8px; padding:4px 8px; background:rgba(0,0,0,0.7); color:#fff; font-size:11px; z-index:10; }
+</style></head>
+<body>
+<div id="status">loading…</div>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.js",
+    "three/addons/loaders/GLTFLoader.js": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js",
+    "three/addons/loaders/DRACOLoader.js": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/DRACOLoader.js"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+
+const params = new URLSearchParams(location.search);
+const glbPath  = params.get('glb')  || '';
+const meshName = params.get('mesh') || '';
+const w = parseInt(params.get('w')) || 512;
+const h = parseInt(params.get('h')) || 512;
+const azimuth  = parseFloat(params.get('az')) || 30;    // deg
+const elevation= parseFloat(params.get('el')) || 25;
+const dist     = parseFloat(params.get('d'))  || 3.2;
+const bg       = params.get('bg') || '#f5f4f0';
+const setStatus = t => document.getElementById('status').textContent = t;
+
+const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true, preserveDrawingBuffer:true });
+renderer.setPixelRatio(1);
+renderer.setSize(w, h);
+renderer.setClearColor(new THREE.Color(bg), 1);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+const key = new THREE.DirectionalLight(0xffffff, 1.1);
+key.position.set(4, 5, 3);
+key.castShadow = true;
+key.shadow.mapSize.set(1024, 1024);
+scene.add(key);
+scene.add(new THREE.DirectionalLight(0xffffff, 0.3).translateOnAxis(new THREE.Vector3(-1, 0.5, -1).normalize(), 5));
+
+// Floor (subtle shadow catcher)
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.ShadowMaterial({ opacity: 0.15 }));
+floor.rotation.x = -Math.PI/2;
+floor.receiveShadow = true;
+scene.add(floor);
+
+const camera = new THREE.PerspectiveCamera(35, w/h, 0.1, 100);
+
+const draco = new DRACOLoader();
+draco.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+const loader = new GLTFLoader().setDRACOLoader(draco);
+
+async function main() {
+  if (!glbPath) { setStatus('no glb'); return; }
+  setStatus('loading GLB…');
+  const gltf = await loader.loadAsync(glbPath);
+  let obj = gltf.scene;
+
+  if (meshName) {
+    // Extract only the named node
+    let found = null;
+    obj.traverse(o => { if (!found && o.name === meshName) found = o; });
+    if (found) {
+      // Clone + reparent to isolate
+      const clone = found.clone(true);
+      clone.position.set(0,0,0);
+      clone.rotation.set(0,0,0);
+      obj = new THREE.Group();
+      obj.add(clone);
+    }
+  }
+
+  // Ensure all shadow flags on meshes
+  obj.traverse(ch => {
+    if (ch.isMesh) {
+      ch.castShadow = true;
+      ch.receiveShadow = true;
+      if (ch.material && !ch.material.side) ch.material.side = THREE.FrontSide;
+    }
+  });
+
+  // Center on origin and rest on floor
+  scene.add(obj);
+  obj.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(obj);
+  const sizeVec = box.getSize(new THREE.Vector3());
+  const centerVec = box.getCenter(new THREE.Vector3());
+  obj.position.sub(new THREE.Vector3(centerVec.x, box.min.y, centerVec.z));
+  obj.updateMatrixWorld(true);
+
+  // Camera framing
+  const maxDim = Math.max(sizeVec.x, sizeVec.y, sizeVec.z);
+  const scale = dist / Math.max(1e-6, maxDim);
+  obj.scale.setScalar(scale);
+  obj.updateMatrixWorld(true);
+  const finalBox = new THREE.Box3().setFromObject(obj);
+  const centerFinal = finalBox.getCenter(new THREE.Vector3());
+
+  const azr = azimuth * Math.PI / 180;
+  const elr = elevation * Math.PI / 180;
+  const R = 3.5;
+  camera.position.set(
+    centerFinal.x + R * Math.cos(elr) * Math.sin(azr),
+    centerFinal.y + R * Math.sin(elr),
+    centerFinal.z + R * Math.cos(elr) * Math.cos(azr)
+  );
+  camera.lookAt(centerFinal);
+
+  renderer.render(scene, camera);
+  // Second pass to ensure shadows are computed
+  await new Promise(r => setTimeout(r, 50));
+  renderer.render(scene, camera);
+
+  const dataURL = renderer.domElement.toDataURL('image/png');
+  window.__png = dataURL;
+  setStatus('ready ✓');
+  document.title = 'READY';
+}
+main().catch(e => { setStatus('ERR: ' + e.message); console.error(e); });
+</script>
+</body></html>
