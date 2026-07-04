@@ -170,7 +170,7 @@ const CATALOG_ONLY_LEGS = [
 
 
 // Exclusion patterns: never show items whose ZW title matches these (per user)
-const LEG_TITLE_EXCLUDE = /Bank-|Couchtisch|Bartisch/i;  // Bartisch excluded per user
+const LEG_TITLE_EXCLUDE = /Bank-|Couchtisch|Bartisch|Ovale Holzsäule aus Stäbchenholz/i;  // Bartisch + Ovale Holzsäule excluded per user
 
 
 function buildZWSizeKey(shape, state) {
