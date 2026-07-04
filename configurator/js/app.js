@@ -164,7 +164,6 @@ const CATALOG_ONLY_LEGS = [
   { title: 'Felix Tischbein',                     variantId: '51070954012938', price: 57500 },
   { title: 'Vario Tischbein',                     variantId: '51070958502154', price: 37500 },
   { title: 'Drone Tischbeine (Satz)',             variantId: '51011118039306', price: 34500 },
-  { title: 'U Tischgestell (schmal) (Satz)',      variantId: '43838180393226', price: 11900 },
   { title: 'Stahlwangen Tischgestell (Satz)',     variantId: '44218834026762', price: 56000 },
   { title: 'Stahlwangen Tischgestell (S) (Satz)', variantId: '44218853032202', price: 56000 }
 ];
