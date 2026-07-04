@@ -51,7 +51,22 @@ async function renderItem(item) {
   let obj = gltf.scene;
   scene.add(obj);
   obj.updateMatrixWorld(true);
-  obj.traverse(ch => { if (ch.isMesh) { ch.castShadow = true; ch.receiveShadow = true; } });
+  obj.traverse(ch => {
+    if (ch.isMesh) {
+      ch.castShadow = true; ch.receiveShadow = true;
+      // Force black metal look for legs (metals appear as dark PBR steel)
+      if (item.color === 'black' && ch.material) {
+        const mats = Array.isArray(ch.material) ? ch.material : [ch.material];
+        for (const m of mats) {
+          m.color = new THREE.Color(0x0d0d0d);
+          m.metalness = 0.4;
+          m.roughness = 0.55;
+          m.envMapIntensity = 1;
+          m.needsUpdate = true;
+        }
+      }
+    }
+  });
 
   // Center on origin, rest bottom on floor
   const box = new THREE.Box3().setFromObject(obj);
@@ -103,7 +118,8 @@ async function main() {
     az: parseFloat(params.get('az')) || undefined,
     el: parseFloat(params.get('el')) || undefined,
     fov: parseFloat(params.get('fov')) || undefined,
-    pad: parseFloat(params.get('pad')) || undefined
+    pad: parseFloat(params.get('pad')) || undefined,
+    color: params.get('color') || undefined
   }];
   else { setStatus('use ?batch=<b64json> or ?glb=<path>&az&el&fov&pad'); return; }
   const results = [];
