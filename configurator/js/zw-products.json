@@ -169,12 +169,6 @@
           "handle": "ovale-tischgestelle-aus-eiche-stabchenholz-satz"
         },
         {
-          "title": "Ovale Tischgestelle aus Eichenholz (Satz)",
-          "variantId": "52553817030922",
-          "price": 44000,
-          "handle": "ovale-tischgestelle-aus-eichenholz-satz"
-        },
-        {
           "title": "Butterfly Tischbeine aus Eichenholz (Satz) (A)",
           "variantId": "52554397548810",
           "price": 44000,
@@ -191,6 +185,12 @@
           "variantId": "52553822896394",
           "price": 54000,
           "handle": "aeris-tischgestell-aus-eichenholz"
+        },
+        {
+          "title": "Ovale Holzsäule aus Stäbchenholz, Eiche",
+          "variantId": "52553810542858",
+          "price": 54000,
+          "handle": "ovale-holzsaule-aus-stabchenholz-eiche"
         }
       ],
       "Kantenbearbeitung": [
@@ -429,12 +429,6 @@
           "handle": "ovale-tischgestelle-aus-eiche-stabchenholz-satz"
         },
         {
-          "title": "Ovale Tischgestelle aus Eichenholz (Satz)",
-          "variantId": "52553817030922",
-          "price": 44000,
-          "handle": "ovale-tischgestelle-aus-eichenholz-satz"
-        },
-        {
           "title": "Butterfly Tischbeine aus Eichenholz (Satz) (A)",
           "variantId": "52554397548810",
           "price": 44000,
@@ -451,6 +445,12 @@
           "variantId": "52553822896394",
           "price": 54000,
           "handle": "aeris-tischgestell-aus-eichenholz"
+        },
+        {
+          "title": "Ovale Holzsäule aus Stäbchenholz, Eiche",
+          "variantId": "52553810542858",
+          "price": 54000,
+          "handle": "ovale-holzsaule-aus-stabchenholz-eiche"
         }
       ],
       "Kantenbearbeitung": [
@@ -731,12 +731,6 @@
           "handle": "ovale-tischgestelle-aus-eiche-stabchenholz-satz"
         },
         {
-          "title": "Ovale Tischgestelle aus Eichenholz (Satz)",
-          "variantId": "52553817030922",
-          "price": 44000,
-          "handle": "ovale-tischgestelle-aus-eichenholz-satz"
-        },
-        {
           "title": "Butterfly Tischbeine aus Eichenholz (Satz) (A)",
           "variantId": "52554397548810",
           "price": 44000,
@@ -753,6 +747,12 @@
           "variantId": "52553822896394",
           "price": 54000,
           "handle": "aeris-tischgestell-aus-eichenholz"
+        },
+        {
+          "title": "Ovale Holzsäule aus Stäbchenholz, Eiche",
+          "variantId": "52553810542858",
+          "price": 54000,
+          "handle": "ovale-holzsaule-aus-stabchenholz-eiche"
         }
       ],
       "Kantenbearbeitung": [],
@@ -1208,12 +1208,6 @@
           "handle": "ovale-tischgestelle-aus-eiche-stabchenholz-satz"
         },
         {
-          "title": "Ovale Tischgestelle aus Eichenholz (Satz)",
-          "variantId": "52553817030922",
-          "price": 44000,
-          "handle": "ovale-tischgestelle-aus-eichenholz-satz"
-        },
-        {
           "title": "Butterfly Tischbeine aus Eichenholz (Satz) (A)",
           "variantId": "52554397548810",
           "price": 44000,
@@ -1230,6 +1224,12 @@
           "variantId": "52553822896394",
           "price": 54000,
           "handle": "aeris-tischgestell-aus-eichenholz"
+        },
+        {
+          "title": "Ovale Holzsäule aus Stäbchenholz, Eiche",
+          "variantId": "52553810542858",
+          "price": 54000,
+          "handle": "ovale-holzsaule-aus-stabchenholz-eiche"
         }
       ],
       "Kantenbearbeitung": [
@@ -1654,12 +1654,6 @@
           "handle": "ovale-tischgestelle-aus-eiche-stabchenholz-satz"
         },
         {
-          "title": "Ovale Tischgestelle aus Eichenholz (Satz)",
-          "variantId": "52553817030922",
-          "price": 44000,
-          "handle": "ovale-tischgestelle-aus-eichenholz-satz"
-        },
-        {
           "title": "Butterfly Tischbeine aus Eichenholz (Satz) (A)",
           "variantId": "52554397548810",
           "price": 44000,
@@ -1676,6 +1670,12 @@
           "variantId": "52553822896394",
           "price": 54000,
           "handle": "aeris-tischgestell-aus-eichenholz"
+        },
+        {
+          "title": "Ovale Holzsäule aus Stäbchenholz, Eiche",
+          "variantId": "52553810542858",
+          "price": 54000,
+          "handle": "ovale-holzsaule-aus-stabchenholz-eiche"
         }
       ],
       "Kantenbearbeitung": [
