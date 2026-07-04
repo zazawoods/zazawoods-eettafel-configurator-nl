@@ -831,6 +831,7 @@ class TableConfigurator {
         const group = new THREE.Group();
         group.name = '__ext_group__' + title;
         const isPair = /^U Tischgestell|^Trapezium Tischgestell|^Stahlwangen Tischgestell|^Drone Tischbeine/i.test(title);
+        const isDrone = /^Drone Tischbeine/i.test(title);
         const placements = isPair
           ? [{ x: -0.75, mirror: false }, { x: 0.75, mirror: true }]   // pair: second instance faces opposite
           : [{ x: 0, mirror: false }];                                    // single centered
@@ -839,7 +840,12 @@ class TableConfigurator {
           // Most external GLBs were modelled with Z-axis as length, but our tables
           // use X-axis as length. Rotate them 90° so the long side aligns.
           // For paired legs, second instance gets +180° so it mirrors (like Thorn).
-          inst.rotation.y = Math.PI / 2 + (pl.mirror ? Math.PI : 0);
+          // Drone: each leg faces outward (opposite directions), so we swap which one gets the flip.
+          if (isDrone) {
+            inst.rotation.y = pl.x < 0 ? -Math.PI / 2 : Math.PI / 2;
+          } else {
+            inst.rotation.y = Math.PI / 2 + (pl.mirror ? Math.PI : 0);
+          }
           inst.position.x = pl.x;
           // Edelstahl variants: brushed-steel look instead of black
           if (/Edelstahl/i.test(title)) {

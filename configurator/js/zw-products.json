@@ -133,16 +133,16 @@
           "handle": "trapezium-tischgestell-pulverbeschichtet-stahl-b-70cm-h-72cm"
         },
         {
-          "title": "Konisches Spidertischgestell",
-          "variantId": "51527174553866",
-          "price": 18500,
-          "handle": "konisches-spidertischbein"
-        },
-        {
           "title": "Thorn Tischgestelle (Satz)",
           "variantId": "51527177502986",
           "price": 17500,
           "handle": "thorn-tischbeine-satz"
+        },
+        {
+          "title": "Konisches Spidertischgestell",
+          "variantId": "51527174553866",
+          "price": 18500,
+          "handle": "konisches-spidertischbein"
         },
         {
           "title": "V Tischgestell",
@@ -161,12 +161,6 @@
           "variantId": "43736525897994",
           "price": 36000,
           "handle": "spidergestell-tischbein-aus-edelstahl-l-135cm-x-b-70cm-x-h-72cm"
-        },
-        {
-          "title": "Aeris Tischgestell aus Eichenholz",
-          "variantId": "52553822896394",
-          "price": 54000,
-          "handle": "aeris-tischgestell-aus-eichenholz"
         },
         {
           "title": "Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)",
@@ -191,6 +185,12 @@
           "variantId": "52725568274698",
           "price": 44000,
           "handle": "runde-holzsaule-aus-eichenholz-satz-a-copy"
+        },
+        {
+          "title": "Aeris Tischgestell aus Eichenholz",
+          "variantId": "52553822896394",
+          "price": 54000,
+          "handle": "aeris-tischgestell-aus-eichenholz"
         }
       ],
       "Kantenbearbeitung": [
@@ -423,12 +423,6 @@
           "handle": "spidergestell-tischbein-aus-edelstahl-l-135cm-x-b-70cm-x-h-72cm"
         },
         {
-          "title": "Aeris Tischgestell aus Eichenholz",
-          "variantId": "52553822896394",
-          "price": 54000,
-          "handle": "aeris-tischgestell-aus-eichenholz"
-        },
-        {
           "title": "Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)",
           "variantId": "52553828958474",
           "price": 44000,
@@ -451,6 +445,12 @@
           "variantId": "52725568274698",
           "price": 44000,
           "handle": "runde-holzsaule-aus-eichenholz-satz-a-copy"
+        },
+        {
+          "title": "Aeris Tischgestell aus Eichenholz",
+          "variantId": "52553822896394",
+          "price": 54000,
+          "handle": "aeris-tischgestell-aus-eichenholz"
         }
       ],
       "Kantenbearbeitung": [
@@ -695,16 +695,16 @@
           "handle": "trapezium-tischgestell-pulverbeschichtet-stahl-b-70cm-h-72cm"
         },
         {
-          "title": "Konisches Spidertischgestell",
-          "variantId": "51527174553866",
-          "price": 18500,
-          "handle": "konisches-spidertischbein"
-        },
-        {
           "title": "Thorn Tischgestelle (Satz)",
           "variantId": "51527177502986",
           "price": 17500,
           "handle": "thorn-tischbeine-satz"
+        },
+        {
+          "title": "Konisches Spidertischgestell",
+          "variantId": "51527174553866",
+          "price": 18500,
+          "handle": "konisches-spidertischbein"
         },
         {
           "title": "V Tischgestell",
@@ -723,12 +723,6 @@
           "variantId": "43736525897994",
           "price": 36000,
           "handle": "spidergestell-tischbein-aus-edelstahl-l-135cm-x-b-70cm-x-h-72cm"
-        },
-        {
-          "title": "Aeris Tischgestell aus Eichenholz",
-          "variantId": "52553822896394",
-          "price": 54000,
-          "handle": "aeris-tischgestell-aus-eichenholz"
         },
         {
           "title": "Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)",
@@ -753,6 +747,12 @@
           "variantId": "52725568274698",
           "price": 44000,
           "handle": "runde-holzsaule-aus-eichenholz-satz-a-copy"
+        },
+        {
+          "title": "Aeris Tischgestell aus Eichenholz",
+          "variantId": "52553822896394",
+          "price": 54000,
+          "handle": "aeris-tischgestell-aus-eichenholz"
         }
       ],
       "Kantenbearbeitung": [],
@@ -1172,16 +1172,16 @@
           "handle": "trapezium-tischgestell-pulverbeschichtet-stahl-b-70cm-h-72cm"
         },
         {
-          "title": "Konisches Spidertischgestell",
-          "variantId": "51527174553866",
-          "price": 18500,
-          "handle": "konisches-spidertischbein"
-        },
-        {
           "title": "Thorn Tischgestelle (Satz)",
           "variantId": "51527177502986",
           "price": 17500,
           "handle": "thorn-tischbeine-satz"
+        },
+        {
+          "title": "Konisches Spidertischgestell",
+          "variantId": "51527174553866",
+          "price": 18500,
+          "handle": "konisches-spidertischbein"
         },
         {
           "title": "V Tischgestell",
@@ -1200,12 +1200,6 @@
           "variantId": "43736525897994",
           "price": 36000,
           "handle": "spidergestell-tischbein-aus-edelstahl-l-135cm-x-b-70cm-x-h-72cm"
-        },
-        {
-          "title": "Aeris Tischgestell aus Eichenholz",
-          "variantId": "52553822896394",
-          "price": 54000,
-          "handle": "aeris-tischgestell-aus-eichenholz"
         },
         {
           "title": "Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)",
@@ -1230,6 +1224,12 @@
           "variantId": "52725568274698",
           "price": 44000,
           "handle": "runde-holzsaule-aus-eichenholz-satz-a-copy"
+        },
+        {
+          "title": "Aeris Tischgestell aus Eichenholz",
+          "variantId": "52553822896394",
+          "price": 54000,
+          "handle": "aeris-tischgestell-aus-eichenholz"
         }
       ],
       "Kantenbearbeitung": [
@@ -1618,16 +1618,16 @@
           "handle": "trapezium-tischgestell-pulverbeschichtet-stahl-b-70cm-h-72cm"
         },
         {
-          "title": "Konisches Spidertischgestell",
-          "variantId": "51527174553866",
-          "price": 18500,
-          "handle": "konisches-spidertischbein"
-        },
-        {
           "title": "Thorn Tischgestelle (Satz)",
           "variantId": "51527177502986",
           "price": 17500,
           "handle": "thorn-tischbeine-satz"
+        },
+        {
+          "title": "Konisches Spidertischgestell",
+          "variantId": "51527174553866",
+          "price": 18500,
+          "handle": "konisches-spidertischbein"
         },
         {
           "title": "V Tischgestell",
@@ -1646,12 +1646,6 @@
           "variantId": "43736525897994",
           "price": 36000,
           "handle": "spidergestell-tischbein-aus-edelstahl-l-135cm-x-b-70cm-x-h-72cm"
-        },
-        {
-          "title": "Aeris Tischgestell aus Eichenholz",
-          "variantId": "52553822896394",
-          "price": 54000,
-          "handle": "aeris-tischgestell-aus-eichenholz"
         },
         {
           "title": "Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)",
@@ -1676,6 +1670,12 @@
           "variantId": "52725568274698",
           "price": 44000,
           "handle": "runde-holzsaule-aus-eichenholz-satz-a-copy"
+        },
+        {
+          "title": "Aeris Tischgestell aus Eichenholz",
+          "variantId": "52553822896394",
+          "price": 54000,
+          "handle": "aeris-tischgestell-aus-eichenholz"
         }
       ],
       "Kantenbearbeitung": [
