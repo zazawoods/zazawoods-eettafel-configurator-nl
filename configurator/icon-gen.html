@@ -17,6 +17,7 @@ renderer.setPixelRatio(1);
 renderer.setSize(w, h);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
 const draco = new DRACOLoader();
@@ -25,13 +26,20 @@ const loader = new GLTFLoader().setDRACOLoader(draco);
 
 function makeScene(bg) {
   const scene = new THREE.Scene();
-  scene.add(new THREE.AmbientLight(0xffffff, 0.55));
-  const key = new THREE.DirectionalLight(0xffffff, 1.1);
-  key.position.set(4, 5, 3); key.castShadow = true;
-  key.shadow.mapSize.set(1024, 1024); scene.add(key);
-  const fill = new THREE.DirectionalLight(0xffffff, 0.3);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.65));
+  const key = new THREE.DirectionalLight(0xffffff, 1.4);
+  key.position.set(4, 6, 4); key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048);
+  key.shadow.camera.top = 4; key.shadow.camera.bottom = -4;
+  key.shadow.camera.left = -4; key.shadow.camera.right = 4;
+  key.shadow.camera.near = 0.5; key.shadow.camera.far = 20;
+  key.shadow.bias = -0.001;
+  scene.add(key);
+  const fill = new THREE.DirectionalLight(0xffffff, 0.45);
   fill.position.set(-3, 3, -3); scene.add(fill);
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), new THREE.ShadowMaterial({ opacity: 0.15 }));
+  const rim = new THREE.DirectionalLight(0xffffff, 0.3);
+  rim.position.set(0, 2, -5); scene.add(rim);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), new THREE.ShadowMaterial({ opacity: 0.18 }));
   floor.rotation.x = -Math.PI/2; floor.receiveShadow = true; scene.add(floor);
   renderer.setClearColor(new THREE.Color(bg || '#f5f4f0'), 1);
   return scene;
@@ -44,37 +52,60 @@ async function renderItem(item) {
   scene.add(obj);
   obj.updateMatrixWorld(true);
   obj.traverse(ch => { if (ch.isMesh) { ch.castShadow = true; ch.receiveShadow = true; } });
+
+  // Center on origin, rest bottom on floor
   const box = new THREE.Box3().setFromObject(obj);
   const sizeVec = box.getSize(new THREE.Vector3());
   const centerVec = box.getCenter(new THREE.Vector3());
   obj.position.sub(new THREE.Vector3(centerVec.x, box.min.y, centerVec.z));
   obj.updateMatrixWorld(true);
+
+  // Normalize to reference size — put biggest dim to 1.0 unit tall
   const maxDim = Math.max(sizeVec.x, sizeVec.y, sizeVec.z);
-  const scale = (item.d || 3.2) / Math.max(1e-6, maxDim);
+  const scale = 1.0 / Math.max(1e-6, maxDim);
   obj.scale.setScalar(scale);
   obj.updateMatrixWorld(true);
+
+  // Recompute box after normalization
   const finalBox = new THREE.Box3().setFromObject(obj);
-  const center = finalBox.getCenter(new THREE.Vector3());
-  const camera = new THREE.PerspectiveCamera(35, w/h, 0.1, 100);
-  const azr = (item.az ?? 35) * Math.PI / 180;
-  const elr = (item.el ?? 20) * Math.PI / 180;
-  const R = 3.5;
+  const finalSize = finalBox.getSize(new THREE.Vector3());
+  const finalCenter = finalBox.getCenter(new THREE.Vector3());
+  const bboxRadius = finalBox.getBoundingSphere(new THREE.Sphere()).radius;
+
+  // Camera: fixed FOV, distance chosen so bounding sphere fills (frameFactor)% of view
+  const azr = (item.az ?? 25) * Math.PI / 180;
+  const elr = (item.el ?? 18) * Math.PI / 180;
+  const fov = item.fov ?? 30;
+  const frameFactor = item.pad ?? 1.55;  // >1 = more padding
+  const halfFov = fov * 0.5 * Math.PI / 180;
+  const distance = (bboxRadius / Math.sin(halfFov)) * frameFactor;
+
+  const camera = new THREE.PerspectiveCamera(fov, w/h, 0.05, 200);
   camera.position.set(
-    center.x + R * Math.cos(elr) * Math.sin(azr),
-    center.y + R * Math.sin(elr),
-    center.z + R * Math.cos(elr) * Math.cos(azr)
+    finalCenter.x + distance * Math.cos(elr) * Math.sin(azr),
+    finalCenter.y + distance * Math.sin(elr),
+    finalCenter.z + distance * Math.cos(elr) * Math.cos(azr)
   );
-  camera.lookAt(center);
+  camera.lookAt(finalCenter);
+
   renderer.render(scene, camera);
-  await new Promise(r => setTimeout(r, 50));
+  await new Promise(r => setTimeout(r, 80));
   renderer.render(scene, camera);
   return renderer.domElement.toDataURL('image/png');
 }
 
 async function main() {
   const batchB64 = params.get('batch');
-  if (!batchB64) { setStatus('use ?batch=<base64json>'); return; }
-  const items = JSON.parse(atob(batchB64));
+  const single = params.get('glb');
+  let items;
+  if (batchB64) items = JSON.parse(atob(batchB64));
+  else if (single) items = [{ name: params.get('name') || 'test', glb: single,
+    az: parseFloat(params.get('az')) || undefined,
+    el: parseFloat(params.get('el')) || undefined,
+    fov: parseFloat(params.get('fov')) || undefined,
+    pad: parseFloat(params.get('pad')) || undefined
+  }];
+  else { setStatus('use ?batch=<b64json> or ?glb=<path>&az&el&fov&pad'); return; }
   const results = [];
   for (let i = 0; i < items.length; i++) {
     setStatus(`rendering ${i+1}/${items.length}: ${items[i].name}`);
@@ -93,10 +124,11 @@ async function main() {
       results.push({ name: items[i].name, ok: true });
     } catch (e) {
       results.push({ name: items[i].name, err: e.message });
+      console.error(items[i].name, e);
     }
   }
   window.__results = results;
-  setStatus(`done: ${results.length} items`);
+  setStatus(`done: ${results.length}`);
   document.title = 'READY';
 }
 main().catch(e => { setStatus('ERR: ' + e.message); console.error(e); });
