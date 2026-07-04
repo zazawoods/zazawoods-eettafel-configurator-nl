@@ -1012,9 +1012,10 @@ class TableConfigurator {
   }
 
   _remapVariantUVs(variant) {
+    // For Bootsform: skip side/top split, use pure planar XZ (fixes wood grain jumps on boat curves)
+    const forcePlanar = this.state.shape === 'bootsform';
     variant.traverse((child) => {
       if (!child.isMesh || !child.geometry) return;
-      // Include ALL meshes — procedural and custom tabletops also need proper UV mapping
 
       const geo = child.geometry;
       const pos = geo.attributes.position;
@@ -1057,7 +1058,7 @@ class TableConfigurator {
 
         // Check normal direction to determine if this is a top/bottom or side vertex
         let isSide = false;
-        if (norm) {
+        if (norm && !forcePlanar) {
           tempNorm.set(norm.getX(i), norm.getY(i), norm.getZ(i));
           tempNorm.applyMatrix3(normalMatrix).normalize();
           // Side face: normal is mostly horizontal (small Y component)
