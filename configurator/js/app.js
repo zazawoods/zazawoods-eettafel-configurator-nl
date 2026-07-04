@@ -3560,6 +3560,19 @@ class TableConfigurator {
       'Rund-Säule': 'Kolom Rod.png',
       'Twist': 'Twist Tafelpoot Rond.png',
       'Vierpoot': 'Vierpoot.png',
+      'Spider Tischgestell (L)': 'Spider Tischgestell (L)_bw.png',
+      'Spider Tischgestell (M)': 'Spider Tischgestell (M)_bw.png',
+      'Spider Tischgestell Edelstahl': 'Spider Tischgestell Edelstahl_bw.png',
+      'Spider Tischgestell Edelstahl (S)': 'Spider Tischgestell Edelstahl (S)_bw.png',
+      'U Tischgestell (Satz)': 'U Tischgestell (Satz)_bw.png',
+      'U Tischgestell (M) (Satz)': 'U Tischgestell (M) (Satz)_bw.png',
+      'U Tischgestell (schmal) (Satz)': 'U Tischgestell (schmal) (Satz)_bw.png',
+      'Trapezium Tischgestell (Satz)': 'Trapezium Tischgestell (Satz)_bw.png',
+      'Drone Tischbeine (Satz)': 'Drone Tischbeine (Satz)_bw.png',
+      'Stahlwangen Tischgestell (Satz)': 'Stahlwangen Tischgestell (Satz)_bw.png',
+      'Stahlwangen Tischgestell (S) (Satz)': 'Stahlwangen Tischgestell (S) (Satz)_bw.png',
+      'Spider Gestell (rund)': 'Spider Gestell (rund)_bw.png',
+      'Spider Gestell - Schmal (Rund)': 'Spider Gestell - Schmal (Rund)_bw.png',
     };
 
     const getLegSwatch = (name, isWood) => {
