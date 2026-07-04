@@ -159,10 +159,7 @@ const EXTERNAL_LEG_CACHE = new Map();
 
 // Catalog-only legs from /collections/tischgestelle that aren't sold as addons on any Esstisch.
 const CATALOG_ONLY_LEGS = [
-  { title: 'Aeris Tischbein',                     variantId: '51070961680650', price: 37500 },
-  { title: 'Doppel V-Tischbein',                  variantId: '51070965317898', price: 57500 },
-  { title: 'Felix Tischbein',                     variantId: '51070954012938', price: 57500 },
-  { title: 'Vario Tischbein',                     variantId: '51070958502154', price: 37500 },
+  // Only legs that have a 3D model AND aren't sold as an addon on any Esstisch page.
   { title: 'Drone Tischbeine (Satz)',             variantId: '51011118039306', price: 34500 },
   { title: 'Stahlwangen Tischgestell (Satz)',     variantId: '44218834026762', price: 56000 },
   { title: 'Stahlwangen Tischgestell (S) (Satz)', variantId: '44218853032202', price: 56000 }
@@ -3610,6 +3607,14 @@ class TableConfigurator {
     } else {
       tischgestellList = unionLegs.filter(a => !isRoundOnly(a.title) && !isHalfrondOnly(a.title));
     }
+
+    // Sort: FREE (€0) first, then paid ascending by price
+    tischgestellList = tischgestellList.slice().sort((a, b) => {
+      const aFree = (a.price === 0) ? 0 : 1;
+      const bFree = (b.price === 0) ? 0 : 1;
+      if (aFree !== bFree) return aFree - bFree;
+      return (a.price || 0) - (b.price || 0);
+    });
 
     // Sync zwLegName from current GLB leg, OR default to first ZW addon that ALSO has a 3D model match
     if (!tischgestellList.find(a => a.title === this.state.zwLegName)) {
