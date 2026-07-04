@@ -82,6 +82,31 @@ export const TABLE_SHAPES = [
     ]
   },
   {
+    id: 'bootsform',
+    name: 'Bootsform',
+    shopifyHandle: 'bootsform-esstisch-sergio-aus-massivem-eichenholz',
+    glbFile: `${BASE_PATH}/glb files tables and legs/Bootsform.glb`,
+    icon: `<img src="Swatches/Vorm/Rechthoekig.png" alt="Bootsform"/>`,
+    meshPrefix: ['Boat_Table_Top', 'Boat'],
+    defaultLength: 240,
+    defaultWidth: 110,
+    fixedDimensions: [
+      [180, 100], [200, 100], [220, 100], [240, 110],
+      [260, 120], [280, 120], [300, 120], [350, 140], [400, 140]
+    ],
+    variants: [
+      { size:'180cm x 100cm x 4cm', length:180, width:100, price:124900, id:43827799130378 },
+      { size:'200cm x 100cm x 4cm', length:200, width:100, price:134900, id:43827799163146 },
+      { size:'220cm x 100cm x 4cm', length:220, width:100, price:144900, id:43827799195914 },
+      { size:'240cm x 110cm x 4cm', length:240, width:110, price:164900, id:43827799228682 },
+      { size:'260cm x 120cm x 4cm', length:260, width:120, price:174900, id:43827799261450 },
+      { size:'280cm x 120cm x 4cm', length:280, width:120, price:179900, id:43827799294218 },
+      { size:'300cm x 120cm x 4cm', length:300, width:120, price:191900, id:43827799326986 },
+      { size:'350cm x 120cm x 4cm', length:350, width:120, price:271900, id:51945233678602 },
+      { size:'400cm x 120cm x 4cm', length:400, width:120, price:336900, id:51945233711370 }
+    ]
+  },
+  {
     id: 'halfrond',
     name: 'Halbrund',
     shopifyHandle: 'halbkreisform-esstisch-aus-massivem-eichenholz',

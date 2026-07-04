@@ -1785,5 +1785,280 @@
         }
       ]
     }
+  },
+  "bootsform": {
+    "title": "Bootsform Esstisch \"Sergio\" Aus Massivem Eichenholz",
+    "handle": "bootsform-esstisch-sergio-aus-massivem-eichenholz",
+    "baseVariants": [
+      {
+        "variantId": "43827799130378",
+        "title": "180cm x 100cm x 4cm",
+        "price": 124900
+      },
+      {
+        "variantId": "43827799163146",
+        "title": "200cm x 100cm x 4cm",
+        "price": 134900
+      },
+      {
+        "variantId": "43827799195914",
+        "title": "220cm x 100cm x 4cm",
+        "price": 144900
+      },
+      {
+        "variantId": "43827799228682",
+        "title": "240cm x 110cm x 4cm",
+        "price": 164900
+      },
+      {
+        "variantId": "43827799261450",
+        "title": "260cm x 120cm x 4cm",
+        "price": 174900
+      },
+      {
+        "variantId": "43827799294218",
+        "title": "280cm x 120cm x 4cm",
+        "price": 179900
+      },
+      {
+        "variantId": "43827799326986",
+        "title": "300cm x 120cm x 4cm",
+        "price": 191900
+      },
+      {
+        "variantId": "51945233678602",
+        "title": "350cm x 120cm x 4cm",
+        "price": 271900
+      },
+      {
+        "variantId": "51945233711370",
+        "title": "400cm x 120cm x 4cm",
+        "price": 336900
+      }
+    ],
+    "addons": {
+      "Tischgestell": [
+        {
+          "title": "Spider Tischgestell (L)",
+          "variantId": "40669726441638",
+          "price": 0,
+          "handle": "kopie-van-spider-gestell-fur-rechteckigen-tisch-10cm-x-10cm-1"
+        },
+        {
+          "title": "Spider Tischgestell (M)",
+          "variantId": "44707879125258",
+          "price": 0,
+          "handle": "spider-tischgestell-m-1"
+        },
+        {
+          "title": "Spider Tischgestell (S)",
+          "variantId": "40669736239270",
+          "price": 0,
+          "handle": "spider-tischgestell-fur-rechteckigen-tisch-schmal-10cm-x-5cm-pulverbeschichtet-stahl"
+        },
+        {
+          "title": "U Tischgestell (Satz)",
+          "variantId": "40669512302758",
+          "price": 0,
+          "handle": "u-gestell"
+        },
+        {
+          "title": "U Tischgestell (M) (Satz)",
+          "variantId": "40669578756262",
+          "price": 0,
+          "handle": "u-tischgestell-schmal-10cm-x-5cm-pulverbeschichtet-stahl-b-70cm-h-72cm"
+        },
+        {
+          "title": "U Tischgestell (schmal) (Satz)",
+          "variantId": "40669547266214",
+          "price": 0,
+          "handle": "u-gestell-schmal"
+        },
+        {
+          "title": "X Tischgestell (Satz)",
+          "variantId": "40669646028966",
+          "price": 0,
+          "handle": "x-gestell"
+        },
+        {
+          "title": "A Tischgestell (Satz)",
+          "variantId": "40669470752934",
+          "price": 0,
+          "handle": "a-gestell"
+        },
+        {
+          "title": "Trapezium Tischgestell (Satz)",
+          "variantId": "40669598023846",
+          "price": 0,
+          "handle": "trapezium-tischgestell-pulverbeschichtet-stahl-b-70cm-h-72cm"
+        },
+        {
+          "title": "Thorn Tischgestelle (Satz)",
+          "variantId": "51527177502986",
+          "price": 17500,
+          "handle": "thorn-tischbeine-satz"
+        },
+        {
+          "title": "Konisches Spidertischgestell",
+          "variantId": "51527174553866",
+          "price": 18500,
+          "handle": "konisches-spidertischbein"
+        },
+        {
+          "title": "V Tischgestell",
+          "variantId": "44795273609482",
+          "price": 19500,
+          "handle": "kopie-van-a-tischgestell-2"
+        },
+        {
+          "title": "Spider Tischgestell Edelstahl",
+          "variantId": "43839005786378",
+          "price": 36000,
+          "handle": "spidergestell-edelstahl-l140cm-b70cm"
+        },
+        {
+          "title": "Spider Tischgestell Edelstahl (S)",
+          "variantId": "43736525897994",
+          "price": 36000,
+          "handle": "spidergestell-tischbein-aus-edelstahl-l-135cm-x-b-70cm-x-h-72cm"
+        },
+        {
+          "title": "Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)",
+          "variantId": "52553828958474",
+          "price": 44000,
+          "handle": "ovale-tischgestelle-aus-eiche-stabchenholz-satz"
+        },
+        {
+          "title": "Butterfly Tischbeine aus Eichenholz (Satz) (A)",
+          "variantId": "52554397548810",
+          "price": 44000,
+          "handle": "butterfly-tischgestelle-aus-eichenholz-satz"
+        },
+        {
+          "title": "Halbrunde Tischbeine aus Eichenholz (Satz) (A)",
+          "variantId": "52725568274698",
+          "price": 44000,
+          "handle": "runde-holzsaule-aus-eichenholz-satz-a-copy"
+        },
+        {
+          "title": "Aeris Tischgestell aus Eichenholz",
+          "variantId": "52553822896394",
+          "price": 54000,
+          "handle": "aeris-tischgestell-aus-eichenholz"
+        },
+        {
+          "title": "Ovale Holzsäule aus Stäbchenholz, Eiche",
+          "variantId": "52553810542858",
+          "price": 54000,
+          "handle": "ovale-holzsaule-aus-stabchenholz-eiche"
+        }
+      ],
+      "Kantenbearbeitung": [
+        {
+          "title": "Gerade Kanten",
+          "variantId": "43736479301898",
+          "price": 0,
+          "handle": "gerade-kante"
+        },
+        {
+          "title": "Schweizer Kanten",
+          "variantId": "43736479039754",
+          "price": 7500,
+          "handle": "schweizer-kante"
+        }
+      ],
+      "Behandlung": [
+        {
+          "title": "Pure",
+          "variantId": "36823095050406",
+          "price": 0,
+          "handle": "hartholz-ol-mit-klarem-farbcode"
+        },
+        {
+          "title": "Unsichtbarer Skylt-Lack",
+          "variantId": "36823097409702",
+          "price": 0,
+          "handle": "unsichtbarer-skylt-lack"
+        },
+        {
+          "title": "Chocolate",
+          "variantId": "51411501187338",
+          "price": 0,
+          "handle": "chocolate"
+        },
+        {
+          "title": "Cocoa",
+          "variantId": "51412105658634",
+          "price": 0,
+          "handle": "cocoa"
+        },
+        {
+          "title": "Cortado",
+          "variantId": "51925952332042",
+          "price": 0,
+          "handle": "cortado"
+        },
+        {
+          "title": "Shell Grey",
+          "variantId": "51925954887946",
+          "price": 0,
+          "handle": "shell-grey"
+        },
+        {
+          "title": "Black",
+          "variantId": "51412155203850",
+          "price": 0,
+          "handle": "black"
+        },
+        {
+          "title": "Deep Black",
+          "variantId": "52554148315402",
+          "price": 0,
+          "handle": "deep-black"
+        },
+        {
+          "title": "Super White",
+          "variantId": "51412172177674",
+          "price": 0,
+          "handle": "super-white"
+        },
+        {
+          "title": "White",
+          "variantId": "51411506823434",
+          "price": 0,
+          "handle": "white"
+        },
+        {
+          "title": "White 5%",
+          "variantId": "51412146225418",
+          "price": 0,
+          "handle": "white-5"
+        },
+        {
+          "title": "Macchiato",
+          "variantId": "51411483099402",
+          "price": 0,
+          "handle": "macchiato"
+        },
+        {
+          "title": "Smoke",
+          "variantId": "51411505676554",
+          "price": 0,
+          "handle": "smoke"
+        },
+        {
+          "title": "Dulce",
+          "variantId": "51411494863114",
+          "price": 0,
+          "handle": "dulce"
+        },
+        {
+          "title": "Walnut",
+          "variantId": "51412131152138",
+          "price": 0,
+          "handle": "walnut"
+        }
+      ]
+    }
   }
 }
