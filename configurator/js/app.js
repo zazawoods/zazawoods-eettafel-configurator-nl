@@ -739,12 +739,19 @@ class TableConfigurator {
     const tabletopPatterns = [/table.?top/i, /standaard/i];
     const allowedPrefixes = shape.meshPrefix || [];
 
-    // Bootsform: DanishOval-imported meshes have their vertices pre-scaled 100x
-    // in Bootsform_v4.glb so they render at the same 0.01 scale as siblings.
+    // Bootsform: DanishOval-imported meshes need same rotation as native
+    // Bootsform legs (rot.x = π/2). Copy transform from a working reference leg.
     if (shape.id === 'bootsform') {
+      // Drop model to ground (native Bootsform scene has 0.37m Y offset baked in)
+      model.position.y = 0;
+      const REF_SATZ = model.children.find(c => c.name === 'bootsform_X_shape_240');
       for (const child of model.children) {
         if (child.name && /^bootsform_(Flach_Stahl|Double_Fluted_-_WOOD)_240$/.test(child.name)) {
           child.scale.setScalar(0.01);
+          if (REF_SATZ) {
+            child.rotation.copy(REF_SATZ.rotation);
+            child.position.copy(REF_SATZ.position);
+          }
         }
       }
     }
