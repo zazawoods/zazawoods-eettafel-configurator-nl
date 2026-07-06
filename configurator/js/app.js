@@ -3581,10 +3581,10 @@ class TableConfigurator {
       if (name === 'Lara') {
         const file = 'Aeris Tischgestell aus Eichenholz_bw.png';
         void isWood;
-        return `<img src="Swatches/Onderstel/${file}?v=5122eaf-bw9" alt="${name}"/>`;
+        return `<img src="Swatches/Onderstel/${file}?v=873d792-bw10" alt="${name}"/>`;
       }
       const file = legSwatchFiles[name];
-      if (file) return `<img src="Swatches/Onderstel/${file}?v=5122eaf-bw9" alt="${name}"/>`;
+      if (file) return `<img src="Swatches/Onderstel/${file}?v=873d792-bw10" alt="${name}"/>`;
       // Fallback SVG for unmapped legs
       return `<svg viewBox="0 0 60 50" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="6" x2="55" y2="6"/><line x1="14" y1="6" x2="14" y2="46"/><line x1="46" y1="6" x2="46" y2="46"/></svg>`;
     };
