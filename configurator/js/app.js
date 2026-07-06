@@ -518,7 +518,7 @@ class TableConfigurator {
       if (this.modelCache[shapeId]) {
         gltf = this.modelCache[shapeId];
       } else {
-        gltf = await this.loadGLTF(shape.glbFile + '?v=5fecff0');
+        gltf = await this.loadGLTF(shape.glbFile + '?v=a3e959b');
         if (isStale()) { return; }  // newer load took over — drop this result
         this.modelCache[shapeId] = gltf;
       }
@@ -726,7 +726,7 @@ class TableConfigurator {
       try {
         // Yield to any pending user click first
         await new Promise(r => setTimeout(r, 0));
-        const gltf = await this.loadGLTF(shape.glbFile + '?v=5fecff0', { silent: true });
+        const gltf = await this.loadGLTF(shape.glbFile + '?v=a3e959b', { silent: true });
         this.modelCache[shape.id] = gltf;
       } catch (e) {
         // Silently skip failed preloads
@@ -742,16 +742,8 @@ class TableConfigurator {
     const tabletopPatterns = [/table.?top/i, /standaard/i];
     const allowedPrefixes = shape.meshPrefix || [];
 
-    // Bootsform: imports from rectangle.glb — vertices in meters ~0.7m Y range.
-    // Scale 1.0 renders them at correct 70cm height (matches other legs).
-    if (shape.id === 'bootsform') {
-      for (const child of model.children) {
-        if (child.name === 'bootsform_Flach_Stahl_240' || child.name === 'bootsform_Half_spider_-_WOOD_240') {
-          child.scale.setScalar(1.0);
-          child.rotation.set(0, 0, 0);
-        }
-      }
-    }
+    // Bootsform now uses Rectangle-style GLB (meter-scale, identity transforms).
+    // No special-case JS needed — behaves like any other shape.
 
     model.children.forEach((child) => {
       const meshNames = [];
