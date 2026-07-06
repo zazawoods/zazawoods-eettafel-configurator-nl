@@ -515,7 +515,7 @@ class TableConfigurator {
       if (this.modelCache[shapeId]) {
         gltf = this.modelCache[shapeId];
       } else {
-        gltf = await this.loadGLTF(shape.glbFile + '?v=e4d7ad3');
+        gltf = await this.loadGLTF(shape.glbFile + '?v=35310ae');
         if (isStale()) { return; }  // newer load took over — drop this result
         this.modelCache[shapeId] = gltf;
       }
@@ -723,7 +723,7 @@ class TableConfigurator {
       try {
         // Yield to any pending user click first
         await new Promise(r => setTimeout(r, 0));
-        const gltf = await this.loadGLTF(shape.glbFile + '?v=e4d7ad3', { silent: true });
+        const gltf = await this.loadGLTF(shape.glbFile + '?v=35310ae', { silent: true });
         this.modelCache[shape.id] = gltf;
       } catch (e) {
         // Silently skip failed preloads
@@ -739,14 +739,12 @@ class TableConfigurator {
     const tabletopPatterns = [/table.?top/i, /standaard/i];
     const allowedPrefixes = shape.meshPrefix || [];
 
-    // Bootsform: DanishOval-imported meshes (Flach_Stahl, Double_Fluted) have
-    // geometry in METERS (world scale 1), while Bootsform's own meshes are in
-    // CENTIMETERS (world scale 0.01). Set imported nodes to scale 1 so their
-    // world size matches the other legs and they sit at correct height.
+    // Bootsform: DanishOval-imported meshes have their vertices pre-scaled 100x
+    // in Bootsform_v4.glb so they render at the same 0.01 scale as siblings.
     if (shape.id === 'bootsform') {
       for (const child of model.children) {
         if (child.name && /^bootsform_(Flach_Stahl|Double_Fluted_-_WOOD)_240$/.test(child.name)) {
-          child.scale.setScalar(1.0);
+          child.scale.setScalar(0.01);
         }
       }
     }
