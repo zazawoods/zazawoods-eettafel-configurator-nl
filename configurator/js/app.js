@@ -152,6 +152,9 @@ const EXTERNAL_LEG_FILES = {
   'U Tischgestell (schmal) (Satz)':                   'U Tischgestell (schmal) (Satz).glb',
   'Stahlwangen Tischgestell (Satz)':                  'Stahlwangen Tischgestell (Satz).glb',
   'Stahlwangen Tischgestell (S) (Satz)':              'Stahlwangen Tischgestell (S) (Satz).glb',
+  // Butterfly Eichenholz — 18-th external. Fixes Bootsform where the internal
+  // Butterfly_Wood_LEG has 8 size children that we can't safely toggle.
+  'Butterfly Tischbeine aus Eichenholz (Satz) (A)':   'Butterfly Tischbeine aus Eichenholz (Satz).glb',
 };
 
 // Persistent cache of loaded external leg gltf.scene clones — reused across shape switches.
@@ -1058,7 +1061,7 @@ class TableConfigurator {
         // (one at each end of the table), for everyone else just one centered.
         const group = new THREE.Group();
         group.name = '__ext_group__' + title;
-        const isPair = /^U Tischgestell|^Trapezium Tischgestell|^Stahlwangen Tischgestell|^Drone Tischbeine/i.test(title);
+        const isPair = /^U Tischgestell|^Trapezium Tischgestell|^Stahlwangen Tischgestell|^Drone Tischbeine|^Butterfly Tischbeine/i.test(title);
         const isDrone = /^Drone Tischbeine/i.test(title);
         const placements = isPair
           ? [{ x: -0.75, mirror: false }, { x: 0.75, mirror: true }]   // pair: second instance faces opposite
