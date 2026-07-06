@@ -728,13 +728,104 @@ class TableConfigurator {
     }
   }
 
+  // Pick which of the 32 Bootsform tabletops should be visible based on the
+  // current state.length and state.edge. Returns the node (or null if none).
+  _pickBootsformTabletop(shape) {
+    if (!this._bootsformTabletops) return null;
+    // Bootsform sizes available in GLB: 180,200,220,240,260,280,300,350
+    const availableLengths = [180, 200, 220, 240, 260, 280, 300, 350];
+    const targetLength = this.state.length || (shape && shape.defaultLength) || 240;
+    // Snap to nearest available length (400 → 350 since GLB has no 400 mesh)
+    let bestLen = availableLengths[0], bestDiff = Infinity;
+    for (const L of availableLengths) {
+      const d = Math.abs(L - targetLength);
+      if (d < bestDiff) { bestDiff = d; bestLen = L; }
+    }
+    // Map state.edge → GLB edge suffix. Only Straight is universally safe.
+    // Bootsform GLB has 4 edge variants; use "Straight" for now to avoid
+    // rendering upward-tilted tabletops.
+    const edgeMap = {
+      'standaard': 'Straight',
+      'facet':     'Schweizer_Kante',
+      'boomstam':  '20_Degrees_Inversed'
+    };
+    const edgeKey = edgeMap[this.state.edge] || 'Straight';
+    // Try preferred key, fall back to Straight if not present in GLB
+    let node = this._bootsformTabletops.get(`${edgeKey}|${bestLen}`);
+    if (!node) node = this._bootsformTabletops.get(`Straight|${bestLen}`);
+    return node || null;
+  }
+
+  // Swap which Bootsform tabletop is visible (called from applyDimensions).
+  _swapBootsformTabletop(shape) {
+    if (!this._bootsformTabletops) return false;
+    const newActive = this._pickBootsformTabletop(shape);
+    if (!newActive) return false;
+    // If already active, nothing to do
+    if (newActive === this.tabletopObject && newActive.visible) return false;
+    // Hide all 32
+    this._bootsformTabletops.forEach(n => { n.visible = false; });
+    // Show new active
+    newActive.visible = true;
+    this.tabletopObject = newActive;
+    this.tabletopOriginalScale = newActive.scale.clone();
+    // Reset variant references so applyDimensions treats this as the single top
+    this.tabletopVariantA = null;
+    this.tabletopVariantB = null;
+    this.tabletopOriginalScaleA = null;
+    this.tabletopOriginalScaleB = null;
+    return true;
+  }
+
   discoverModelParts(model, shape) {
     this.tabletopObject = null;
     this.legObjects = [];
     this.hasSeparateTop = false;
+    this._bootsformTabletops = null; // reset per-shape
 
     const tabletopPatterns = [/table.?top/i, /standaard/i];
     const allowedPrefixes = shape.meshPrefix || [];
+
+    // ─── Bootsform: 32 tabletop meshes (4 edges × 8 sizes) — pick only the one
+    //     matching current length+edge, hide the rest. Otherwise all 32 would
+    //     render on top of each other → texture jumping + tilted-up edges.
+    if (shape.id === 'bootsform') {
+      const boatTops = model.getObjectByName('Boat_Table_Tops');
+      if (boatTops) {
+        this._bootsformTabletops = new Map(); // key: `${edge}|${length}` → node
+        boatTops.traverse(node => {
+          if (!node.name || !/^Boat_Table_Top_/.test(node.name)) return;
+          // Skip container node itself
+          if (node === boatTops) return;
+          // Parse: Boat_Table_Top_<Edge>_<Width>_<Length>
+          //   e.g. Boat_Table_Top_Straight_120_260
+          //        Boat_Table_Top_Schweizer_Kante_120_260
+          //        Boat_Table_Top_20_Degrees_120_260
+          //        Boat_Table_Top_20_Degrees_Inversed_120_260
+          const parts = node.name.replace(/^Boat_Table_Top_/, '').split('_');
+          const lenStr = parts.pop();
+          const widthStr = parts.pop();
+          const edgeKey = parts.join('_') || 'Straight';
+          const length = parseInt(lenStr, 10);
+          if (!isFinite(length)) return;
+          const key = `${edgeKey}|${length}`;
+          this._bootsformTabletops.set(key, node);
+          // Hide by default; we'll pick the active one below
+          node.visible = false;
+        });
+        // Pick the active tabletop
+        const activeNode = this._pickBootsformTabletop(shape);
+        if (activeNode) {
+          activeNode.visible = true;
+          this.tabletopObject = activeNode;
+          this.tabletopOriginalScale = activeNode.scale.clone();
+          this.hasSeparateTop = true;
+        }
+        // Keep Boat_Table_Tops container visible (it's a group; individual
+        // sub-mesh visibility is what we toggle)
+        boatTops.visible = true;
+      }
+    }
 
     model.children.forEach((child) => {
       const meshNames = [];
@@ -742,6 +833,9 @@ class TableConfigurator {
       const allNames = meshNames.join(' ');
 
       if (meshNames.length === 0 && !child.name) return;
+
+      // Skip Bootsform tabletop container — handled specially above
+      if (shape.id === 'bootsform' && child.name === 'Boat_Table_Tops') return;
 
       // Check if this is the tabletop
       const isTop = tabletopPatterns.some(p => p.test(allNames));
@@ -2704,8 +2798,21 @@ class TableConfigurator {
     const shape = TABLE_SHAPES.find(s => s.id === this.state.shape);
     if (!shape) return;
 
-    const scaleX = this.state.length / shape.defaultLength;
-    const scaleZ = this.state.width / shape.defaultWidth;
+    // ─── Bootsform: swap which tabletop mesh is visible based on length+edge
+    //     (GLB contains 32 pre-modeled tabletops; only one should be visible)
+    if (shape.id === 'bootsform' && this._bootsformTabletops) {
+      this._swapBootsformTabletop(shape);
+    }
+
+    // For Bootsform: don't scale the tabletop mesh — it's already sized correctly.
+    // Use scale 1:1, only leg positioning uses length.
+    let scaleX = this.state.length / shape.defaultLength;
+    let scaleZ = this.state.width / shape.defaultWidth;
+    if (shape.id === 'bootsform') {
+      // Snap to closest available exact-size mesh — no scaling
+      scaleX = 1;
+      scaleZ = 1;
+    }
 
     // Capture state BEFORE changes for smooth morphing
     const isProcedural = ['halfrond', 'boogvorm', 'rectangle', 'verbaan'].includes(shape.id);
@@ -3592,10 +3699,10 @@ class TableConfigurator {
       if (name === 'Lara') {
         const file = 'Aeris Tischgestell aus Eichenholz_bw.png';
         void isWood;
-        return `<img src="Swatches/Onderstel/${file}?v=873d792-bw10" alt="${name}"/>`;
+        return `<img src="Swatches/Onderstel/${file}?v=873d792-bw11" alt="${name}"/>`;
       }
       const file = legSwatchFiles[name];
-      if (file) return `<img src="Swatches/Onderstel/${file}?v=873d792-bw10" alt="${name}"/>`;
+      if (file) return `<img src="Swatches/Onderstel/${file}?v=873d792-bw11" alt="${name}"/>`;
       // Fallback SVG for unmapped legs
       return `<svg viewBox="0 0 60 50" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="6" x2="55" y2="6"/><line x1="14" y1="6" x2="14" y2="46"/><line x1="46" y1="6" x2="46" y2="46"/></svg>`;
     };
@@ -3676,9 +3783,11 @@ class TableConfigurator {
         if (legIdx >= 0) hasModel = true;
       }
       const active = this.state.zwLegName === item.title;
-      const swatch = hasModel
-        ? getLegSwatch(model.name, model.isWood)
-        : `<svg viewBox="0 0 60 50" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="5" y1="6" x2="55" y2="6"/><line x1="15" y1="6" x2="15" y2="46"/><line x1="45" y1="6" x2="45" y2="46"/></svg>`;
+      // Icon = ZW-titled grayscale photo (same file on every shape). Independent of
+      // whether a 3D model exists for the current shape — placeholder was leaking
+      // on shapes whose GLB doesn't include that leg's mesh.
+      const swatchFile = encodeURIComponent(`${item.title}_bw.png`);
+      const swatch = `<img src="Swatches/Onderstel/${swatchFile}?v=873d792-bw11" alt="${item.title}" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','&lt;svg viewBox=&quot;0 0 60 50&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.5&quot; stroke-linecap=&quot;round&quot;&gt;&lt;line x1=&quot;5&quot; y1=&quot;6&quot; x2=&quot;55&quot; y2=&quot;6&quot;/&gt;&lt;line x1=&quot;15&quot; y1=&quot;6&quot; x2=&quot;15&quot; y2=&quot;46&quot;/&gt;&lt;line x1=&quot;45&quot; y1=&quot;6&quot; x2=&quot;45&quot; y2=&quot;46&quot;/&gt;&lt;/svg&gt;')"/>`;
       const priceTag = item.price > 0 ? `<div class="leg-price">+€${(item.price/100).toFixed(0)}</div>` : '';
       return `
         <button class="leg-option ${hasModel ? 'has-model' : 'no-model'} ${active ? 'active' : ''}" data-zw-index="${idx}" data-leg-index="${legIdx}">
