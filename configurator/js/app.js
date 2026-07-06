@@ -777,7 +777,10 @@ class TableConfigurator {
       if (!parent || !parent.name) continue;
       const info = legTypeMap[parent.name];
       if (!info) { parent.visible = false; continue; }
-      parent.visible = true;
+      // Parent starts HIDDEN — loadModel's forEach will set the active one
+      // to visible=true, all others stay false. Only the size-matching child
+      // is left visible on the parent, so activating it renders one mesh.
+      parent.visible = false;
 
       // Case 1: single-mesh ALL_SIZE leg (parent is a Mesh directly, or has 1 child)
       if (parent.name.endsWith('_ALL_SIZE')) {
@@ -964,14 +967,14 @@ class TableConfigurator {
       // Skip Bootsform tabletop container — handled specially above
       if (shape.id === 'bootsform' && child.name === 'Boat_Table_Tops') return;
 
-      // Bootsform's built-in legs group: 25 leg-type parents × 8 size children.
-      // Registering them robustly is complex (size children lose names after
-      // GLTF load). For now: hide entirely and rely on EXTERNAL_LEG_FILES
-      // for Bootsform's 3D legs. Missing internal legs still show icons and
-      // cart correctly; only their 3D preview is unavailable on Bootsform.
+      // Bootsform's built-in legs group: 25 leg-type parents. Each is either
+      // a single _ALL_SIZE mesh OR a group with 8 size-specific children.
+      // Register each parent as a legObject; parent starts hidden and only
+      // the size-matching child of size-groups is left visible so that once
+      // switchLeg activates the parent, only 1 mesh renders (not 8 sizes).
       if (shape.id === 'bootsform' && child.name === 'Boat_Shape_Table_Legs_All_Size') {
-        child.visible = false;
-        child.traverse(n => { n.visible = false; });
+        child.visible = true;
+        this._registerBootsformInternalLegs(child);
         return;
       }
 
