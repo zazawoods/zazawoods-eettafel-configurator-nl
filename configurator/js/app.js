@@ -2956,13 +2956,13 @@ class TableConfigurator {
         }
       }
 
-      // External pair legs (U/Trapezium/Stahlwangen/Drone): scale child positions with table length
-      if (leg.external && leg.object.children.length === 2 && /^U Tischgestell|^Trapezium|^Stahlwangen|^Drone/i.test(leg.displayName)) {
-        // Legs sit at 15% inset from each table end
-        const halfLenM = (currentLength / 100) / 2;
-        const insetM = halfLenM * 0.85;  // ~15% from each end
-        leg.object.children[0].position.x = -insetM;
-        leg.object.children[1].position.x =  insetM;
+      // External pair legs (any external leg with 2 child instances):
+      // Position at same edge-distance as internal set legs — unified rule
+      if (leg.external && leg.object.children.length === 2) {
+        const edgeDistCm = this.getLegEdgeDistance(currentLength, shape.id);
+        const legPosM = (currentLength/2 - edgeDistCm) / 100;
+        leg.object.children[0].position.x = -legPosM;
+        leg.object.children[1].position.x =  legPosM;
       }
     });
 
