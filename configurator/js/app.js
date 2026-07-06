@@ -984,6 +984,14 @@ class TableConfigurator {
           clearTimeout(enclosingThis._legGridTimer);
           enclosingThis._legGridTimer = setTimeout(() => enclosingThis.renderLegGrid(), 50);
         }
+        // If user clicked this leg while it was still loading (activeLegIndex
+        // stayed at whatever it was, no 3D swap happened) — auto-switch to
+        // this newly-loaded leg so the click "takes effect" without another
+        // click from the user.
+        if (enclosingThis.state.zwLegName === title && enclosingThis.state.userPickedLeg) {
+          const idx = enclosingThis.legObjects.length - 1;
+          try { enclosingThis.switchLeg(idx); } catch(e) { /* swallow */ }
+        }
       };
       const cached = EXTERNAL_LEG_CACHE.get(title);
       if (cached) { registerLoaded(cached); return; }
@@ -3827,18 +3835,37 @@ class TableConfigurator {
       const btn = e.target.closest('.leg-option');
       if (!btn) return;
       const zwIdx = parseInt(btn.dataset.zwIndex);
-      const legIdx = parseInt(btn.dataset.legIndex);
+      let legIdx = parseInt(btn.dataset.legIndex);
       const item = tischgestellList[zwIdx];
       this.state.zwLegName = item.title;
       this.state.userPickedLeg = true;
 
+      // Re-scan legObjects at click time: async external-leg loading may have
+      // completed after render, but data-leg-index is a stale -1. Try to find
+      // the leg NOW before deciding it doesn't have a model.
+      if (legIdx < 0) {
+        const mapped = ZW_LEG_MODEL_MAP[item.title];
+        if (mapped) {
+          legIdx = this.legObjects.findIndex(
+            l => l.displayName === mapped.name && l.isWood === mapped.isWood
+          );
+        }
+        // Fallback: direct-title match on external legs
+        if (legIdx < 0) {
+          legIdx = this.legObjects.findIndex(l => l.displayName === item.title);
+        }
+      }
+
       if (legIdx >= 0) {
         this.switchLeg(legIdx);
       } else {
-        // No 3D model — hide all leg meshes
-        this.legObjects.forEach(l => { if (l.object) l.object.visible = false; });
-        this.activeLegIndex = -1;
-        this.updatePrice();   // important: recompute total + selected variant for cart
+        // Leg's 3D model isn't loaded yet (external GLB pending) or truly missing.
+        // Do NOT hide all legs — keep the current visible one until the async
+        // load finishes. renderLegGrid will run again after each external leg
+        // load; state.zwLegName + userPickedLeg cause the discovery step to
+        // auto-select the desired leg once available.
+        // Only update state + cart bookkeeping.
+        this.updatePrice();
       }
       grid.querySelectorAll('.leg-option').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
