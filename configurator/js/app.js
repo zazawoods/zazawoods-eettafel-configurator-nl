@@ -739,6 +739,19 @@ class TableConfigurator {
     const tabletopPatterns = [/table.?top/i, /standaard/i];
     const allowedPrefixes = shape.meshPrefix || [];
 
+    // Bootsform: fix scale mismatch for meshes imported from DanishOval
+    // (Flach_Stahl, Double_Fluted). Their node scale is 0.001 in the merged
+    // GLB but Bootsform's other legs use 0.01. Normalize so they render at
+    // the same 10× larger size — matching the collapse-check threshold and
+    // visual size of siblings.
+    if (shape.id === 'bootsform') {
+      for (const child of model.children) {
+        if (child.name && /^bootsform_(Flach_Stahl|Double_Fluted_-_WOOD)_240$/.test(child.name)) {
+          child.scale.setScalar(0.01);
+        }
+      }
+    }
+
     model.children.forEach((child) => {
       const meshNames = [];
       child.traverse(c => { if (c.name) meshNames.push(c.name); });
