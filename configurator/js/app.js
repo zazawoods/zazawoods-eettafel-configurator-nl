@@ -515,7 +515,7 @@ class TableConfigurator {
       if (this.modelCache[shapeId]) {
         gltf = this.modelCache[shapeId];
       } else {
-        gltf = await this.loadGLTF(shape.glbFile + '?v=8b720fb');
+        gltf = await this.loadGLTF(shape.glbFile + '?v=b625574');
         if (isStale()) { return; }  // newer load took over — drop this result
         this.modelCache[shapeId] = gltf;
       }
@@ -723,7 +723,7 @@ class TableConfigurator {
       try {
         // Yield to any pending user click first
         await new Promise(r => setTimeout(r, 0));
-        const gltf = await this.loadGLTF(shape.glbFile + '?v=8b720fb', { silent: true });
+        const gltf = await this.loadGLTF(shape.glbFile + '?v=b625574', { silent: true });
         this.modelCache[shape.id] = gltf;
       } catch (e) {
         // Silently skip failed preloads
@@ -739,22 +739,9 @@ class TableConfigurator {
     const tabletopPatterns = [/table.?top/i, /standaard/i];
     const allowedPrefixes = shape.meshPrefix || [];
 
-    // Bootsform: DanishOval-imported meshes need same rotation as native
-    // Bootsform legs (rot.x = π/2). Copy transform from a working reference leg.
-    if (shape.id === 'bootsform') {
-      // Drop model to ground (native Bootsform scene has 0.37m Y offset baked in)
-      model.position.y = 0;
-      const REF_SATZ = model.children.find(c => c.name === 'bootsform_X_shape_240');
-      for (const child of model.children) {
-        if (child.name && /^bootsform_(Flach_Stahl|Double_Fluted_-_WOOD)_240$/.test(child.name)) {
-          child.scale.setScalar(0.01);
-          if (REF_SATZ) {
-            child.rotation.copy(REF_SATZ.rotation);
-            child.position.copy(REF_SATZ.position);
-          }
-        }
-      }
-    }
+    // Bootsform: no DanishOval imports right now (they caused visual chaos).
+    // Uses only native Bootsform meshes. Thorn/Wellen-Duo/Aeris fall back to
+    // previous leg (via click-handler fallback) when clicked.
 
     model.children.forEach((child) => {
       const meshNames = [];
