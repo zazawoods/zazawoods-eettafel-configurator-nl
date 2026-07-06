@@ -2048,7 +2048,9 @@ class TableConfigurator {
       'Demi Lune', 'Hapa', 'Base', 'Wellen-Duo', 'Moda',
       // Metaal
       'A-Form', 'Butterfly', 'Diago', 'Walrus', 'Ekso',
-      'X-Form', 'Hairpin', 'Pedro', 'VN', 'Cona'
+      'X-Form', 'Hairpin', 'Pedro', 'VN', 'Cona',
+      // Hout — Hannah (Butterfly Eichenholz / bogade Butterfly wood)
+      'Hannah'
     ];
     return setLegs.some(n => displayName.toLowerCase() === n.toLowerCase());
   }
