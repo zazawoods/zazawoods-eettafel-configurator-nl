@@ -964,14 +964,14 @@ class TableConfigurator {
       // Skip Bootsform tabletop container — handled specially above
       if (shape.id === 'bootsform' && child.name === 'Boat_Table_Tops') return;
 
-      // Bootsform's built-in legs group: 25 leg-type parents, each containing
-      // either an "_ALL_SIZE" mesh or 8 size-specific meshes (e.g. A_Frame_LEG
-      // has children A_Frame_LEG_100_180, _100_200, ..., _140_350). If we
-      // treat the whole group as a single legObject → 200 meshes all visible
-      // at once. Instead, promote each leg-type parent to its own legObject.
+      // Bootsform's built-in legs group: 25 leg-type parents × 8 size children.
+      // Registering them robustly is complex (size children lose names after
+      // GLTF load). For now: hide entirely and rely on EXTERNAL_LEG_FILES
+      // for Bootsform's 3D legs. Missing internal legs still show icons and
+      // cart correctly; only their 3D preview is unavailable on Bootsform.
       if (shape.id === 'bootsform' && child.name === 'Boat_Shape_Table_Legs_All_Size') {
-        child.visible = true; // group container itself must stay visible
-        this._registerBootsformInternalLegs(child);
+        child.visible = false;
+        child.traverse(n => { n.visible = false; });
         return;
       }
 
