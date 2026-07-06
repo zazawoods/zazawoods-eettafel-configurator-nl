@@ -884,6 +884,13 @@ class TableConfigurator {
           clearTimeout(enclosingThis._legGridTimer);
           enclosingThis._legGridTimer = setTimeout(() => enclosingThis.renderLegGrid(), 50);
         }
+        // Also re-run applyDimensions so external pair legs (Drone, U, etc.)
+        // get positioned correctly — otherwise they stay at their hard-coded
+        // default ±0.75m from the discoverModelParts loop.
+        if (typeof enclosingThis.applyDimensions === 'function') {
+          clearTimeout(enclosingThis._applyDimensionsTimer);
+          enclosingThis._applyDimensionsTimer = setTimeout(() => enclosingThis.applyDimensions(), 60);
+        }
         // If user clicked this leg while it was still loading (activeLegIndex
         // stayed at whatever it was, no 3D swap happened) — auto-switch to
         // this newly-loaded leg so the click "takes effect" without another
