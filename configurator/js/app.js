@@ -518,7 +518,7 @@ class TableConfigurator {
       if (this.modelCache[shapeId]) {
         gltf = this.modelCache[shapeId];
       } else {
-        gltf = await this.loadGLTF(shape.glbFile + '?v=a3e959b');
+        gltf = await this.loadGLTF(shape.glbFile + '?v=d0404ab');
         if (isStale()) { return; }  // newer load took over — drop this result
         this.modelCache[shapeId] = gltf;
       }
@@ -726,7 +726,7 @@ class TableConfigurator {
       try {
         // Yield to any pending user click first
         await new Promise(r => setTimeout(r, 0));
-        const gltf = await this.loadGLTF(shape.glbFile + '?v=a3e959b', { silent: true });
+        const gltf = await this.loadGLTF(shape.glbFile + '?v=d0404ab', { silent: true });
         this.modelCache[shape.id] = gltf;
       } catch (e) {
         // Silently skip failed preloads
@@ -742,8 +742,16 @@ class TableConfigurator {
     const tabletopPatterns = [/table.?top/i, /standaard/i];
     const allowedPrefixes = shape.meshPrefix || [];
 
-    // Bootsform now uses Rectangle-style GLB (meter-scale, identity transforms).
-    // No special-case JS needed — behaves like any other shape.
+    // Bootsform: imports from rectangle.glb (Flach_Stahl=Thorn, Half_spider_WOOD=Aeris)
+    // Rectangle geometry ~0.7m Y range; scale 1 renders 70cm tall (matches other legs)
+    if (shape.id === 'bootsform') {
+      for (const child of model.children) {
+        if (child.name === 'bootsform_Flach_Stahl_240' || child.name === 'bootsform_Half_spider_-_WOOD_240') {
+          child.scale.setScalar(1.0);
+          child.rotation.set(0, 0, 0);
+        }
+      }
+    }
 
     model.children.forEach((child) => {
       const meshNames = [];
