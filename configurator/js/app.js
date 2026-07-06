@@ -518,7 +518,7 @@ class TableConfigurator {
       if (this.modelCache[shapeId]) {
         gltf = this.modelCache[shapeId];
       } else {
-        gltf = await this.loadGLTF(shape.glbFile + '?v=b625574');
+        gltf = await this.loadGLTF(shape.glbFile + '?v=5fecff0');
         if (isStale()) { return; }  // newer load took over — drop this result
         this.modelCache[shapeId] = gltf;
       }
@@ -726,7 +726,7 @@ class TableConfigurator {
       try {
         // Yield to any pending user click first
         await new Promise(r => setTimeout(r, 0));
-        const gltf = await this.loadGLTF(shape.glbFile + '?v=b625574', { silent: true });
+        const gltf = await this.loadGLTF(shape.glbFile + '?v=5fecff0', { silent: true });
         this.modelCache[shape.id] = gltf;
       } catch (e) {
         // Silently skip failed preloads
@@ -742,9 +742,18 @@ class TableConfigurator {
     const tabletopPatterns = [/table.?top/i, /standaard/i];
     const allowedPrefixes = shape.meshPrefix || [];
 
-    // Bootsform: no DanishOval imports right now (they caused visual chaos).
-    // Uses only native Bootsform meshes. Thorn/Wellen-Duo/Aeris fall back to
-    // previous leg (via click-handler fallback) when clicked.
+    // Bootsform: imports Flach_Stahl (Thorn/Pedro) + Half_spider_WOOD (Aeris/Lara)
+    // from rectangle.glb. Rectangle geometry is in meters at unit scale, needs
+    // scale ~0.35-0.36 to match Bootsform's 72cm leg height (their vertex range
+    // is -1 to 1 = 2m raw). Applied at load time.
+    if (shape.id === 'bootsform') {
+      for (const child of model.children) {
+        if (child.name === 'bootsform_Flach_Stahl_240' || child.name === 'bootsform_Half_spider_-_WOOD_240') {
+          child.scale.setScalar(0.36);
+          child.rotation.set(0, 0, 0); // Rectangle's identity → keep upright
+        }
+      }
+    }
 
     model.children.forEach((child) => {
       const meshNames = [];
