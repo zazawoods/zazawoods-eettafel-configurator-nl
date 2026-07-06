@@ -742,15 +742,13 @@ class TableConfigurator {
     const tabletopPatterns = [/table.?top/i, /standaard/i];
     const allowedPrefixes = shape.meshPrefix || [];
 
-    // Bootsform: imports Flach_Stahl (Thorn/Pedro) + Half_spider_WOOD (Aeris/Lara)
-    // from rectangle.glb. Rectangle geometry is in meters at unit scale, needs
-    // scale ~0.35-0.36 to match Bootsform's 72cm leg height (their vertex range
-    // is -1 to 1 = 2m raw). Applied at load time.
+    // Bootsform: imports from rectangle.glb — vertices in meters ~0.7m Y range.
+    // Scale 1.0 renders them at correct 70cm height (matches other legs).
     if (shape.id === 'bootsform') {
       for (const child of model.children) {
         if (child.name === 'bootsform_Flach_Stahl_240' || child.name === 'bootsform_Half_spider_-_WOOD_240') {
-          child.scale.setScalar(0.36);
-          child.rotation.set(0, 0, 0); // Rectangle's identity → keep upright
+          child.scale.setScalar(1.0);
+          child.rotation.set(0, 0, 0);
         }
       }
     }
