@@ -515,7 +515,7 @@ class TableConfigurator {
       if (this.modelCache[shapeId]) {
         gltf = this.modelCache[shapeId];
       } else {
-        gltf = await this.loadGLTF(shape.glbFile + '?v=0e3f5bb');
+        gltf = await this.loadGLTF(shape.glbFile + '?v=8b720fb');
         if (isStale()) { return; }  // newer load took over — drop this result
         this.modelCache[shapeId] = gltf;
       }
@@ -723,7 +723,7 @@ class TableConfigurator {
       try {
         // Yield to any pending user click first
         await new Promise(r => setTimeout(r, 0));
-        const gltf = await this.loadGLTF(shape.glbFile + '?v=0e3f5bb', { silent: true });
+        const gltf = await this.loadGLTF(shape.glbFile + '?v=8b720fb', { silent: true });
         this.modelCache[shape.id] = gltf;
       } catch (e) {
         // Silently skip failed preloads
