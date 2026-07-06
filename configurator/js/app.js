@@ -837,6 +837,15 @@ class TableConfigurator {
       // Skip Bootsform tabletop container — handled specially above
       if (shape.id === 'bootsform' && child.name === 'Boat_Table_Tops') return;
 
+      // Skip Bootsform's built-in legs group (25 leg types × 8 sizes = 200 meshes
+      // in ONE group). Bootsform uses EXTERNAL_LEG_FILES for its legs, not the
+      // pre-baked internal ones — so this whole group stays hidden.
+      if (shape.id === 'bootsform' && child.name === 'Boat_Shape_Table_Legs_All_Size') {
+        child.visible = false;
+        child.traverse(n => { n.visible = false; });
+        return;
+      }
+
       // Check if this is the tabletop
       const isTop = tabletopPatterns.some(p => p.test(allNames));
 
