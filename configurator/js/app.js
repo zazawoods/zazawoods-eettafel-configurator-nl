@@ -967,14 +967,15 @@ class TableConfigurator {
       // Skip Bootsform tabletop container — handled specially above
       if (shape.id === 'bootsform' && child.name === 'Boat_Table_Tops') return;
 
-      // Bootsform's built-in legs group: 25 leg-type parents. Each is either
-      // a single _ALL_SIZE mesh OR a group with 8 size-specific children.
-      // Register each parent as a legObject; parent starts hidden and only
-      // the size-matching child of size-groups is left visible so that once
-      // switchLeg activates the parent, only 1 mesh renders (not 8 sizes).
+      // Bootsform's built-in legs group: 25 leg-type parents × 8 size children.
+      // The app's material system clones leg meshes internally, which detaches
+      // our saved references — we can't reliably control which size renders.
+      // Hide entirely and rely on EXTERNAL_LEG_FILES for Bootsform's 3D legs.
+      // Legs without a matching external GLB show icon+cart but keep the
+      // previously-active 3D leg on the table (handled in click handler).
       if (shape.id === 'bootsform' && child.name === 'Boat_Shape_Table_Legs_All_Size') {
-        child.visible = true;
-        this._registerBootsformInternalLegs(child);
+        child.visible = false;
+        child.traverse(n => { n.visible = false; });
         return;
       }
 
