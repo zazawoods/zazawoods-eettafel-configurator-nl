@@ -877,18 +877,10 @@ class TableConfigurator {
       const d = Math.abs(L - targetLength);
       if (d < bestDiff) { bestDiff = d; bestLen = L; }
     }
-    // Map state.edge → GLB edge suffix. Only Straight is universally safe.
-    // Bootsform GLB has 4 edge variants; use "Straight" for now to avoid
-    // rendering upward-tilted tabletops.
-    const edgeMap = {
-      'standaard': 'Straight',
-      'facet':     'Schweizer_Kante',
-      'boomstam':  '20_Degrees_Inversed'
-    };
-    const edgeKey = edgeMap[this.state.edge] || 'Straight';
-    // Try preferred key, fall back to Straight if not present in GLB
-    let node = this._bootsformTabletops.get(`${edgeKey}|${bestLen}`);
-    if (!node) node = this._bootsformTabletops.get(`Straight|${bestLen}`);
+    // ALWAYS use Straight for Bootsform — other edge variants have visible
+    // upward-slanted top faces (Schweizer top wider than bottom, 20_Degrees
+    // top narrower). Straight has perfectly vertical edges.
+    const node = this._bootsformTabletops.get(`Straight|${bestLen}`);
     return node || null;
   }
 
@@ -973,12 +965,12 @@ class TableConfigurator {
       // Skip Bootsform tabletop container — handled specially above
       if (shape.id === 'bootsform' && child.name === 'Boat_Table_Tops') return;
 
-      // Bootsform's built-in legs group: 25 leg-type parents. Original container
-      // is hidden and each leg-type is extracted+cloned into its own isolated
-      // Group attached to model root (avoids the material-system clone that
-      // detached references in previous attempts).
+      // Bootsform's built-in legs group: hide entirely. Use EXTERNAL_LEG_FILES.
+      // Legs without external GLB show icon + cart entry but no 3D preview
+      // (previous leg stays visible via click-handler fallback).
       if (shape.id === 'bootsform' && child.name === 'Boat_Shape_Table_Legs_All_Size') {
-        this._registerBootsformInternalLegs(child);
+        child.visible = false;
+        child.traverse(n => { n.visible = false; });
         return;
       }
 
