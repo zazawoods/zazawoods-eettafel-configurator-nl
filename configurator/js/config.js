@@ -87,7 +87,7 @@ export const TABLE_SHAPES = [
     shopifyHandle: 'bootsform-esstisch-sergio-aus-massivem-eichenholz',
     glbFile: `${BASE_PATH}/glb files tables and legs/Bootsform.glb`,
     icon: `<img src="Swatches/Vorm/Bootsform_bw.png?v=bec141f-v3" alt="Bootsform"/>`,
-    meshPrefix: ['Boat_Table_Top', 'Boat'],
+    meshPrefix: ['bootsform_', 'Bootsform_'],
     defaultLength: 240,
     defaultWidth: 110,
     fixedDimensions: [
