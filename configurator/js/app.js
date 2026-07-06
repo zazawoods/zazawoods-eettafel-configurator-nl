@@ -773,60 +773,73 @@ class TableConfigurator {
       if (d < bestDiff) { bestDiff = d; bestLen = L; }
     }
 
+    // Hide the entire original container so its 200 meshes never render directly
+    container.visible = false;
+    container.traverse(n => { n.visible = false; });
+
+    const model = container.parent; // model root
+
+    // For each leg-type parent in container, extract the desired mesh (single
+    // for ALL_SIZE, or the size-matching child for size-groups) and CLONE it
+    // into a fresh Group attached directly to the model root. This isolates
+    // it from any mutation that touches the original container.
     for (const parent of container.children) {
       if (!parent || !parent.name) continue;
       const info = legTypeMap[parent.name];
-      if (!info) { parent.visible = false; continue; }
-      // Parent starts HIDDEN — loadModel's forEach will set the active one
-      // to visible=true, all others stay false. Only the size-matching child
-      // is left visible on the parent, so activating it renders one mesh.
-      parent.visible = false;
+      if (!info) continue;
 
-      // Case 1: single-mesh ALL_SIZE leg (parent is a Mesh directly, or has 1 child)
+      const legGroup = new THREE.Group();
+      legGroup.name = '__bootsform_leg__' + parent.name;
+      legGroup.visible = false; // loadModel forEach will set the active one true
+
+      // Store per-size clones so we can hot-swap on length change
+      const sizeClones = new Map();
+
       if (parent.name.endsWith('_ALL_SIZE')) {
-        this.legObjects.push({
-          object: parent,
-          rawName: parent.name,
-          displayName: info.name,
-          isWood: info.isWood,
-          originalScale: parent.scale.clone(),
-          originalPosition: parent.position.clone(),
-          childOrigScales: parent.children.map(ch => ch.scale.clone()),
-          geomCenterX: null,
-          bootsformInternal: true
-        });
-        continue;
-      }
-
-      // Case 2: parent contains 8 size children — pick the matching one
-      const sizeChildren = new Map();
-      for (const c of parent.children) {
-        const m = c.name && c.name.match(/_(\d+)_(\d+)$/);
-        if (!m) continue;
-        const len = parseInt(m[2], 10);
-        sizeChildren.set(len, c);
-        c.visible = false;
-      }
-      let picked = sizeChildren.get(bestLen);
-      if (!picked) {
-        // fallback: nearest
-        let ndiff = Infinity;
-        for (const [L, c] of sizeChildren) {
-          const d = Math.abs(L - bestLen);
-          if (d < ndiff) { ndiff = d; picked = c; }
+        // Case 1: single-mesh leg — either parent IS a mesh, or has one child mesh
+        const source = parent.isMesh ? parent : (parent.children[0] || null);
+        if (source && source.isMesh) {
+          const cloned = source.clone(true);
+          cloned.visible = true;
+          legGroup.add(cloned);
+          // ALL sizes share the same mesh — store as key '0'
+          sizeClones.set(0, cloned);
+        }
+      } else {
+        // Case 2: parent has 8 size children — clone each and add all, toggle visibility
+        for (const c of parent.children) {
+          const m = c.name && c.name.match(/_(\d+)_(\d+)$/);
+          if (!m) continue;
+          const len = parseInt(m[2], 10);
+          const cloned = c.clone(true);
+          cloned.visible = (len === bestLen);
+          legGroup.add(cloned);
+          sizeClones.set(len, cloned);
+        }
+        // If no children matched by regex (unnamed after load), fall back to indexed positions
+        if (sizeClones.size === 0 && parent.children.length >= availableLengths.length) {
+          for (let i = 0; i < Math.min(availableLengths.length, parent.children.length); i++) {
+            const len = availableLengths[i];
+            const cloned = parent.children[i].clone(true);
+            cloned.visible = (len === bestLen);
+            legGroup.add(cloned);
+            sizeClones.set(len, cloned);
+          }
         }
       }
-      if (picked) picked.visible = true;
 
-      this._bootsformInternalLegs.push({ parent, sizeChildren });
+      if (legGroup.children.length === 0) continue;
+      model.add(legGroup);
+
+      this._bootsformInternalLegs.push({ legGroup, sizeClones });
       this.legObjects.push({
-        object: parent,
+        object: legGroup,
         rawName: parent.name,
         displayName: info.name,
         isWood: info.isWood,
-        originalScale: parent.scale.clone(),
-        originalPosition: parent.position.clone(),
-        childOrigScales: parent.children.map(ch => ch.scale.clone()),
+        originalScale: legGroup.scale.clone(),
+        originalPosition: legGroup.position.clone(),
+        childOrigScales: legGroup.children.map(ch => ch.scale.clone()),
         geomCenterX: null,
         bootsformInternal: true
       });
@@ -845,16 +858,9 @@ class TableConfigurator {
       if (d < bestDiff) { bestDiff = d; bestLen = L; }
     }
     for (const entry of this._bootsformInternalLegs) {
-      entry.sizeChildren.forEach(c => { c.visible = false; });
-      let picked = entry.sizeChildren.get(bestLen);
-      if (!picked) {
-        let ndiff = Infinity;
-        for (const [L, c] of entry.sizeChildren) {
-          const d = Math.abs(L - bestLen);
-          if (d < ndiff) { ndiff = d; picked = c; }
-        }
-      }
-      if (picked) picked.visible = true;
+      entry.sizeClones.forEach((c, len) => {
+        c.visible = (len === 0) ? true : (len === bestLen); // ALL_SIZE always on, else only bestLen
+      });
     }
   }
 
@@ -967,15 +973,12 @@ class TableConfigurator {
       // Skip Bootsform tabletop container — handled specially above
       if (shape.id === 'bootsform' && child.name === 'Boat_Table_Tops') return;
 
-      // Bootsform's built-in legs group: 25 leg-type parents × 8 size children.
-      // The app's material system clones leg meshes internally, which detaches
-      // our saved references — we can't reliably control which size renders.
-      // Hide entirely and rely on EXTERNAL_LEG_FILES for Bootsform's 3D legs.
-      // Legs without a matching external GLB show icon+cart but keep the
-      // previously-active 3D leg on the table (handled in click handler).
+      // Bootsform's built-in legs group: 25 leg-type parents. Original container
+      // is hidden and each leg-type is extracted+cloned into its own isolated
+      // Group attached to model root (avoids the material-system clone that
+      // detached references in previous attempts).
       if (shape.id === 'bootsform' && child.name === 'Boat_Shape_Table_Legs_All_Size') {
-        child.visible = false;
-        child.traverse(n => { n.visible = false; });
+        this._registerBootsformInternalLegs(child);
         return;
       }
 
