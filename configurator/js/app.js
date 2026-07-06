@@ -728,6 +728,133 @@ class TableConfigurator {
     }
   }
 
+  // Bootsform internal legs: register each leg-type parent as its own
+  // legObject. Size-specific parents (e.g. A_Frame_LEG with 8 size children)
+  // are stored in this._bootsformInternalLegs so we can swap the visible size
+  // child on state.length change.
+  _registerBootsformInternalLegs(container) {
+    this._bootsformInternalLegs = []; // array of {parent, sizeChildren:Map<len,child>}
+    // Bootsform leg-type internal name → external display name (via ZW_LEG_MODEL_MAP)
+    // We just use the parent node name as displayName here; user-facing name comes
+    // from ZW_LEG_MODEL_MAP mapping via the button click.
+    const legTypeMap = {
+      // GLB parent name → displayName used by ZW_LEG_MODEL_MAP
+      '_4_Legs_on_Pole_LEG_ALL_SIZE':          { name: 'Vera',            isWood: false },
+      'A_Frame_LEG':                            { name: 'A-Form',          isWood: false },
+      'A_Shape_Wood_LEG':                       { name: 'A-Form',          isWood: true  },
+      'Butterfly_LEG':                          { name: 'Butterfly',       isWood: false },
+      'Butterfly_Wood_LEG':                     { name: 'Hannah',          isWood: true  },
+      'DIAGONAL_POLE_LEG_REC_TABLE':            { name: 'Diago',           isWood: false },
+      'Hairpin_LEG_REC_TABLE':                  { name: 'Hairpin',         isWood: false },
+      'HALF_ROUNDED_SLAB_LEG_REC_TABLE':        { name: 'Hapa',            isWood: true  },
+      'Half_Spider_LEG_ALL_SIZE':               { name: 'Konische Spider', isWood: false },
+      'Japandi_Wood_Slab_LEG':                  { name: 'Wellen-Duo',      isWood: true  },
+      'Klos_LEG':                               { name: 'Klos',            isWood: true  },
+      'Konische_Spider_Metal_LEG_ALL_SIZE':     { name: 'Konische Spider', isWood: false },
+      'Konische_Spider_Wood_LEG_ALL_SIZE':      { name: 'Konische Spider', isWood: true  },
+      'MATRIX_LEG_ALL_SIZE':                    { name: 'Matrix',          isWood: false },
+      'Miakdo_Leg_ALL_SIZE':                    { name: 'Mikado',          isWood: false },
+      'Open_Spider_LEG_ALL_SIZE':               { name: 'Spider Open',     isWood: false },
+      'Oval_Column_in_middle_wood_LEG_ALL_SIZE':{ name: 'Wellen-Säule',    isWood: true  },
+      'Pillars_Metal_LEG_REC_TABLE':            { name: 'Pillars',         isWood: false },
+      'Pillars_Wood_LEG_REC_TABLE':             { name: 'Pilares',         isWood: true  },
+      'Triple_LEG':                             { name: 'Triple',          isWood: false },
+      'U_Shape_LEG':                            { name: 'U-Shape-internal',isWood: false }, // external U preferred
+      'V_Shape_LEG_ALL_SIZE':                   { name: 'V-Form',          isWood: false },
+      'Walrus_LEG':                             { name: 'Walrus',          isWood: false },
+      'X_Modern_LEG':                           { name: 'Ekso',            isWood: false },
+      'X_Shape_LEG':                            { name: 'X-Form',          isWood: false }
+    };
+    const availableLengths = [180, 200, 220, 240, 260, 280, 300, 350];
+    const targetLength = this.state.length || 240;
+    let bestLen = availableLengths[0], bestDiff = Infinity;
+    for (const L of availableLengths) {
+      const d = Math.abs(L - targetLength);
+      if (d < bestDiff) { bestDiff = d; bestLen = L; }
+    }
+
+    for (const parent of container.children) {
+      if (!parent || !parent.name) continue;
+      const info = legTypeMap[parent.name];
+      if (!info) { parent.visible = false; continue; }
+      parent.visible = true;
+
+      // Case 1: single-mesh ALL_SIZE leg (parent is a Mesh directly, or has 1 child)
+      if (parent.name.endsWith('_ALL_SIZE')) {
+        this.legObjects.push({
+          object: parent,
+          rawName: parent.name,
+          displayName: info.name,
+          isWood: info.isWood,
+          originalScale: parent.scale.clone(),
+          originalPosition: parent.position.clone(),
+          childOrigScales: parent.children.map(ch => ch.scale.clone()),
+          geomCenterX: null,
+          bootsformInternal: true
+        });
+        continue;
+      }
+
+      // Case 2: parent contains 8 size children — pick the matching one
+      const sizeChildren = new Map();
+      for (const c of parent.children) {
+        const m = c.name && c.name.match(/_(\d+)_(\d+)$/);
+        if (!m) continue;
+        const len = parseInt(m[2], 10);
+        sizeChildren.set(len, c);
+        c.visible = false;
+      }
+      let picked = sizeChildren.get(bestLen);
+      if (!picked) {
+        // fallback: nearest
+        let ndiff = Infinity;
+        for (const [L, c] of sizeChildren) {
+          const d = Math.abs(L - bestLen);
+          if (d < ndiff) { ndiff = d; picked = c; }
+        }
+      }
+      if (picked) picked.visible = true;
+
+      this._bootsformInternalLegs.push({ parent, sizeChildren });
+      this.legObjects.push({
+        object: parent,
+        rawName: parent.name,
+        displayName: info.name,
+        isWood: info.isWood,
+        originalScale: parent.scale.clone(),
+        originalPosition: parent.position.clone(),
+        childOrigScales: parent.children.map(ch => ch.scale.clone()),
+        geomCenterX: null,
+        bootsformInternal: true
+      });
+    }
+  }
+
+  // Swap the visible size child on all Bootsform internal legs (called when
+  // state.length changes).
+  _swapBootsformInternalLegSizes() {
+    if (!this._bootsformInternalLegs || this._bootsformInternalLegs.length === 0) return;
+    const availableLengths = [180, 200, 220, 240, 260, 280, 300, 350];
+    const targetLength = this.state.length || 240;
+    let bestLen = availableLengths[0], bestDiff = Infinity;
+    for (const L of availableLengths) {
+      const d = Math.abs(L - targetLength);
+      if (d < bestDiff) { bestDiff = d; bestLen = L; }
+    }
+    for (const entry of this._bootsformInternalLegs) {
+      entry.sizeChildren.forEach(c => { c.visible = false; });
+      let picked = entry.sizeChildren.get(bestLen);
+      if (!picked) {
+        let ndiff = Infinity;
+        for (const [L, c] of entry.sizeChildren) {
+          const d = Math.abs(L - bestLen);
+          if (d < ndiff) { ndiff = d; picked = c; }
+        }
+      }
+      if (picked) picked.visible = true;
+    }
+  }
+
   // Pick which of the 32 Bootsform tabletops should be visible based on the
   // current state.length and state.edge. Returns the node (or null if none).
   _pickBootsformTabletop(shape) {
@@ -837,12 +964,14 @@ class TableConfigurator {
       // Skip Bootsform tabletop container — handled specially above
       if (shape.id === 'bootsform' && child.name === 'Boat_Table_Tops') return;
 
-      // Skip Bootsform's built-in legs group (25 leg types × 8 sizes = 200 meshes
-      // in ONE group). Bootsform uses EXTERNAL_LEG_FILES for its legs, not the
-      // pre-baked internal ones — so this whole group stays hidden.
+      // Bootsform's built-in legs group: 25 leg-type parents, each containing
+      // either an "_ALL_SIZE" mesh or 8 size-specific meshes (e.g. A_Frame_LEG
+      // has children A_Frame_LEG_100_180, _100_200, ..., _140_350). If we
+      // treat the whole group as a single legObject → 200 meshes all visible
+      // at once. Instead, promote each leg-type parent to its own legObject.
       if (shape.id === 'bootsform' && child.name === 'Boat_Shape_Table_Legs_All_Size') {
-        child.visible = false;
-        child.traverse(n => { n.visible = false; });
+        child.visible = true; // group container itself must stay visible
+        this._registerBootsformInternalLegs(child);
         return;
       }
 
@@ -2820,6 +2949,10 @@ class TableConfigurator {
     if (shape.id === 'bootsform' && this._bootsformTabletops) {
       this._swapBootsformTabletop(shape);
     }
+    // Bootsform: also swap the visible size-child on each internal leg group
+    if (shape.id === 'bootsform' && this._bootsformInternalLegs) {
+      this._swapBootsformInternalLegSizes();
+    }
 
     // For Bootsform: don't scale the tabletop mesh — it's already sized correctly.
     // Use scale 1:1, only leg positioning uses length.
@@ -3797,6 +3930,13 @@ class TableConfigurator {
       let hasModel = false, legIdx = -1;
       if (model) {
         legIdx = this.legObjects.findIndex(l => l.displayName === model.name && l.isWood === model.isWood);
+        if (legIdx >= 0) hasModel = true;
+      }
+      // Fallback: try to find by ZW title directly (external legs use title as
+      // displayName). Fixes shapes where the internal bogade mesh isn't present
+      // but the external GLB is loaded, e.g. "A Tischgestell (Satz)" on Bootsform.
+      if (legIdx < 0) {
+        legIdx = this.legObjects.findIndex(l => l.displayName === item.title);
         if (legIdx >= 0) hasModel = true;
       }
       const active = this.state.zwLegName === item.title;
