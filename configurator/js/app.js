@@ -2971,7 +2971,15 @@ class TableConfigurator {
       // External pair legs (any external leg with 2 child instances):
       // Position at same edge-distance as internal set legs — unified rule
       if (leg.external && leg.object.children.length === 2) {
-        const edgeDistCm = this.getLegEdgeDistance(currentLength, shape.id);
+        let edgeDistCm = this.getLegEdgeDistance(currentLength, shape.id);
+        // Drone-specific: pull further inward (Drone models are longer / spread
+        // wider than other set-legs, so they hang off the table without extra
+        // inward offset that scales with table length).
+        if (/^Drone/i.test(leg.displayName)) {
+          // Add 15% of half-length as extra inward pull, min 20cm, max 45cm
+          const extraCm = Math.max(20, Math.min(45, currentLength * 0.075));
+          edgeDistCm += extraCm;
+        }
         const legPosM = (currentLength/2 - edgeDistCm) / 100;
         leg.object.children[0].position.x = -legPosM;
         leg.object.children[1].position.x =  legPosM;
