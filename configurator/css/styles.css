@@ -939,8 +939,11 @@ body {
 
 .leg-category-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 6px;
+  grid-template-columns: repeat(4, 1fr);  /* was 5 — bigger cards, more air */
+  gap: 10px;
+}
+@media (min-width: 1200px) {
+  .leg-category-grid { grid-template-columns: repeat(5, 1fr); }
 }
 
 .leg-grid::-webkit-scrollbar {
@@ -1422,20 +1425,18 @@ body {
    Break only at word boundaries, and keep all leg cards a uniform size so
    the grid stays visually regular regardless of name length. */
 .leg-name {
-  /* Prefer whole-word wrapping. Fall back to break-word only when the whole
-     word doesn't fit — prevents overly narrow columns and keeps every leg
-     card visible in the grid, but never letter-breaks a fitting word. */
   word-break: normal;
   overflow-wrap: break-word;
   hyphens: none;
-  line-height: 1.15;
+  line-height: 1.2;
   font-size: 11px;
-  padding: 0 2px;
+  padding: 0 6px;                /* was 2 — text no longer touches corners */
 }
 .leg-option {
-  min-height: 108px;
+  min-height: 128px;             /* was 108 — more room around text */
+  padding: 10px 8px 10px !important;
   align-self: stretch;
-  min-width: 0;  /* let grid tracks shrink instead of pushing columns wide */
+  min-width: 0;
 }
 /* Photo area fills the card width so there's no visible small "photo inside
    card" — the white photo bg merges with the white card bg into one surface. */
