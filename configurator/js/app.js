@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=7d6ff667';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=11cf5ae1';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=7d6ff667';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=11cf5ae1';
 
 class TableConfigurator {
   constructor() {
@@ -2181,14 +2181,20 @@ class TableConfigurator {
     else if (lengthCm <= 350) dist = 70;
     else dist = 75; // 400+
 
-    // Per-shape extra inward offset for specific lengths
+    // Per-shape extra inward offset for specific lengths. Curved shapes (oval,
+    // organic, halbrund, halboval) narrow toward the short ends, so at small
+    // lengths the leg's outer tip can sit past the tabletop outline at its
+    // Z-depth. Extra inward pull compensates.
     if (shapeId === 'oval') {
-      if (lengthCm <= 160) dist += 25;
-      else if (lengthCm <= 180) dist += 15;
-      else if (lengthCm <= 200) dist += 10;
+      if (lengthCm <= 160) dist += 30;
+      else if (lengthCm <= 180) dist += 22;
+      else if (lengthCm <= 200) dist += 17;
+      else if (lengthCm <= 220) dist += 10;
     } else if (shapeId === 'danish-oval') {
-      if (lengthCm <= 180) dist += 15;
-      else if (lengthCm <= 200) dist += 10;
+      // Halboval (Andreas / White 5%) — slightly narrower ends than Oval
+      if (lengthCm <= 180) dist += 20;
+      else if (lengthCm <= 200) dist += 15;
+      else if (lengthCm <= 220) dist += 8;
     } else if (shapeId === 'round') {
       if (lengthCm <= 100) dist += 13;
       else if (lengthCm <= 110) dist += 10;
@@ -2196,12 +2202,15 @@ class TableConfigurator {
       else if (lengthCm <= 130) dist += 7;
       else if (lengthCm <= 140) dist += 6;
     } else if (shapeId === 'organic') {
-      if (lengthCm < 300) dist += 13;
-    } else if (shapeId === 'organic') {
-      if (lengthCm <= 200) dist += 10;
+      // Organic ends narrow noticeably — more inward at short sizes
+      if (lengthCm <= 200) dist += 20;
+      else if (lengthCm <= 220) dist += 15;
+      else if (lengthCm <= 260) dist += 13;
+      else if (lengthCm < 300) dist += 8;
     } else if (shapeId === 'halfrond') {
-      if (lengthCm <= 180) dist += 15;
-      else if (lengthCm <= 200) dist += 10;
+      if (lengthCm <= 180) dist += 20;
+      else if (lengthCm <= 200) dist += 15;
+      else if (lengthCm <= 220) dist += 8;
     } else if (shapeId === 'boogvorm') {
       if (lengthCm <= 180) dist += 10;
     } else if (shapeId === 'verbaan') {
