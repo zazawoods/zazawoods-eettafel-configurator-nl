@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=52812caf';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=2b54e64a';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=52812caf';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=2b54e64a';
 
 class TableConfigurator {
   constructor() {
@@ -3511,7 +3511,29 @@ class TableConfigurator {
     this.bindResetCamera();
     this.bindAddToCart();
     this.updateShapeOptions();
+    this.syncSectionHeadersFromState();
     this.updateSummary();
+  }
+
+  // Sync section-header labels + icons with current state. Needed on init
+  // because index.html ships hardcoded defaults (val-shape="Rechteck",
+  // val-edge="Gerade Kante", etc.) which stay stale when the app boots from
+  // URL params. Without this the sidebar shows the wrong active shape/edge
+  // even though the 3D render is correct.
+  syncSectionHeadersFromState() {
+    const shape = TABLE_SHAPES.find(s => s.id === this.state.shape);
+    if (shape) {
+      const el = document.getElementById('val-shape');
+      if (el) el.textContent = shape.name;
+      const btn = document.querySelector(`.shape-option[data-shape="${shape.id}"]`);
+      const iconHost = btn?.closest('.section')?.querySelector('.section-icon');
+      if (iconHost && shape.icon) iconHost.innerHTML = shape.icon;
+    }
+    const edge = EDGE_OPTIONS.find(e => e.id === this.state.edge);
+    if (edge) {
+      const el = document.getElementById('val-edge');
+      if (el) el.textContent = edge.name;
+    }
   }
 
   bindAddToCart() {
