@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=11cf5ae1';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=b95349f1';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=11cf5ae1';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=b95349f1';
 
 class TableConfigurator {
   constructor() {
@@ -2184,17 +2184,15 @@ class TableConfigurator {
     // Per-shape extra inward offset for specific lengths. Curved shapes (oval,
     // organic, halbrund, halboval) narrow toward the short ends, so at small
     // lengths the leg's outer tip can sit past the tabletop outline at its
-    // Z-depth. Extra inward pull compensates.
+    // Z-depth. Modest extra inward pull compensates without pulling legs so
+    // far inward that they merge in the middle.
     if (shapeId === 'oval') {
-      if (lengthCm <= 160) dist += 30;
-      else if (lengthCm <= 180) dist += 22;
-      else if (lengthCm <= 200) dist += 17;
-      else if (lengthCm <= 220) dist += 10;
+      if (lengthCm <= 160) dist += 22;
+      else if (lengthCm <= 180) dist += 15;
+      else if (lengthCm <= 200) dist += 10;
     } else if (shapeId === 'danish-oval') {
-      // Halboval (Andreas / White 5%) — slightly narrower ends than Oval
-      if (lengthCm <= 180) dist += 20;
-      else if (lengthCm <= 200) dist += 15;
-      else if (lengthCm <= 220) dist += 8;
+      if (lengthCm <= 180) dist += 12;
+      else if (lengthCm <= 200) dist += 8;
     } else if (shapeId === 'round') {
       if (lengthCm <= 100) dist += 13;
       else if (lengthCm <= 110) dist += 10;
@@ -2202,15 +2200,11 @@ class TableConfigurator {
       else if (lengthCm <= 130) dist += 7;
       else if (lengthCm <= 140) dist += 6;
     } else if (shapeId === 'organic') {
-      // Organic ends narrow noticeably — more inward at short sizes
-      if (lengthCm <= 200) dist += 20;
-      else if (lengthCm <= 220) dist += 15;
-      else if (lengthCm <= 260) dist += 13;
-      else if (lengthCm < 300) dist += 8;
+      if (lengthCm <= 200) dist += 13;
+      else if (lengthCm < 300) dist += 10;
     } else if (shapeId === 'halfrond') {
-      if (lengthCm <= 180) dist += 20;
-      else if (lengthCm <= 200) dist += 15;
-      else if (lengthCm <= 220) dist += 8;
+      if (lengthCm <= 180) dist += 15;
+      else if (lengthCm <= 200) dist += 10;
     } else if (shapeId === 'boogvorm') {
       if (lengthCm <= 180) dist += 10;
     } else if (shapeId === 'verbaan') {
@@ -3070,17 +3064,10 @@ class TableConfigurator {
         const isWideWoodSetExt =
           leg.displayName === 'Butterfly Tischbeine aus Eichenholz (Satz) (A)' ||
           leg.displayName === 'Halbrunde Tischbeine aus Eichenholz (Satz) (A)';
-        if (isWideWoodSetExt && ['oval', 'organic', 'halfrond', 'danish-oval'].includes(shape.id)) {
-          // Modest extra inward pull so panel tips stay under curved outline
-          // WITHOUT pulling legs so far in that the two panels merge in the
-          // middle. Aim for the panel outer edge to sit ~30cm from the short
-          // end of the tabletop (user rule of thumb): 15cm @180, 10cm @200,
-          // 5cm @220, 0 above.
-          if (currentLength <= 180) legInwardCm += 15;
-          else if (currentLength <= 200) legInwardCm += 15 - (currentLength - 180) / 20 * 5;
-          else if (currentLength <= 220) legInwardCm += 10 - (currentLength - 200) / 20 * 5;
-          else if (currentLength <= 240) legInwardCm += 5 - (currentLength - 220) / 20 * 5;
-        }
+        // (Removed per-leg inward for Butterfly/Halbrunde external — the shape's
+        // getLegEdgeDistance already pulls them in enough on curved shapes at
+        // short sizes. Extra per-leg inward made the panels sit too close
+        // together in the middle. Push them back OUT toward the edges.)
         // Walrus: 15% more inward on all shapes
         if (leg.displayName === 'Walrus') {
           legInwardCm += currentTargetOuter * 0.15;
