@@ -459,7 +459,10 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--color-surface);
+  /* Match photo background so wood-leg icons (200×200 PNG with white bg)
+     blend seamlessly into the round container — otherwise the light beige
+     surface makes the rectangular photo visible inside the circle. */
+  background: var(--color-white);
   border: 1px solid var(--color-border);
   display: flex;
   align-items: center;
@@ -467,6 +470,14 @@ body {
   flex-shrink: 0;
   color: var(--color-text);
   overflow: hidden;
+}
+/* Section icons that display a photo (leg / shape / behandlung / edge swatch)
+   should fill the circle so no visible rectangle inside. Photos already have
+   white backgrounds that match the .section-icon container above. */
+.section-icon img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
 }
 
 .section-icon img {
