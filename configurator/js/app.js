@@ -742,14 +742,16 @@ class TableConfigurator {
     const tabletopPatterns = [/table.?top/i, /standaard/i];
     const allowedPrefixes = shape.meshPrefix || [];
 
-    // Bootsform: 3 legs imported from DanishOval.glb need scale adjustment.
-    // DanishOval geometry uses vertex Y range ±1 (2m raw) for legs — scale 0.36
-    // brings them to ~72cm world height matching Bootsform's other legs.
+    // Bootsform: 3 legs imported from DanishOval.glb with different vertex scales:
+    //   Flach_Stahl (Thorn), Half_spider (Aeris): vertex range 2m → scale 1.0
+    //   Double_Fluted (Wellen-Duo): vertex range 720 units → scale 0.001
     if (shape.id === 'bootsform') {
-      const IMPORTED = /^bootsform_(Flach_Stahl|Half_spider_-_WOOD|Double_Fluted_-_WOOD)_240$/;
       for (const child of model.children) {
-        if (child.name && IMPORTED.test(child.name)) {
+        if (!child.name) continue;
+        if (/^bootsform_(Flach_Stahl|Half_spider_-_WOOD)_240$/.test(child.name)) {
           child.scale.setScalar(1.0);
+        } else if (child.name === 'bootsform_Double_Fluted_-_WOOD_240') {
+          child.scale.setScalar(0.001);
         }
       }
     }
