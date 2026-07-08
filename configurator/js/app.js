@@ -112,7 +112,9 @@ const ZW_LEG_MODEL_MAP = {
   'Runde Holzsäule aus Stäbchenholz, Eiche':            { name: 'Wellen-Rund',     isWood: true  },
   'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)':  { name: 'Wellen-Duo',      isWood: true  },
   'Runde Holzsäule aus Eichenholz (Satz) (A)':          { name: 'Pilares',         isWood: true  },
-  'Halbrunde Tischbeine aus Eichenholz (Satz) (A)':     { name: 'Hapa',            isWood: true  },
+  // Halbrunde Tischbeine — removed model map so app uses the external GLB
+  // (extracted from rectangle.glb) on ALL shapes. Ensures 1:1 with Rectangle.
+  // 'Halbrunde Tischbeine aus Eichenholz (Satz) (A)':     { name: 'Hapa',            isWood: true  },
   // External GLB legs — name matches the legObject.displayName loaded from external file
   'Spider Tischgestell (L)':                            { name: 'Spider Tischgestell (L)',                      isWood: false },
   'Spider Tischgestell (M)':                            { name: 'Spider Tischgestell (M)',                      isWood: false },
@@ -158,6 +160,9 @@ const EXTERNAL_LEG_FILES = {
   // Ovale Stäbchenholz Satz — user-uploaded standalone GLB. Same file used for
   // both ZW titles (Tischbeine legacy + Tischgestelle Eiche-Stäbchenholz).
   'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)': 'Ovale Tischbeine aus Eichenholz (Satz).glb',
+  // Halbrunde Eichenholz — extracted from rectangle.glb so all shapes render the
+  // canonical rectangle-style arches (some GLBs had faceted/rotated variants).
+  'Halbrunde Tischbeine aus Eichenholz (Satz) (A)':   'Halbrunde Tischbeine aus Eichenholz (Satz).glb',
 };
 
 // Persistent cache of loaded external leg gltf.scene clones — reused across shape switches.
@@ -871,11 +876,12 @@ class TableConfigurator {
         group.name = '__ext_group__' + title;
         const isPair = /^U Tischgestell|^Trapezium Tischgestell|^Stahlwangen Tischgestell|^Drone Tischbeine|^Ovale Tischgestelle aus Eiche-Stäbchenholz/i.test(title);
         const isDrone = /^Drone Tischbeine/i.test(title);
-        // Butterfly Eichenholz: mesh is extracted from rectangle.glb with the 2
-        // panels already baked along X (world X = table length). Skip the extra
-        // 90° Y rotation that other external legs need, and skip pair placement —
-        // it's handled later via splitSetLeg → splitHalves spread.
+        // Butterfly / Halbrunde Eichenholz: both are single-mesh Satz legs
+        // extracted from rectangle.glb with the 2 pieces already baked along X.
+        // Skip the extra 90° Y rotation and use splitSetLeg → splitHalves spread.
         const isButterflyExt = /^Butterfly Tischbeine aus Eichenholz/i.test(title);
+        const isHalbrundeExt = /^Halbrunde Tischbeine aus Eichenholz/i.test(title);
+        const isX_alignedSat = isButterflyExt || isHalbrundeExt;
         const placements = isPair
           ? [{ x: -0.75, mirror: false }, { x: 0.75, mirror: true }]   // pair: second instance faces opposite
           : [{ x: 0, mirror: false }];                                    // single centered
@@ -887,7 +893,7 @@ class TableConfigurator {
           // Drone: each leg faces outward (opposite directions), so we swap which one gets the flip.
           if (isDrone) {
             inst.rotation.y = pl.x < 0 ? -Math.PI / 2 : Math.PI / 2;
-          } else if (isButterflyExt) {
+          } else if (isX_alignedSat) {
             inst.rotation.y = 0;   // no extra rotation — mesh already X-aligned
           } else {
             inst.rotation.y = Math.PI / 2 + (pl.mirror ? Math.PI : 0);
@@ -924,13 +930,13 @@ class TableConfigurator {
           childOrigScales: group.children.map(ch => ch.scale.clone()),
           geomCenterX: null
         };
-        // Butterfly Eichenholz has 2 panels baked into a single mesh along X
-        // (extracted from rectangle.glb at 240cm default). Split into left/right
-        // halves so applyDimensions can spread them like other set-legs, and
-        // pin the baseline to 240 regardless of shape.defaultLength.
-        if (/^Butterfly Tischbeine aus Eichenholz/i.test(title)) {
+        // Butterfly / Halbrunde Eichenholz — both are single-mesh Satz legs with
+        // 2 pieces baked along X (extracted from rectangle.glb at 240cm default).
+        // Split into left/right halves so applyDimensions can spread them like
+        // other set-legs, and pin the baseline to 240 regardless of shape default.
+        if (isX_alignedSat) {
           legEntry.legBaseline = 240;
-          try { enclosingThis.splitSetLeg(legEntry); } catch (e) { console.warn('[ZW] splitSetLeg Butterfly failed', e); }
+          try { enclosingThis.splitSetLeg(legEntry); } catch (e) { console.warn('[ZW] splitSetLeg', title, 'failed', e); }
         }
         enclosingThis.legObjects.push(legEntry);
         // Re-render leg grid — debounced so we run at most once per 50ms,
@@ -2126,7 +2132,9 @@ class TableConfigurator {
       // Hout — Hannah (Butterfly Eichenholz / bogade Butterfly wood)
       'Hannah',
       // External Butterfly Eichenholz (single mesh with 2 panels, split at load)
-      'Butterfly Tischbeine aus Eichenholz (Satz) (A)'
+      'Butterfly Tischbeine aus Eichenholz (Satz) (A)',
+      // External Halbrunde Eichenholz (single mesh with 2 arches, split at load)
+      'Halbrunde Tischbeine aus Eichenholz (Satz) (A)'
     ];
     return setLegs.some(n => displayName.toLowerCase() === n.toLowerCase());
   }
