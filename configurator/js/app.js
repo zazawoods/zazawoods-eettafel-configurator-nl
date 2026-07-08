@@ -860,7 +860,7 @@ class TableConfigurator {
         // (one at each end of the table), for everyone else just one centered.
         const group = new THREE.Group();
         group.name = '__ext_group__' + title;
-        const isPair = /^U Tischgestell|^Trapezium Tischgestell|^Stahlwangen Tischgestell|^Drone Tischbeine|^Butterfly Tischbeine|^Ovale Tischgestelle aus Eiche-Stäbchenholz/i.test(title);
+        const isPair = /^U Tischgestell|^Trapezium Tischgestell|^Stahlwangen Tischgestell|^Drone Tischbeine|^Ovale Tischgestelle aus Eiche-Stäbchenholz/i.test(title);
         const isDrone = /^Drone Tischbeine/i.test(title);
         const placements = isPair
           ? [{ x: -0.75, mirror: false }, { x: 0.75, mirror: true }]   // pair: second instance faces opposite
