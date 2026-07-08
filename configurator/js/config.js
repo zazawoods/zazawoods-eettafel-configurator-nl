@@ -2,13 +2,17 @@
 
 const BASE_PATH = '..';
 
+// Single cache-bust across the whole app — bumped by the deploy script so all
+// static assets (JS, images, GLBs) invalidate together. Never edit by hand.
+export const BUILD_VERSION = '9adc83b8';
+
 export const TABLE_SHAPES = [
   {
     id: 'rectangle',
     name: 'Rechteck',
     shopifyHandle: 'rechteckiger-esstisch-milano-aus-massiver-eichenholz-mit-baumstammkanten',
     glbFile: `${BASE_PATH}/glb files tables and legs/rectangle.glb`,
-    icon: `<img src="Swatches/Vorm/Rechteck_bw.png?v=bec141f-v3" alt="Rechteck"/>`,
+    icon: `<img src="Swatches/Vorm/Rechteck_bw.png?v=${BUILD_VERSION}" alt="Rechteck"/>`,
     meshPrefix: ['rectangle', 'Rectangle'],
     defaultLength: 240,
     defaultWidth: 100,
@@ -20,7 +24,7 @@ export const TABLE_SHAPES = [
     name: 'Oval',
     shopifyHandle: 'ovaler-esstisch-danilo-aus-massiver-eichenholz-mit-schweizer-kante',
     glbFile: `${BASE_PATH}/glb files tables and legs/Oval.glb`,
-    icon: `<img src="Swatches/Vorm/Oval_bw.png?v=bec141f-v3" alt="Oval"/>`,
+    icon: `<img src="Swatches/Vorm/Oval_bw.png?v=${BUILD_VERSION}" alt="Oval"/>`,
     meshPrefix: ['Oval'],
     defaultLength: 240,
     defaultWidth: 120,
@@ -34,7 +38,7 @@ export const TABLE_SHAPES = [
     name: 'Dänisch-Oval',
     shopifyHandle: 'danisch-ovaler-esstisch-aus-massivem-eichenholz-andreas-mit-abgeschragter-kante',
     glbFile: `${BASE_PATH}/glb files tables and legs/DanishOval.glb`,
-    icon: `<img src="Swatches/Vorm/DanishOval_bw.png?v=bec141f-v3" alt="Dänisch-Oval"/>`,
+    icon: `<img src="Swatches/Vorm/DanishOval_bw.png?v=${BUILD_VERSION}" alt="Dänisch-Oval"/>`,
     meshPrefix: ['Danish_Oval', 'Danish'],
     defaultLength: 240,
     defaultWidth: 110,
@@ -48,7 +52,7 @@ export const TABLE_SHAPES = [
     name: 'Rund',
     shopifyHandle: 'runder-esstisch-romano-aus-massiver-eichenholz',
     glbFile: `${BASE_PATH}/glb files tables and legs/Round.glb`,
-    icon: `<img src="Swatches/Vorm/Rund_bw.png?v=bec141f-v3" alt="Rund"/>`,
+    icon: `<img src="Swatches/Vorm/Rund_bw.png?v=${BUILD_VERSION}" alt="Rund"/>`,
     meshPrefix: ['Round'],
     excludeLegs: ['Rondo'],
     defaultLength: 140,
@@ -61,7 +65,7 @@ export const TABLE_SHAPES = [
     name: 'Organisch',
     shopifyHandle: 'esstisch-milano-aus-massivem-eichenholz-mit-baumstammkanten-copy',
     glbFile: `${BASE_PATH}/glb files tables and legs/Organic.glb`,
-    icon: `<img src="Swatches/Vorm/Organisch_bw.png?v=bec141f-v3" alt="Organisch"/>`,
+    icon: `<img src="Swatches/Vorm/Organisch_bw.png?v=${BUILD_VERSION}" alt="Organisch"/>`,
     meshPrefix: ['Organic'],
     defaultLength: 240,
     defaultWidth: 120,
@@ -75,7 +79,7 @@ export const TABLE_SHAPES = [
     name: 'Bootsform',
     shopifyHandle: 'bootsform-esstisch-sergio-aus-massivem-eichenholz',
     glbFile: `${BASE_PATH}/glb files tables and legs/Bootsform.glb`,
-    icon: `<img src="Swatches/Vorm/Bootsform_bw.png?v=bec141f-v3" alt="Bootsform"/>`,
+    icon: `<img src="Swatches/Vorm/Bootsform_bw.png?v=${BUILD_VERSION}" alt="Bootsform"/>`,
     meshPrefix: ['bootsform_', 'Bootsform_'],
     defaultLength: 240,
     defaultWidth: 110,
@@ -90,7 +94,7 @@ export const TABLE_SHAPES = [
     name: 'Halbrund',
     shopifyHandle: 'halbkreisform-esstisch-aus-massivem-eichenholz',
     glbFile: `${BASE_PATH}/glb files tables and legs/Halfrond.glb`,
-    icon: `<img src="Swatches/Vorm/Halbrund_bw.png?v=bec141f-v3" alt="Halbrund"/>`,
+    icon: `<img src="Swatches/Vorm/Halbrund_bw.png?v=${BUILD_VERSION}" alt="Halbrund"/>`,
     meshPrefix: ['Halfrond'],
     defaultLength: 240,
     defaultWidth: 100,

@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE } from './config.js?v=3cc5e8c';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=9adc83b8';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -196,7 +196,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, calculateTotal, getLineItems, formatPrice, addToCart } from './shopify.js?v=3cc5e8c';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=9adc83b8';
 
 class TableConfigurator {
   constructor() {
@@ -541,7 +541,7 @@ class TableConfigurator {
       if (this.modelCache[shapeId]) {
         gltf = this.modelCache[shapeId];
       } else {
-        gltf = await this.loadGLTF(shape.glbFile + '?v=402501d');
+        gltf = await this.loadGLTF(shape.glbFile + '?v=${BUILD_VERSION}');
         if (isStale()) { return; }  // newer load took over — drop this result
         this.modelCache[shapeId] = gltf;
       }
@@ -749,7 +749,7 @@ class TableConfigurator {
       try {
         // Yield to any pending user click first
         await new Promise(r => setTimeout(r, 0));
-        const gltf = await this.loadGLTF(shape.glbFile + '?v=402501d', { silent: true });
+        const gltf = await this.loadGLTF(shape.glbFile + '?v=${BUILD_VERSION}', { silent: true });
         this.modelCache[shape.id] = gltf;
       } catch (e) {
         // Silently skip failed preloads
@@ -981,7 +981,7 @@ class TableConfigurator {
       };
       const cached = EXTERNAL_LEG_CACHE.get(title);
       if (cached) { registerLoaded(cached); return; }
-      const url = '../glb files tables and legs/external-legs/' + encodeURIComponent(file) + '?v=e846cf0';
+      const url = '../glb files tables and legs/external-legs/' + encodeURIComponent(file) + '?v=' + BUILD_VERSION;
       enclosingThis.loader.load(url,
         (gltf) => { EXTERNAL_LEG_CACHE.set(title, gltf.scene); registerLoaded(gltf.scene); },
         undefined,
@@ -3738,10 +3738,10 @@ class TableConfigurator {
       if (name === 'Lara') {
         const file = 'Aeris Tischgestell aus Eichenholz_bw.png';
         void isWood;
-        return `<img src="Swatches/Onderstel/${file}?v=873d792-bw11" alt="${name}"/>`;
+        return `<img src="Swatches/Onderstel/${file}?v=${BUILD_VERSION}" alt="${name}"/>`;
       }
       const file = legSwatchFiles[name];
-      if (file) return `<img src="Swatches/Onderstel/${file}?v=873d792-bw11" alt="${name}"/>`;
+      if (file) return `<img src="Swatches/Onderstel/${file}?v=${BUILD_VERSION}" alt="${name}"/>`;
       // Fallback SVG for unmapped legs
       return `<svg viewBox="0 0 60 50" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="6" x2="55" y2="6"/><line x1="14" y1="6" x2="14" y2="46"/><line x1="46" y1="6" x2="46" y2="46"/></svg>`;
     };
@@ -3841,7 +3841,7 @@ class TableConfigurator {
       // whether a 3D model exists for the current shape — placeholder was leaking
       // on shapes whose GLB doesn't include that leg's mesh.
       const swatchFile = encodeURIComponent(`${item.title}_bw.png`);
-      const swatch = `<img src="Swatches/Onderstel/${swatchFile}?v=873d792-bw11" alt="${item.title}" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','&lt;svg viewBox=&quot;0 0 60 50&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.5&quot; stroke-linecap=&quot;round&quot;&gt;&lt;line x1=&quot;5&quot; y1=&quot;6&quot; x2=&quot;55&quot; y2=&quot;6&quot;/&gt;&lt;line x1=&quot;15&quot; y1=&quot;6&quot; x2=&quot;15&quot; y2=&quot;46&quot;/&gt;&lt;line x1=&quot;45&quot; y1=&quot;6&quot; x2=&quot;45&quot; y2=&quot;46&quot;/&gt;&lt;/svg&gt;')"/>`;
+      const swatch = `<img src="Swatches/Onderstel/${swatchFile}?v=${BUILD_VERSION}" alt="${item.title}" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','&lt;svg viewBox=&quot;0 0 60 50&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.5&quot; stroke-linecap=&quot;round&quot;&gt;&lt;line x1=&quot;5&quot; y1=&quot;6&quot; x2=&quot;55&quot; y2=&quot;6&quot;/&gt;&lt;line x1=&quot;15&quot; y1=&quot;6&quot; x2=&quot;15&quot; y2=&quot;46&quot;/&gt;&lt;line x1=&quot;45&quot; y1=&quot;6&quot; x2=&quot;45&quot; y2=&quot;46&quot;/&gt;&lt;/svg&gt;')"/>`;
       const priceTag = item.price > 0 ? `<div class="leg-price">+€${(item.price/100).toFixed(0)}</div>` : '';
       return `
         <button class="leg-option ${hasModel ? 'has-model' : 'no-model'} ${active ? 'active' : ''}" data-zw-index="${idx}" data-leg-index="${legIdx}">
@@ -4244,7 +4244,13 @@ class TableConfigurator {
       if (isCeramic && !filteredWidths.includes(this.state.width)) {
         this.state.width = filteredWidths[filteredWidths.length - 1] || filteredWidths[0];
       }
-      // Breite section hidden per design request; width stays at shape.defaultWidth internally.
+      // Halbrund exposes Breite so users can pick any of the 3 Shopify widths.
+      // Other shapes still hide Breite (design choice — single width per length).
+      const showBreite = this.state.shape === 'halfrond' && filteredWidths.length > 1;
+      // Snap state.width to a valid choice if it isn't already.
+      if (showBreite && !filteredWidths.includes(this.state.width)) {
+        this.state.width = filteredWidths.includes(shape.defaultWidth) ? shape.defaultWidth : filteredWidths[0];
+      }
       container.innerHTML = `
         <div class="dim-section">
           <div class="dim-section-label">Länge (cm)</div>
@@ -4255,6 +4261,16 @@ class TableConfigurator {
             `).join('')}
           </div>
         </div>
+        ${showBreite ? `
+        <div class="dim-section">
+          <div class="dim-section-label">Breite (cm)</div>
+          <div class="dim-btn-row" id="dim-width-row">
+            ${filteredWidths.map(v => `
+              <button class="dim-btn ${v === this.state.width ? 'active' : ''}"
+                      data-value="${v}">${v}</button>
+            `).join('')}
+          </div>
+        </div>` : ''}
       `;
 
       container.querySelector('#dim-length-row').addEventListener('click', (e) => {
@@ -4267,6 +4283,19 @@ class TableConfigurator {
         this.updateDimensionDisplay();
         this.updateSummary();
       });
+
+      if (showBreite) {
+        container.querySelector('#dim-width-row').addEventListener('click', (e) => {
+          const btn = e.target.closest('.dim-btn');
+          if (!btn) return;
+          this.state.width = parseInt(btn.dataset.value);
+          container.querySelector('#dim-width-row').querySelectorAll('.dim-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          this.applyDimensions();
+          this.updateDimensionDisplay();
+          this.updateSummary();
+        });
+      }
 
       // (Breite click handler removed — width is no longer user-selectable)
     }
@@ -4883,6 +4912,7 @@ class TableConfigurator {
   updatePrice() {
     const product = ZW_PRODUCTS_DATA && ZW_PRODUCTS_DATA[this.state.shape];
     let total = 0;
+    let priceIsFresh = false;
     if (product) {
       const baseVariant = findBaseVariant(product, this.state.shape, this.state);
       total = baseVariant ? baseVariant.price : 0;
@@ -4913,34 +4943,34 @@ class TableConfigurator {
         leg:  legAddon?.variantId,
         behandlung: behandlungVariant
       };
-      total = total / 100; // ZW data is in cents; legacy formatPrice expects EUR units
+      total = total / 100; // ZW data is in cents; formatPrice expects EUR units
+      priceIsFresh = total > 0;
+    }
+    // If we couldn't compute a fresh total (ZW data missing / shape unknown),
+    // fall back to the last successful total from localStorage so the customer
+    // never sees "Preis wird berechnet…" indefinitely.
+    let displayTotal = total;
+    let isStale = false;
+    if (!priceIsFresh) {
+      const cached = getCachedTotal();
+      if (cached > 0) { displayTotal = cached; isStale = true; }
     } else {
-      const activeLeg = this.legObjects[this.activeLegIndex];
-      total = calculateTotal({
-        ...this.state,
-        _activeLeg: activeLeg ? { displayName: activeLeg.displayName, isWood: activeLeg.isWood } : null
-      });
+      setCachedTotal(total);
     }
     const priceEl = document.getElementById('total-price');
     const priceMobileEl = document.getElementById('total-price-mobile');
-    if (priceEl) {
-      if (total > 0) {
-        priceEl.textContent = formatPrice(total);
-        priceEl.classList.remove('price-loading');
+    const setPrice = (el, value, empty) => {
+      if (!el) return;
+      if (value > 0) {
+        el.textContent = formatPrice(value);
+        el.classList.toggle('price-loading', isStale);
       } else {
-        priceEl.textContent = 'Preis wird berechnet…';
-        priceEl.classList.add('price-loading');
+        el.textContent = empty;
+        el.classList.add('price-loading');
       }
-    }
-    if (priceMobileEl) {
-      if (total > 0) {
-        priceMobileEl.textContent = formatPrice(total);
-        priceMobileEl.classList.remove('price-loading');
-      } else {
-        priceMobileEl.textContent = '€ ...';
-        priceMobileEl.classList.add('price-loading');
-      }
-    }
+    };
+    setPrice(priceEl,       displayTotal, 'Preis wird berechnet…');
+    setPrice(priceMobileEl, displayTotal, '€ ...');
   }
 
   showLoader() {
