@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=3790390d';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=d8065c65';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=3790390d';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=d8065c65';
 
 class TableConfigurator {
   constructor() {
@@ -4798,8 +4798,9 @@ class TableConfigurator {
     exportScene.add(modelClone);
 
     const exporter = new USDZExporter();
-    // maxTextureSize keeps the file small enough for a quick Quick Look open.
-    const arrayBuffer = await exporter.parseAsync(exportScene, { maxTextureSize: 1024 });
+    // r0.162 USDZExporter: `parse(scene, options)` returns a Promise<Uint8Array>.
+    // maxTextureSize keeps the file small enough for a fast Quick Look open.
+    const arrayBuffer = await exporter.parse(exportScene, { maxTextureSize: 1024 });
     return new Blob([arrayBuffer], { type: 'model/vnd.usdz+zip' });
   }
 
