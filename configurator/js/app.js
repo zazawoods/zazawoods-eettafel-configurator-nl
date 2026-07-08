@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=d8065c65';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=236563ea';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=d8065c65';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=236563ea';
 
 class TableConfigurator {
   constructor() {
@@ -3570,6 +3570,13 @@ class TableConfigurator {
       this.state.length = shape.defaultLength;
       this.state.width = shape.defaultWidth;
       this.state.radius = 0;
+      // Snap edge to the shape's default when the user hasn't chosen one, or
+      // when their current edge isn't compatible with the new shape's
+      // allowedEdges list (e.g. leaving Dänisch-Oval → Rectangle keeps user's
+      // pick; Rectangle → Dänisch-Oval falls back to facet).
+      if (shape.defaultEdge && shape.allowedEdges && !shape.allowedEdges.includes(this.state.edge)) {
+        this.state.edge = shape.defaultEdge;
+      }
       this.renderDimensionButtons();
 
       grid.querySelectorAll('.shape-option').forEach(b => b.classList.remove('active'));
@@ -3791,14 +3798,19 @@ class TableConfigurator {
       return (a.price || 0) - (b.price || 0);
     });
 
-    // Sync zwLegName from current GLB leg, OR default to first ZW addon that ALSO has a 3D model match
+    // Sync zwLegName from current GLB leg, OR default. Default preference:
+    //   1. "Spider Tischgestell (S)" if it exists for this shape (user request)
+    //   2. First ZW addon that also has a matching 3D model
+    //   3. First addon in the list
     if (!tischgestellList.find(a => a.title === this.state.zwLegName)) {
+      const PREFERRED_DEFAULT = 'Spider Tischgestell (S)';
+      const preferred = tischgestellList.find(item => item.title === PREFERRED_DEFAULT);
       const firstWithModel = tischgestellList.find(item => {
         const model = ZW_LEG_MODEL_MAP[item.title];
         if (!model) return false;
         return this.legObjects.some(l => l.displayName === model.name && l.isWood === model.isWood);
       });
-      this.state.zwLegName = (firstWithModel || tischgestellList[0])?.title || null;
+      this.state.zwLegName = (preferred || firstWithModel || tischgestellList[0])?.title || null;
     }
     // Sync the 3D scene to whatever zwLegName is currently chosen
     if (this.state.zwLegName) {
@@ -4056,18 +4068,24 @@ class TableConfigurator {
       if (zwEdgeTitles.length > 0) {
         const titles = EDGE_TITLE_MAP[edge.id] || [];
         if (!titles.some(t => zwEdgeTitles.includes(t))) return false;
-      } else if (zwProduct) {
-        // Product loaded but has NO edge addons → only the default 'standaard' makes sense
+      } else if (zwProduct && !allowed) {
+        // Product loaded, NO edge addons, AND shape didn't override with allowedEdges
+        // → only the default 'standaard' makes sense. shape.allowedEdges (e.g.
+        // Dänisch-Oval's ['facet']) takes precedence when set.
         if (edge.id !== 'standaard') return false;
       }
       return true;
     });
 
-    // Reset to standaard if current edge is not available
+    // Reset to shape.defaultEdge (or 'standaard') if current edge is not available
     if (!filteredEdges.find(e => e.id === this.state.edge)) {
-      this.state.edge = 'standaard';
+      const fallbackEdgeId = shape?.defaultEdge && filteredEdges.find(e => e.id === shape.defaultEdge)
+        ? shape.defaultEdge
+        : 'standaard';
+      this.state.edge = fallbackEdgeId;
+      const fallbackEdge = EDGE_OPTIONS.find(e => e.id === fallbackEdgeId);
       const valEdge = document.getElementById('val-edge');
-      if (valEdge) valEdge.textContent = 'Gerade Kante';
+      if (valEdge && fallbackEdge) valEdge.textContent = fallbackEdge.name;
     }
 
     const edgeSwatches = {

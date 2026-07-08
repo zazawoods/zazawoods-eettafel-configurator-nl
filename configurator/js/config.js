@@ -4,7 +4,7 @@ const BASE_PATH = '..';
 
 // Single cache-bust across the whole app — bumped by the deploy script so all
 // static assets (JS, images, GLBs) invalidate together. Never edit by hand.
-export const BUILD_VERSION = 'd8065c65';
+export const BUILD_VERSION = '236563ea';
 
 export const TABLE_SHAPES = [
   {
@@ -42,6 +42,11 @@ export const TABLE_SHAPES = [
     meshPrefix: ['Danish_Oval', 'Danish'],
     defaultLength: 240,
     defaultWidth: 110,
+    // ZW sells this table with Schweizer Kante baked into the physical product
+    // ("mit abgeschrägter Kante" in the Shopify handle). Only Schweizer Kante
+    // is available — no Gerade Kante variant exists on Shopify for Andreas.
+    allowedEdges: ['facet'],
+    defaultEdge: 'facet',
     fixedDimensions: [
       [180, 100], [200, 100], [220, 100], [240, 110],
       [260, 120], [280, 120], [300, 120], [350, 120], [400, 120]
@@ -161,8 +166,7 @@ export const MATERIAL_TYPES = {
 
 export const EDGE_OPTIONS = [
   { id: 'standaard', name: 'Gerade Kante',     description: 'Klassische gerade Kante' },
-  // Schweizer Kante — excluded on Bootsform per user (didn't render correctly)
-  { id: 'facet',     name: 'Schweizer Kante',  description: 'Charakteristische Schweizer Kante', onlyMaterial: ['oak'], excludeShapes: ['bootsform'] },
+  { id: 'facet',     name: 'Schweizer Kante',  description: 'Charakteristische Schweizer Kante', onlyMaterial: ['oak'] },
   { id: 'boomstam',  name: 'Baumstammkante',   description: 'Natürliche Baumstammkante',         onlyMaterial: ['oak'] }
 ];
 
