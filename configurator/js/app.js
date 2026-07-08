@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=47b0911d';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=3f31a89f';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=47b0911d';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=3f31a89f';
 
 class TableConfigurator {
   constructor() {
@@ -3052,6 +3052,22 @@ class TableConfigurator {
           if (currentLength <= 180) legInwardCm = 20;
           else if (currentLength <= 200) legInwardCm = 20 - (currentLength - 180) / 20 * 10;
           else if (currentLength < 240) legInwardCm = 10 - (currentLength - 200) / 40 * 10;
+        }
+        // Wide wood-set legs (Butterfly + Halbrunde external, both baked at
+        // 240cm with wide panels) stick out past the tabletop outline on the
+        // curved shapes (oval, organic, halfrond, danish-oval/halboval) when
+        // the table is short. Add a length-dependent inward pull so the panel
+        // tips stay under the tabletop's actual outline at that leg's Z-depth.
+        const isWideWoodSetExt =
+          leg.displayName === 'Butterfly Tischbeine aus Eichenholz (Satz) (A)' ||
+          leg.displayName === 'Halbrunde Tischbeine aus Eichenholz (Satz) (A)';
+        if (isWideWoodSetExt && ['oval', 'organic', 'halfrond', 'danish-oval'].includes(shape.id)) {
+          // Extra inward pull: 30cm @180, 25cm @200, 15cm @220, 5cm @240, 0 above.
+          if (currentLength <= 180) legInwardCm += 30;
+          else if (currentLength <= 200) legInwardCm += 30 - (currentLength - 180) / 20 * 5;
+          else if (currentLength <= 220) legInwardCm += 25 - (currentLength - 200) / 20 * 10;
+          else if (currentLength <= 240) legInwardCm += 15 - (currentLength - 220) / 20 * 10;
+          else if (currentLength <= 260) legInwardCm += 5 - (currentLength - 240) / 20 * 5;
         }
         // Walrus: 15% more inward on all shapes
         if (leg.displayName === 'Walrus') {
