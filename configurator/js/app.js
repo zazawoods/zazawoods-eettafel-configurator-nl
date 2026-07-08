@@ -2148,6 +2148,30 @@ class TableConfigurator {
   // Faces are classified based on their X position relative to the geometry extent.
   // Left third → left group, right third → right group, center third → stays in place.
   splitSetLeg(leg) {
+    // If leg.object is a bare Mesh (new Bootsform flat structure), wrap it in
+    // a Group so splitSetLeg's existing logic (which expects meshes inside a
+    // container) can operate on it.
+    if (leg.object.isMesh) {
+      const mesh = leg.object;
+      const meshParent = mesh.parent;
+      const wrapperGroup = new THREE.Group();
+      wrapperGroup.name = '__satz_wrapper__' + (mesh.name || '');
+      // Transfer transform from mesh onto the new group; reset mesh to identity
+      wrapperGroup.position.copy(mesh.position);
+      wrapperGroup.rotation.copy(mesh.rotation);
+      wrapperGroup.scale.copy(mesh.scale);
+      if (meshParent) meshParent.remove(mesh);
+      mesh.position.set(0, 0, 0);
+      mesh.rotation.set(0, 0, 0);
+      mesh.scale.setScalar(1);
+      wrapperGroup.add(mesh);
+      if (meshParent) meshParent.add(wrapperGroup);
+      leg.object = wrapperGroup;
+      // Update originalScale/originalPosition to reflect the wrapper
+      leg.originalScale = wrapperGroup.scale.clone();
+      leg.originalPosition = wrapperGroup.position.clone();
+    }
+
     const wrapper = leg.object;
     const meshesToSplit = [];
     // Only collect DIRECT child meshes (or meshes inside direct child groups)
