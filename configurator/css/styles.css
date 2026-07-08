@@ -943,8 +943,12 @@ body {
 
 .leg-category-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);  /* wider cards so long words fit */
   gap: 10px;
+}
+@media (min-width: 1500px) {
+  /* Very wide desktop: OK to fit 4 columns */
+  .leg-category-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
 .leg-grid::-webkit-scrollbar {
@@ -1444,7 +1448,9 @@ body {
   padding: 10px 8px 10px !important;
   align-self: stretch;
   min-width: 0;
-  overflow: hidden;   /* clip words that overflow rather than break layout */
+  /* No overflow:hidden — if a rare word still doesn't fit, let it stay
+     visible (better than truncated). Card is now 3-col wide (~120px) so
+     "Spidertischgestell" and "Tischgestell" always fit on one line. */
 }
 /* Photo area fills the card width so there's no visible small "photo inside
    card" — the white photo bg merges with the white card bg into one surface. */
