@@ -746,9 +746,9 @@ class TableConfigurator {
     // (-π/2 around X to stand upright), AND position offset so leg bottom sits
     // at Y=0 in local space (align code assumes this).
     if (shape.id === 'bootsform') {
-      const applyDanishTransform = (child, scale) => {
+      const applyDanishTransform = (child, scale, rotX) => {
         child.scale.setScalar(scale);
-        child.rotation.set(-Math.PI / 2, 0, 0);
+        child.rotation.set(rotX, 0, 0);
         child.position.set(0, 0, 0);
         child.updateMatrixWorld(true);
         // Compute post-transform bbox and center X/Z at 0, bottom Y at 0
@@ -760,9 +760,11 @@ class TableConfigurator {
       for (const child of model.children) {
         if (!child.name) continue;
         if (/^bootsform_(Flach_Stahl|Half_spider_-_WOOD)_240$/.test(child.name)) {
-          applyDanishTransform(child, 1.0);
+          // Thorn (Pedro) + Aeris (Lara) — DanishOval uses rot.x = -π/2
+          applyDanishTransform(child, 1.0, -Math.PI / 2);
         } else if (child.name === 'bootsform_Double_Fluted_-_WOOD_240') {
-          applyDanishTransform(child, 0.001);
+          // Wellen-Duo — DanishOval uses rot.x = π (180°) for oval columns
+          applyDanishTransform(child, 0.001, Math.PI);
         }
       }
     }
