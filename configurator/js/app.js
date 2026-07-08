@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=daf84365';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=74b3b61c';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=daf84365';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=74b3b61c';
 
 class TableConfigurator {
   constructor() {
@@ -536,6 +536,10 @@ class TableConfigurator {
     const isStale = () => this._loadToken !== myToken;
 
     this.isLoading = true;
+    // Suppress tabletop morph animations for the applyDimensions call inside
+    // this loadModel — shape switches should look instant (no fly-in / grow-in
+    // from the previous shape's tabletop position).
+    this._suppressMorph = true;
     this.showLoader();
 
     // Keep the old model visible until the new one is ready
@@ -3113,12 +3117,19 @@ class TableConfigurator {
     // Ensure tabletop sits flush on top of the active leg (prevent floating)
     this.alignTabletopToLeg();
 
-    // Start smooth morph animation
-    if (isProcedural && oldVertices) {
-      this.morphTabletop(oldVertices);
-    } else if (!isProcedural && oldScaleState) {
-      this.morphTabletopScale(oldScaleState);
+    // Start smooth morph animation — skipped during a full shape-load so the
+    // new shape appears instantly instead of "growing/flying in" from the
+    // previous shape's tabletop transform.
+    if (!this._suppressMorph) {
+      if (isProcedural && oldVertices) {
+        this.morphTabletop(oldVertices);
+      } else if (!isProcedural && oldScaleState) {
+        this.morphTabletopScale(oldScaleState);
+      }
     }
+    // Clear the suppression flag — subsequent applyDimensions calls (dimension
+    // changes from the user) get the smooth morph they expect.
+    this._suppressMorph = false;
 
     this.updateShadowCamera();
     this.applyVariant();
