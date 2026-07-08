@@ -562,80 +562,71 @@
     }
   },
   "danish-oval": {
-    "title": "Dänisch-ovaler Esstisch aus massivem Eichenholz „Andreas“ mit abgeschrägter Kante",
-    "handle": "danisch-ovaler-esstisch-aus-massivem-eichenholz-andreas-mit-abgeschragter-kante",
+    "title": "Halbovaler Esstisch „White 5%\" aus massivem Eichenholz",
+    "handle": "ovaler-esstisch-white-5-aus-massivem-eichenholz",
     "baseVariants": [
       {
-        "id": 51527158661386,
-        "title": "180cm x 100cm x 4cm",
+        "id": 51900569682186,
+        "title": "180cm x 90cm x 4cm",
+        "opt1": "180cm x 90cm x 4cm",
         "price": 124900,
-        "available": true,
-        "opt1": "180cm x 100cm x 4cm",
-        "opt2": null
+        "sku": "table-oak-oval-180x90-color:white5"
       },
       {
-        "id": 51527152697610,
+        "id": 51900569714954,
         "title": "200cm x 100cm x 4cm",
-        "price": 134900,
-        "available": true,
         "opt1": "200cm x 100cm x 4cm",
-        "opt2": null
+        "price": 134900,
+        "sku": "table-oak-oval-200x100-color:white5"
       },
       {
-        "id": 51527152730378,
+        "id": 51900569747722,
         "title": "220cm x 100cm x 4cm",
-        "price": 144900,
-        "available": true,
         "opt1": "220cm x 100cm x 4cm",
-        "opt2": null
+        "price": 144900,
+        "sku": "table-oak-oval-220x100-color:white5"
       },
       {
-        "id": 51527152763146,
-        "title": "240cm x 110cm x 4cm",
+        "id": 51900569780490,
+        "title": "240cm x 120cm x 4cm",
+        "opt1": "240cm x 120cm x 4cm",
         "price": 164900,
-        "available": true,
-        "opt1": "240cm x 110cm x 4cm",
-        "opt2": null
+        "sku": "table-oak-oval-240x120-color:white5"
       },
       {
-        "id": 51527152795914,
+        "id": 51900569813258,
         "title": "260cm x 120cm x 4cm",
-        "price": 174900,
-        "available": true,
         "opt1": "260cm x 120cm x 4cm",
-        "opt2": null
+        "price": 174900,
+        "sku": "table-oak-oval-260x120-color:white5"
       },
       {
-        "id": 51527152828682,
+        "id": 51900569846026,
         "title": "280cm x 120cm x 4cm",
-        "price": 179900,
-        "available": true,
         "opt1": "280cm x 120cm x 4cm",
-        "opt2": null
+        "price": 179900,
+        "sku": "table-oak-oval-280x120-color:white5"
       },
       {
-        "id": 51527152861450,
+        "id": 51900569878794,
         "title": "300cm x 120cm x 4cm",
-        "price": 191900,
-        "available": true,
         "opt1": "300cm x 120cm x 4cm",
-        "opt2": null
+        "price": 191900,
+        "sku": "table-oak-oval-300x120-color:white5"
       },
       {
-        "id": 51945228435722,
+        "id": 51945239806218,
         "title": "350cm x 120cm x 4cm",
-        "price": 271900,
-        "available": true,
         "opt1": "350cm x 120cm x 4cm",
-        "opt2": null
+        "price": 271900,
+        "sku": "table-oak-oval-350x120-color:white5"
       },
       {
-        "id": 51945228468490,
+        "id": 51945239838986,
         "title": "400cm x 120cm x 4cm",
-        "price": 336900,
-        "available": true,
         "opt1": "400cm x 120cm x 4cm",
-        "opt2": null
+        "price": 336900,
+        "sku": "table-oak-oval-400x120-color:white5"
       }
     ],
     "addons": {
@@ -755,7 +746,18 @@
           "handle": "ovale-holzsaule-aus-stabchenholz-eiche"
         }
       ],
-      "Kantenbearbeitung": [],
+      "Kantenbearbeitung": [
+        {
+          "title": "Gerade Kanten",
+          "variantId": "43736479301898",
+          "price": 0
+        },
+        {
+          "title": "Schweizer Kanten",
+          "variantId": "43736479039754",
+          "price": 0
+        }
+      ],
       "Behandlung": [
         {
           "title": "Pure",
@@ -848,7 +850,8 @@
           "handle": "walnut"
         }
       ]
-    }
+    },
+    "productId": 10260059947274
   },
   "round": {
     "title": "Runder Esstisch \"Romano\" Aus Massivem Eichenholz",

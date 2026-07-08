@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=236563ea';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=52e032b7';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=236563ea';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=52e032b7';
 
 class TableConfigurator {
   constructor() {
@@ -4267,13 +4267,8 @@ class TableConfigurator {
       if (isCeramic && !filteredWidths.includes(this.state.width)) {
         this.state.width = filteredWidths[filteredWidths.length - 1] || filteredWidths[0];
       }
-      // Halbrund exposes Breite so users can pick any of the 3 Shopify widths.
-      // Other shapes still hide Breite (design choice — single width per length).
-      const showBreite = this.state.shape === 'halfrond' && filteredWidths.length > 1;
-      // Snap state.width to a valid choice if it isn't already.
-      if (showBreite && !filteredWidths.includes(this.state.width)) {
-        this.state.width = filteredWidths.includes(shape.defaultWidth) ? shape.defaultWidth : filteredWidths[0];
-      }
+      // Breite hidden per user — only length is user-selectable. Width stays at
+      // shape.defaultWidth internally (the default width sold on Shopify).
       container.innerHTML = `
         <div class="dim-section">
           <div class="dim-section-label">Länge (cm)</div>
@@ -4284,16 +4279,6 @@ class TableConfigurator {
             `).join('')}
           </div>
         </div>
-        ${showBreite ? `
-        <div class="dim-section">
-          <div class="dim-section-label">Breite (cm)</div>
-          <div class="dim-btn-row" id="dim-width-row">
-            ${filteredWidths.map(v => `
-              <button class="dim-btn ${v === this.state.width ? 'active' : ''}"
-                      data-value="${v}">${v}</button>
-            `).join('')}
-          </div>
-        </div>` : ''}
       `;
 
       container.querySelector('#dim-length-row').addEventListener('click', (e) => {
@@ -4306,19 +4291,6 @@ class TableConfigurator {
         this.updateDimensionDisplay();
         this.updateSummary();
       });
-
-      if (showBreite) {
-        container.querySelector('#dim-width-row').addEventListener('click', (e) => {
-          const btn = e.target.closest('.dim-btn');
-          if (!btn) return;
-          this.state.width = parseInt(btn.dataset.value);
-          container.querySelector('#dim-width-row').querySelectorAll('.dim-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          this.applyDimensions();
-          this.updateDimensionDisplay();
-          this.updateSummary();
-        });
-      }
 
       // (Breite click handler removed — width is no longer user-selectable)
     }
