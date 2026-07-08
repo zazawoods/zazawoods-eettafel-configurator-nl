@@ -862,6 +862,11 @@ class TableConfigurator {
         group.name = '__ext_group__' + title;
         const isPair = /^U Tischgestell|^Trapezium Tischgestell|^Stahlwangen Tischgestell|^Drone Tischbeine|^Ovale Tischgestelle aus Eiche-Stäbchenholz/i.test(title);
         const isDrone = /^Drone Tischbeine/i.test(title);
+        // Butterfly Eichenholz: mesh is extracted from rectangle.glb with the 2
+        // panels already baked along X (world X = table length). Skip the extra
+        // 90° Y rotation that other external legs need, and skip pair placement —
+        // it's handled later via splitSetLeg → splitHalves spread.
+        const isButterflyExt = /^Butterfly Tischbeine aus Eichenholz/i.test(title);
         const placements = isPair
           ? [{ x: -0.75, mirror: false }, { x: 0.75, mirror: true }]   // pair: second instance faces opposite
           : [{ x: 0, mirror: false }];                                    // single centered
@@ -873,6 +878,8 @@ class TableConfigurator {
           // Drone: each leg faces outward (opposite directions), so we swap which one gets the flip.
           if (isDrone) {
             inst.rotation.y = pl.x < 0 ? -Math.PI / 2 : Math.PI / 2;
+          } else if (isButterflyExt) {
+            inst.rotation.y = 0;   // no extra rotation — mesh already X-aligned
           } else {
             inst.rotation.y = Math.PI / 2 + (pl.mirror ? Math.PI : 0);
           }
@@ -897,7 +904,7 @@ class TableConfigurator {
         group.visible = false;
         model.add(group);
         const isWood = /Eichenholz|Stäbchenholz|Holzsäule/i.test(title);
-        enclosingThis.legObjects.push({
+        const legEntry = {
           object: group,
           rawName: '__external__' + title,
           displayName: title,
@@ -907,7 +914,16 @@ class TableConfigurator {
           originalPosition: group.position.clone(),
           childOrigScales: group.children.map(ch => ch.scale.clone()),
           geomCenterX: null
-        });
+        };
+        // Butterfly Eichenholz has 2 panels baked into a single mesh along X
+        // (extracted from rectangle.glb at 240cm default). Split into left/right
+        // halves so applyDimensions can spread them like other set-legs, and
+        // pin the baseline to 240 regardless of shape.defaultLength.
+        if (/^Butterfly Tischbeine aus Eichenholz/i.test(title)) {
+          legEntry.legBaseline = 240;
+          try { enclosingThis.splitSetLeg(legEntry); } catch (e) { console.warn('[ZW] splitSetLeg Butterfly failed', e); }
+        }
+        enclosingThis.legObjects.push(legEntry);
         // Re-render leg grid — debounced so we run at most once per 50ms,
         // not once per external leg (12 in a row was killing the UI thread).
         if (typeof enclosingThis.renderLegGrid === 'function') {
@@ -2099,7 +2115,9 @@ class TableConfigurator {
       'A-Form', 'Butterfly', 'Diago', 'Walrus', 'Ekso',
       'X-Form', 'Hairpin', 'Pedro', 'VN', 'Cona',
       // Hout — Hannah (Butterfly Eichenholz / bogade Butterfly wood)
-      'Hannah'
+      'Hannah',
+      // External Butterfly Eichenholz (single mesh with 2 panels, split at load)
+      'Butterfly Tischbeine aus Eichenholz (Satz) (A)'
     ];
     return setLegs.some(n => displayName.toLowerCase() === n.toLowerCase());
   }
@@ -2996,7 +3014,17 @@ class TableConfigurator {
           else if (currentLength < 240) legInwardCm += 10 - (currentLength - 200) / 40 * 10;
         }
 
-        const totalShiftM = (spreadShiftCm - legInwardCm) / 100;
+        // Per-leg baseline override — used for legs baked at a length different
+        // from the shape's default (e.g. Butterfly Eichenholz extracted from
+        // rectangle.glb at 240cm, used on shapes with defaults of 200/220/etc.)
+        let effectiveSpreadShiftCm = spreadShiftCm;
+        if (leg.legBaseline && leg.legBaseline !== defaultLength) {
+          const legBaseEdge = this.getLegEdgeDistance(leg.legBaseline, shape.id);
+          const legBaseOuter = leg.legBaseline / 2 - legBaseEdge;
+          effectiveSpreadShiftCm = currentTargetOuter - legBaseOuter;
+        }
+
+        const totalShiftM = (effectiveSpreadShiftCm - legInwardCm) / 100;
         if (Math.abs(totalShiftM) > 0.001) {
         leg.splitHalves.forEach(half => {
           const refMesh = half.left || half.right;
