@@ -3504,10 +3504,19 @@ class TableConfigurator {
       // Build cart permalink with ALL 4 line items: base table + Behandlung + edge + leg
       const v = this._selectedVariants || {};
       const items = [];
-      if (v.base)       items.push(v.base       + ':1');
-      if (v.behandlung) items.push(v.behandlung + ':1');
-      if (v.edge)       items.push(v.edge       + ':1');
-      if (v.leg)        items.push(v.leg        + ':1');
+      // Skip any variant with a falsy/undefined ID — never emit "undefined:1"
+      // into the Shopify permalink (would leave the customer with a broken cart).
+      const validId = (x) => x !== undefined && x !== null && x !== '' && String(x) !== 'undefined' && String(x) !== 'null';
+      if (validId(v.base))       items.push(v.base       + ':1');
+      if (validId(v.behandlung)) items.push(v.behandlung + ':1');
+      if (validId(v.edge))       items.push(v.edge       + ':1');
+      if (validId(v.leg))        items.push(v.leg        + ':1');
+      // Base table is mandatory — without it Shopify receives an addon-only cart
+      // (behandlung/edge/leg are €0 line items on the base product's page).
+      if (!validId(v.base)) {
+        this.showToast('Diese Größe ist gerade nicht verfügbar — bitte andere Länge/Breite wählen.');
+        return;
+      }
       if (items.length === 0) {
         this.showToast('Konfiguration unvollständig — bitte erneut auswählen');
         return;
@@ -4151,6 +4160,15 @@ class TableConfigurator {
       if (isCeramic && !filteredDims.some(([l, w]) => l === this.state.length && w === this.state.width)) {
         const last = filteredDims[filteredDims.length - 1];
         if (last) { this.state.length = last[0]; this.state.width = last[1]; }
+      }
+      // Snap to the closest valid (length, width) pair — width may have come from
+      // a stale URL/state (e.g. Bootsform 350×140 → now 350×120 in Shopify).
+      // Otherwise findBaseVariant would keep the stale width in state and the
+      // customer summary would still say 140 while cart adds a 120-wide.
+      const exactMatch = filteredDims.find(([l, w]) => l === this.state.length && w === this.state.width);
+      if (!exactMatch) {
+        const lenMatch = filteredDims.find(([l]) => l === this.state.length);
+        if (lenMatch) this.state.width = lenMatch[1];
       }
       // De-duplicate by length so user sees one button per length (width is auto-paired internally)
       const uniqueByLength = [];
