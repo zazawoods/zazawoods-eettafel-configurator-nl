@@ -3,7 +3,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=f5352ae6';
+import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=3790390d';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -196,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=f5352ae6';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=3790390d';
 
 class TableConfigurator {
   constructor() {
@@ -4719,79 +4720,63 @@ class TableConfigurator {
     const btn = document.getElementById('btn-ar');
     if (!btn) return;
 
-    // Android: AR is intentionally unsupported here — Apple Quick Look is
-    // iOS-only. Give a clear German error and stop.
+    // Android: intentionally unsupported (Apple Quick Look is iOS-only).
     if (isAndroid) {
       this.showToast('AR ist derzeit nur auf iPhone / iPad verfügbar.');
       return;
     }
 
-    // Desktop (not iOS, not Android): keep the QR popup so the user can scan
-    // the current configuration with their iPhone.
+    // Desktop: QR popup so the user can scan the config on their iPhone.
     if (!isIOS) {
       this.showARPopup();
       return;
     }
 
-    // iPhone / iPad: launch Quick Look AR. This requires exporting the current
-    // 3D scene to GLB and letting Safari open it in Quick Look via <a rel="ar">.
+    // iPhone / iPad — real AR path.
+    //
+    // iOS Quick Look ONLY understands `.usdz` / `.reality`. Handing it a `.glb`
+    // makes Safari navigate to the blob URL as if it were a webpage (which is
+    // why users saw an "empty zazawoods page" flash by). We therefore export
+    // USDZ client-side using three.js's USDZExporter and open it via a plain
+    // <a rel="ar"> anchor — the same pattern Apple's own examples use.
     btn.classList.add('loading');
     const cleanup = () => btn.classList.remove('loading');
-    // Safety timer in case anything hangs.
-    const hangTimer = setTimeout(cleanup, 8000);
+    const hangTimer = setTimeout(cleanup, 12000);
 
     try {
-      const glbBlob = await this.exportSceneToGLB();
-      if (!glbBlob || glbBlob.size < 1000) throw new Error('Empty GLB');
-      const blobUrl = URL.createObjectURL(glbBlob);
+      const usdzBlob = await this.exportSceneToUSDZ();
+      if (!usdzBlob || usdzBlob.size < 1000) throw new Error('Empty USDZ');
 
-      // Preferred path: <model-viewer> with ar-modes="quick-look" auto-generates
-      // the Quick Look link when the user taps its AR button. We create it
-      // hidden and call activateAR() so it happens without a visible viewer.
-      let mv = document.getElementById('ar-model-viewer');
-      if (mv) mv.remove();
+      // Safari inspects the file extension in the URL. Blob URLs don't have
+      // one, so we use a File object which gives us a proper name.
+      const usdzFile = new File([usdzBlob], 'zazawoods-tisch.usdz', { type: 'model/vnd.usdz+zip' });
+      const usdzUrl = URL.createObjectURL(usdzFile);
 
-      mv = document.createElement('model-viewer');
-      mv.id = 'ar-model-viewer';
-      mv.setAttribute('src', blobUrl);
-      mv.setAttribute('ar', '');
-      mv.setAttribute('ar-modes', 'quick-look scene-viewer webxr');
-      mv.setAttribute('ar-scale', 'fixed');
-      mv.setAttribute('camera-controls', '');
-      mv.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none;z-index:-1;';
-      document.body.appendChild(mv);
+      // Build the AR link exactly as Apple recommends.
+      const link = document.createElement('a');
+      link.rel = 'ar';
+      link.href = usdzUrl;
+      link.style.cssText = 'position:fixed;top:-9999px;left:-9999px;';
+      // Safari requires a child <img> — anything, doesn't need to be real.
+      const img = document.createElement('img');
+      img.alt = '';
+      img.style.cssText = 'width:1px;height:1px;';
+      link.appendChild(img);
+      document.body.appendChild(link);
 
-      const cleanupBlob = () => {
-        try { URL.revokeObjectURL(blobUrl); } catch (e) {}
-        try { mv.remove(); } catch (e) {}
-      };
+      // Programmatic click launches Quick Look.
+      link.click();
 
-      let launched = false;
-      const launch = () => {
-        if (launched) return;
-        launched = true;
-        try { mv.activateAR(); }
-        catch (err) {
-          console.warn('AR activate failed:', err);
-          this.showToast('AR konnte nicht gestartet werden. Bitte in Safari öffnen.');
-        }
-        clearTimeout(hangTimer);
-        cleanup();
-        // Revoke the blob URL after Safari has consumed it.
-        setTimeout(cleanupBlob, 20000);
-      };
+      clearTimeout(hangTimer);
+      cleanup();
 
-      // Fires when model-viewer has finished loading the GLB into its scene.
-      mv.addEventListener('load', launch, { once: true });
-      // Guard: if `load` never fires (e.g. bad blob), still bail out gracefully.
+      // Revoke the blob URL after Safari has consumed it. Keep it alive long
+      // enough for Quick Look to open (about a second is usually enough, but
+      // we're generous).
       setTimeout(() => {
-        if (!launched) {
-          clearTimeout(hangTimer);
-          cleanup();
-          cleanupBlob();
-          this.showToast('AR-Modell konnte nicht geladen werden.');
-        }
-      }, 7000);
+        try { URL.revokeObjectURL(usdzUrl); } catch (e) {}
+        try { link.remove(); } catch (e) {}
+      }, 30000);
 
     } catch (err) {
       console.error('AR error:', err);
@@ -4799,6 +4784,23 @@ class TableConfigurator {
       cleanup();
       this.showToast('AR ist momentan nicht verfügbar. Bitte erneut versuchen.');
     }
+  }
+
+  async exportSceneToUSDZ() {
+    if (!this.currentModel) throw new Error('No model loaded');
+
+    // Clone visible parts only so hidden variants/legs don't get baked in.
+    const exportScene = new THREE.Scene();
+    const modelClone = this.currentModel.clone(true);
+    const toRemove = [];
+    modelClone.traverse(child => { if (!child.visible) toRemove.push(child); });
+    toRemove.forEach(obj => obj.parent?.remove(obj));
+    exportScene.add(modelClone);
+
+    const exporter = new USDZExporter();
+    // maxTextureSize keeps the file small enough for a quick Quick Look open.
+    const arrayBuffer = await exporter.parseAsync(exportScene, { maxTextureSize: 1024 });
+    return new Blob([arrayBuffer], { type: 'model/vnd.usdz+zip' });
   }
 
   showARPopup() {
