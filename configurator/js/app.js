@@ -932,7 +932,7 @@ class TableConfigurator {
       };
       const cached = EXTERNAL_LEG_CACHE.get(title);
       if (cached) { registerLoaded(cached); return; }
-      const url = '../glb files tables and legs/external-legs/' + encodeURIComponent(file);
+      const url = '../glb files tables and legs/external-legs/' + encodeURIComponent(file) + '?v=e846cf0';
       enclosingThis.loader.load(url,
         (gltf) => { EXTERNAL_LEG_CACHE.set(title, gltf.scene); registerLoaded(gltf.scene); },
         undefined,
