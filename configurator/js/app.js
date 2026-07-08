@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=3f31a89f';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=7d6ff667';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=3f31a89f';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=7d6ff667';
 
 class TableConfigurator {
   constructor() {
@@ -3062,12 +3062,15 @@ class TableConfigurator {
           leg.displayName === 'Butterfly Tischbeine aus Eichenholz (Satz) (A)' ||
           leg.displayName === 'Halbrunde Tischbeine aus Eichenholz (Satz) (A)';
         if (isWideWoodSetExt && ['oval', 'organic', 'halfrond', 'danish-oval'].includes(shape.id)) {
-          // Extra inward pull: 30cm @180, 25cm @200, 15cm @220, 5cm @240, 0 above.
-          if (currentLength <= 180) legInwardCm += 30;
-          else if (currentLength <= 200) legInwardCm += 30 - (currentLength - 180) / 20 * 5;
-          else if (currentLength <= 220) legInwardCm += 25 - (currentLength - 200) / 20 * 10;
-          else if (currentLength <= 240) legInwardCm += 15 - (currentLength - 220) / 20 * 10;
-          else if (currentLength <= 260) legInwardCm += 5 - (currentLength - 240) / 20 * 5;
+          // Modest extra inward pull so panel tips stay under curved outline
+          // WITHOUT pulling legs so far in that the two panels merge in the
+          // middle. Aim for the panel outer edge to sit ~30cm from the short
+          // end of the tabletop (user rule of thumb): 15cm @180, 10cm @200,
+          // 5cm @220, 0 above.
+          if (currentLength <= 180) legInwardCm += 15;
+          else if (currentLength <= 200) legInwardCm += 15 - (currentLength - 180) / 20 * 5;
+          else if (currentLength <= 220) legInwardCm += 10 - (currentLength - 200) / 20 * 5;
+          else if (currentLength <= 240) legInwardCm += 5 - (currentLength - 220) / 20 * 5;
         }
         // Walrus: 15% more inward on all shapes
         if (leg.displayName === 'Walrus') {
