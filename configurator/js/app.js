@@ -742,18 +742,26 @@ class TableConfigurator {
     const tabletopPatterns = [/table.?top/i, /standaard/i];
     const allowedPrefixes = shape.meshPrefix || [];
 
-    // Bootsform: 3 legs imported from DanishOval.glb — need scale + rotation
-    // to match DanishOval's orientation. DanishOval applies rot.x = -π/2 to make
-    // legs stand upright (mesh is stored lying flat).
+    // Bootsform: 3 legs imported from DanishOval.glb — need scale, rotation
+    // (-π/2 around X to stand upright), AND position offset so leg bottom sits
+    // at Y=0 in local space (align code assumes this).
     if (shape.id === 'bootsform') {
+      const applyDanishTransform = (child, scale) => {
+        child.scale.setScalar(scale);
+        child.rotation.set(-Math.PI / 2, 0, 0);
+        child.position.set(0, 0, 0);
+        child.updateMatrixWorld(true);
+        // Compute post-transform bbox to find bottom Y
+        const box = new THREE.Box3().setFromObject(child);
+        // Shift up so bottom lands at Y = 0
+        if (isFinite(box.min.y)) child.position.y = -box.min.y;
+      };
       for (const child of model.children) {
         if (!child.name) continue;
         if (/^bootsform_(Flach_Stahl|Half_spider_-_WOOD)_240$/.test(child.name)) {
-          child.scale.setScalar(1.0);
-          child.rotation.set(-Math.PI / 2, 0, 0);
+          applyDanishTransform(child, 1.0);
         } else if (child.name === 'bootsform_Double_Fluted_-_WOOD_240') {
-          child.scale.setScalar(0.001);
-          child.rotation.set(-Math.PI / 2, 0, 0);
+          applyDanishTransform(child, 0.001);
         }
       }
     }
