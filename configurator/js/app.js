@@ -795,6 +795,15 @@ class TableConfigurator {
           return;
         }
 
+        // Bootsform: the internal copy of Butterfly Eichenholz was baked in
+        // from rectangle.glb during Bootsform rebuild, but its material comes
+        // out looking metal-black. Use the standalone external Butterfly
+        // Eichenholz GLB instead (loaded below), so hide the internal one.
+        if (shape.id === 'bootsform' && /Butterfly_Tischbeine.*Eichenholz/i.test(primaryName)) {
+          child.visible = false;
+          return;
+        }
+
         // Skip collapsed meshes
         const childBox = new THREE.Box3().setFromObject(child);
         const childSize = childBox.getSize(new THREE.Vector3());
