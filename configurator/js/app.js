@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=d92f2c50';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=56394aa1';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=d92f2c50';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=56394aa1';
 
 class TableConfigurator {
   constructor() {
@@ -703,6 +703,17 @@ class TableConfigurator {
       this.renderLegGrid();
 
       this.applyDimensions();
+
+      // Safety: external legs (Halbrunde, Butterfly, U, etc.) load async and
+      // schedule their own applyDimensions with a short delay. When shape is
+      // switched multiple times, the debounced timer can be cancelled by
+      // subsequent loads, leaving legs at their pre-fix positions. Schedule
+      // additional applyDimensions calls at 300/700ms so late-arriving legs
+      // are guaranteed to pick up the current shape+length offsets.
+      clearTimeout(this._safetyApplyDimTimer1);
+      clearTimeout(this._safetyApplyDimTimer2);
+      this._safetyApplyDimTimer1 = setTimeout(() => this.applyDimensions(), 300);
+      this._safetyApplyDimTimer2 = setTimeout(() => this.applyDimensions(), 700);
 
       // Apply top material — don't await so the model shows immediately
       // The texture will pop in once loaded (usually from cache)
