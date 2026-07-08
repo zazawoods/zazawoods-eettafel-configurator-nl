@@ -475,12 +475,12 @@ body {
    should fill the circle so no visible rectangle inside. Photos already have
    white backgrounds that match the .section-icon container above. */
 .section-icon img {
-  /* Photo fills most of the circle (34/40 = 85%) so the leg is clearly
-     visible. Contain keeps the whole product in view (no cropping), and the
-     small white margin around blends with the white circle background so
-     there's no visible square inside the round border. */
-  width: 34px !important;
-  height: 34px !important;
+  /* Fully fit the square photo inside the round border. A 40-px circle
+     inscribes a ~28-px square (40/√2 ≈ 28.28) — 28px keeps every corner of
+     the photo inside the circle so nothing gets clipped. object-fit:contain
+     preserves the aspect ratio; center alignment happens via the flex parent. */
+  width: 28px !important;
+  height: 28px !important;
   object-fit: contain !important;
 }
 
@@ -1426,20 +1426,25 @@ body {
    Break only at word boundaries, and keep all leg cards a uniform size so
    the grid stays visually regular regardless of name length. */
 .leg-name {
-  word-break: normal;
-  overflow-wrap: break-word;
+  /* Strict word-only wrapping — never break inside a word, even if a very
+     long compound like "Spidertischgestell" extends past the card's visible
+     area. Overflow is handled by the card's overflow:hidden (visible clip)
+     without ugly letter-level breaks. */
+  word-break: keep-all;
+  overflow-wrap: normal;
   hyphens: none;
   line-height: 1.22;
-  font-size: 10.5px;             /* smaller so long German words fit inside */
+  font-size: 10.5px;
   padding: 0 4px;
   width: 100%;
   box-sizing: border-box;
 }
 .leg-option {
-  min-height: 128px;             /* was 108 — more room around text */
+  min-height: 128px;
   padding: 10px 8px 10px !important;
   align-self: stretch;
   min-width: 0;
+  overflow: hidden;   /* clip words that overflow rather than break layout */
 }
 /* Photo area fills the card width so there's no visible small "photo inside
    card" — the white photo bg merges with the white card bg into one surface. */
