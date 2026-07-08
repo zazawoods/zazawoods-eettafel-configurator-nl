@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=9adc83b8';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=3f222158';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -196,7 +196,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=9adc83b8';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=3f222158';
 
 class TableConfigurator {
   constructor() {
@@ -316,7 +316,11 @@ class TableConfigurator {
     params.set('length', s.length);
     params.set('width', s.width);
     params.set('edge', s.edge);
-    if (leg) params.set('leg', leg.displayName);
+    // Prefer the ZW product title over the internal model name (e.g. "Butterfly
+    // Tischbeine aus Eichenholz (Satz) (A)" instead of "Hannah") so URLs shared
+    // and reloaded from saved configurations restore the exact addon variant.
+    const legTitle = s.zwLegName || leg?.displayName;
+    if (legTitle) params.set('leg', legTitle);
     params.set('powder', s.powderCoat);
     if (s.variant && s.variant !== 'a') params.set('variant', s.variant);
     if (s.topThickness && s.topThickness !== 4) params.set('thickness', s.topThickness);
@@ -4588,13 +4592,51 @@ class TableConfigurator {
     const color = matType?.colors.find(c => c.id === this.state.color);
     const activeLeg = this.legObjects[this.activeLegIndex];
 
+    // Prefer ZW product titles the customer actually sees in the sidebar over
+    // internal model names ("Hannah" → "Butterfly Tischbeine aus Eichenholz…"),
+    // and the picked Behandlung title ("Black") over the raw color id ("Natural").
+    const legLabel = this.state.zwLegName || activeLeg?.displayName || '';
+    const behandlungLabel = this.state.behandlungTitle || color?.name || '';
+
+    // Dimension string matches what the sidebar shows.
+    const dimStr = this.state.shape === 'round'
+      ? `Ø ${this.state.length} cm`
+      : `${this.state.length} × ${this.state.width} cm`;
+
+    // Current total (fresh or last-cached fallback). Guaranteed to render even
+    // if ZW_PRODUCTS_DATA is unavailable.
+    let priceStr = '';
+    try {
+      const product = ZW_PRODUCTS_DATA && ZW_PRODUCTS_DATA[this.state.shape];
+      let total = 0;
+      if (product) {
+        const bv = findBaseVariant(product, this.state.shape, this.state);
+        total += bv ? bv.price : 0;
+        const edgeTitles = EDGE_TITLE_MAP[this.state.edge] || [];
+        const edgeAddon = product.addons.Kantenbearbeitung.find(a => edgeTitles.includes(a.title));
+        if (edgeAddon) total += edgeAddon.price;
+        if (this.state.zwLegName) {
+          const la = product.addons.Tischgestell.find(a => a.title === this.state.zwLegName);
+          if (la) total += la.price;
+          else {
+            const cat = CATALOG_ONLY_LEGS.find(c => c.title === this.state.zwLegName);
+            if (cat) total += cat.price;
+          }
+        }
+        total = total / 100;
+      }
+      if (!(total > 0)) total = getCachedTotal();
+      if (total > 0) priceStr = formatPrice(total);
+    } catch (e) { /* keep empty */ }
+
     const config = {
       id: Date.now(),
       thumb,
-      title: `${shape?.name || ''} · ${color?.name || ''}`,
-      sub: `${this.state.length} cm · ${activeLeg?.displayName || ''}`,
+      title: `${shape?.name || ''} · ${behandlungLabel}`,
+      sub: `${dimStr}${legLabel ? ' · ' + legLabel : ''}${priceStr ? ' · ' + priceStr : ''}`,
       state: { ...this.state },
-      legName: activeLeg?.displayName || '',
+      legName: legLabel,
+      priceStr,
       url: window.location.search
     };
 
