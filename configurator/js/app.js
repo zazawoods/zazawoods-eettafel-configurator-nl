@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=80923bd1';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=38272a2d';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=80923bd1';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=38272a2d';
 
 class TableConfigurator {
   constructor() {
@@ -2193,6 +2193,30 @@ class TableConfigurator {
       else if (lengthCm <= 140) dist += 6;
     } else if (shapeId === 'verbaan') {
       // Verbaan uses the base distances without extra offset
+    } else if (shapeId === 'danish-oval' || shapeId === 'halboval') {
+      // Halboval's curved short ends narrow the tabletop X at arch's Z-depth
+      // (Z=±0.30). Small sizes need inward correction so Satz arch tips clear
+      // the tapered outline. Larger sizes fit 1:1 with Rectangle.
+      if (lengthCm <= 180) dist += 8;
+      else if (lengthCm <= 200) dist += 5;
+    } else if (shapeId === 'oval') {
+      // Oval tapers on both axes and short sizes are the narrowest — biggest
+      // stick-out risk. Progressive inward correction.
+      if (lengthCm <= 160) dist += 10;
+      else if (lengthCm <= 180) dist += 8;
+      else if (lengthCm <= 200) dist += 5;
+    } else if (shapeId === 'organic') {
+      // Organic short curved sides pull inward at small lengths.
+      if (lengthCm <= 200) dist += 8;
+      else if (lengthCm <= 220) dist += 4;
+    } else if (shapeId === 'halfrond') {
+      // Halbrund has rounded short-end + one straight long side.
+      if (lengthCm <= 180) dist += 8;
+      else if (lengthCm <= 200) dist += 5;
+    } else if (shapeId === 'bootsform') {
+      // Bootsform is essentially rectangular but with slight taper on short
+      // ends. Minor correction at smallest size only.
+      if (lengthCm <= 180) dist += 5;
     }
 
     return dist;
