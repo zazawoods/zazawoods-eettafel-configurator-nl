@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=689f4053';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=ca029b64';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=689f4053';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=ca029b64';
 
 class TableConfigurator {
   constructor() {
@@ -2181,32 +2181,16 @@ class TableConfigurator {
     else if (lengthCm <= 350) dist = 70;
     else dist = 75; // 400+
 
-    // Per-shape extra inward offset for specific lengths. Curved shapes (oval,
-    // organic, halbrund, halboval) narrow toward the short ends, so at small
-    // lengths the leg's outer tip can sit past the tabletop outline at its
-    // Z-depth. Modest extra inward pull compensates without pulling legs so
-    // far inward that they merge in the middle.
-    if (shapeId === 'oval') {
-      if (lengthCm <= 160) dist += 22;
-      else if (lengthCm <= 180) dist += 15;
-      else if (lengthCm <= 200) dist += 10;
-    } else if (shapeId === 'danish-oval') {
-      if (lengthCm <= 180) dist += 12;
-      else if (lengthCm <= 200) dist += 8;
-    } else if (shapeId === 'round') {
+    // Per-user request: Satz legs positioned identically on all shapes (1:1 with
+    // Rectangle). No per-shape inward offsets for curved shapes — pure base
+    // distance applies. Round is the only shape that keeps a special table
+    // because its edge is circular from every direction, not just short ends.
+    if (shapeId === 'round') {
       if (lengthCm <= 100) dist += 13;
       else if (lengthCm <= 110) dist += 10;
       else if (lengthCm <= 120) dist += 9;
       else if (lengthCm <= 130) dist += 7;
       else if (lengthCm <= 140) dist += 6;
-    } else if (shapeId === 'organic') {
-      if (lengthCm <= 200) dist += 13;
-      else if (lengthCm < 300) dist += 10;
-    } else if (shapeId === 'halfrond') {
-      if (lengthCm <= 180) dist += 15;
-      else if (lengthCm <= 200) dist += 10;
-    } else if (shapeId === 'boogvorm') {
-      if (lengthCm <= 180) dist += 10;
     } else if (shapeId === 'verbaan') {
       // Verbaan uses the base distances without extra offset
     }
