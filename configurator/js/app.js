@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=bf35a6ea';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=4fb1728a';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=bf35a6ea';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=4fb1728a';
 
 class TableConfigurator {
   constructor() {
@@ -2207,7 +2207,9 @@ class TableConfigurator {
     } else if (shapeId === 'danish-oval' || shapeId === 'halboval') {
       if (lengthCm <= 180) dist += 20;
       else if (lengthCm <= 200) dist += 12;
-      else if (lengthCm <= 220) dist += 6;
+      else if (lengthCm <= 220) dist += 8;
+      else if (lengthCm <= 240) dist += 6;
+      else if (lengthCm <= 260) dist += 4;
     } else if (shapeId === 'oval') {
       if (lengthCm <= 160) dist += 25;
       else if (lengthCm <= 180) dist += 20;
@@ -2425,6 +2427,14 @@ class TableConfigurator {
     // curved tables until the user reloads the page. Reloading works because
     // loadModel() calls applyDimensions() once, which positions ALL legs.
     this.applyDimensions();
+    // Belt-and-suspenders: schedule additional applyDimensions calls to
+    // guarantee positioning even if some late render/morph resets things.
+    clearTimeout(this._switchLegSafetyTimer1);
+    clearTimeout(this._switchLegSafetyTimer2);
+    clearTimeout(this._switchLegSafetyTimer3);
+    this._switchLegSafetyTimer1 = setTimeout(() => this.applyDimensions(), 50);
+    this._switchLegSafetyTimer2 = setTimeout(() => this.applyDimensions(), 250);
+    this._switchLegSafetyTimer3 = setTimeout(() => this.applyDimensions(), 800);
 
     this.updatePowderSectionVisibility();
     this.updateLegSectionIcon();
