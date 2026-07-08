@@ -178,7 +178,8 @@ export const MATERIAL_TYPES = {
 
 export const EDGE_OPTIONS = [
   { id: 'standaard', name: 'Gerade Kante',     description: 'Klassische gerade Kante' },
-  { id: 'facet',     name: 'Schweizer Kante',  description: 'Charakteristische Schweizer Kante', onlyMaterial: ['oak'] },
+  // Schweizer Kante — excluded on Bootsform per user (didn't render correctly)
+  { id: 'facet',     name: 'Schweizer Kante',  description: 'Charakteristische Schweizer Kante', onlyMaterial: ['oak'], excludeShapes: ['bootsform'] },
   { id: 'boomstam',  name: 'Baumstammkante',   description: 'Natürliche Baumstammkante',         onlyMaterial: ['oak'] }
 ];
 
