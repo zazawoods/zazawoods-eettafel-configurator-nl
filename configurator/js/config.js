@@ -13,18 +13,7 @@ export const TABLE_SHAPES = [
     defaultLength: 240,
     defaultWidth: 100,
     lengths: [180, 200, 220, 240, 260, 280, 300, 350, 400],
-    widths: [100],
-    variants: [
-      { size:'180cm x 100cm x 4cm', length:180, width:100, price:119900, id:36045911851174 },
-      { size:'200cm x 100cm x 4cm', length:200, width:100, price:124900, id:36046025130022 },
-      { size:'220cm x 100cm x 4cm', length:220, width:100, price:149900, id:36046025162790 },
-      { size:'240cm x 100cm x 4cm', length:240, width:100, price:159900, id:36046025195558 },
-      { size:'260cm x 100cm x 4cm', length:260, width:100, price:169900, id:36046025228326 },
-      { size:'280cm x 100cm x 4cm', length:280, width:100, price:179900, id:36046025261094 },
-      { size:'300cm x 100cm x 4cm', length:300, width:100, price:189900, id:36046025293862 },
-      { size:'350cm x 100cm x 4cm', length:350, width:100, price:229900, id:36046025326630 },
-      { size:'400cm x 100cm x 4cm', length:400, width:100, price:296900, id:36046025359398 }
-    ]
+    widths: [100]
   },
   {
     id: 'oval',
@@ -90,20 +79,10 @@ export const TABLE_SHAPES = [
     meshPrefix: ['bootsform_', 'Bootsform_'],
     defaultLength: 240,
     defaultWidth: 110,
+    // Match Shopify variants exactly — 350/400 sold at width 120, not 140.
     fixedDimensions: [
       [180, 100], [200, 100], [220, 100], [240, 110],
-      [260, 120], [280, 120], [300, 120], [350, 140], [400, 140]
-    ],
-    variants: [
-      { size:'180cm x 100cm x 4cm', length:180, width:100, price:124900, id:43827799130378 },
-      { size:'200cm x 100cm x 4cm', length:200, width:100, price:134900, id:43827799163146 },
-      { size:'220cm x 100cm x 4cm', length:220, width:100, price:144900, id:43827799195914 },
-      { size:'240cm x 110cm x 4cm', length:240, width:110, price:164900, id:43827799228682 },
-      { size:'260cm x 120cm x 4cm', length:260, width:120, price:174900, id:43827799261450 },
-      { size:'280cm x 120cm x 4cm', length:280, width:120, price:179900, id:43827799294218 },
-      { size:'300cm x 120cm x 4cm', length:300, width:120, price:191900, id:43827799326986 },
-      { size:'350cm x 120cm x 4cm', length:350, width:120, price:271900, id:51945233678602 },
-      { size:'400cm x 120cm x 4cm', length:400, width:120, price:336900, id:51945233711370 }
+      [260, 120], [280, 120], [300, 120], [350, 120], [400, 120]
     ]
   },
   {
