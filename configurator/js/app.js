@@ -268,7 +268,16 @@ class TableConfigurator {
         this.state.edge = match.id;
       }
     }
-    if (params.has('leg')) this._preferredLegName = params.get('leg');
+    if (params.has('leg')) {
+      const legParam = params.get('leg');
+      this._preferredLegName = legParam;
+      // Also seed zwLegName + userPickedLeg so async external-leg loads (which
+      // haven't finished by the time discoverModelParts runs) will auto-apply
+      // the selection once their GLB finishes downloading. Fixes URL-load and
+      // shape-switch cases for legs like Halbrunde/Butterfly Eichenholz.
+      this.state.zwLegName = legParam;
+      this.state.userPickedLeg = true;
+    }
     if (params.has('powder')) {
       const pwId = params.get('powder');
       if (POWDER_COAT_COLORS.find(p => p.id === pwId || p.name.toLowerCase() === pwId.toLowerCase())) {
@@ -4014,6 +4023,7 @@ class TableConfigurator {
     const zwEdgeTitles = (zwProduct?.addons?.Kantenbearbeitung || []).map(a => a.title);
     const filteredEdges = EDGE_OPTIONS.filter(edge => {
       if (edge.onlyShapes && !edge.onlyShapes.includes(this.state.shape)) return false;
+      if (edge.excludeShapes && edge.excludeShapes.includes(this.state.shape)) return false;
       if (edge.onlyMaterial && !edge.onlyMaterial.includes(this.state.materialType)) return false;
       if (allowed && !allowed.includes(edge.id)) return false;
       // If ZW data is loaded and this product has Kantenbearbeitung addons, only show edges that exist there
