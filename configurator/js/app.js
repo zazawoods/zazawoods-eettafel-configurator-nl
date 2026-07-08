@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=0634125f';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=a95a9a1b';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=0634125f';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=a95a9a1b';
 
 class TableConfigurator {
   constructor() {
@@ -2193,11 +2193,6 @@ class TableConfigurator {
       else if (lengthCm <= 140) dist += 6;
     } else if (shapeId === 'verbaan') {
       // Verbaan uses the base distances without extra offset
-    } else if (shapeId === 'danish-oval' || shapeId === 'halboval') {
-      // Halboval at 180cm has a curved end that narrows the tabletop's Z extent
-      // at the leg's X position. Move Satz legs 5cm further inward so the arch
-      // base tips stay under the curved edge instead of poking past it.
-      if (lengthCm <= 180) dist += 5;
     }
 
     return dist;
