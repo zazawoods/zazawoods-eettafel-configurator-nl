@@ -742,16 +742,18 @@ class TableConfigurator {
     const tabletopPatterns = [/table.?top/i, /standaard/i];
     const allowedPrefixes = shape.meshPrefix || [];
 
-    // Bootsform: 3 legs imported from DanishOval.glb with different vertex scales:
-    //   Flach_Stahl (Thorn), Half_spider (Aeris): vertex range 2m → scale 1.0
-    //   Double_Fluted (Wellen-Duo): vertex range 720 units → scale 0.001
+    // Bootsform: 3 legs imported from DanishOval.glb — need scale + rotation
+    // to match DanishOval's orientation. DanishOval applies rot.x = -π/2 to make
+    // legs stand upright (mesh is stored lying flat).
     if (shape.id === 'bootsform') {
       for (const child of model.children) {
         if (!child.name) continue;
         if (/^bootsform_(Flach_Stahl|Half_spider_-_WOOD)_240$/.test(child.name)) {
           child.scale.setScalar(1.0);
+          child.rotation.set(-Math.PI / 2, 0, 0);
         } else if (child.name === 'bootsform_Double_Fluted_-_WOOD_240') {
           child.scale.setScalar(0.001);
+          child.rotation.set(-Math.PI / 2, 0, 0);
         }
       }
     }
