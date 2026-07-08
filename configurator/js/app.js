@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=a529e84c';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=47b0911d';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=a529e84c';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=47b0911d';
 
 class TableConfigurator {
   constructor() {
@@ -3813,6 +3813,30 @@ class TableConfigurator {
       if (aFree !== bFree) return aFree - bFree;
       return (a.price || 0) - (b.price || 0);
     });
+
+    // Custom order (per user): Thorn → Konisches Spider → V → Drone appear
+    // directly after Spider Tischgestell (S) on every shape EXCEPT Round.
+    if (this.state.shape !== 'round') {
+      const PIN_AFTER = 'Spider Tischgestell (S)';
+      const PIN_ORDER = [
+        'Thorn Tischgestelle (Satz)',
+        'Konisches Spidertischgestell',
+        'V Tischgestell',
+        'Drone Tischbeine (Satz)'
+      ];
+      const anchorIdx = tischgestellList.findIndex(a => a.title === PIN_AFTER);
+      if (anchorIdx >= 0) {
+        // Extract the pinned items in the requested order (if present in list)
+        const pinned = [];
+        for (const title of PIN_ORDER) {
+          const idx = tischgestellList.findIndex(a => a.title === title);
+          if (idx >= 0) pinned.push(tischgestellList.splice(idx, 1)[0]);
+        }
+        // Re-locate anchor (indices shift after splice)
+        const newAnchorIdx = tischgestellList.findIndex(a => a.title === PIN_AFTER);
+        tischgestellList.splice(newAnchorIdx + 1, 0, ...pinned);
+      }
+    }
 
     // Sync zwLegName from current GLB leg, OR default. Default preference:
     //   1. "Spider Tischgestell (S)" if it exists for this shape (user request)
