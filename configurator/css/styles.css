@@ -475,9 +475,13 @@ body {
    should fill the circle so no visible rectangle inside. Photos already have
    white backgrounds that match the .section-icon container above. */
 .section-icon img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
+  /* Photo fills most of the circle (34/40 = 85%) so the leg is clearly
+     visible. Contain keeps the whole product in view (no cropping), and the
+     small white margin around blends with the white circle background so
+     there's no visible square inside the round border. */
+  width: 34px !important;
+  height: 34px !important;
+  object-fit: contain !important;
 }
 
 .section-icon img {
