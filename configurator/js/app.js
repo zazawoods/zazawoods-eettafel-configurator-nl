@@ -257,6 +257,14 @@ class TableConfigurator {
       if (matType.colors.find(c => c.id === colorId || c.name.toLowerCase() === colorId.toLowerCase())) {
         const match = matType.colors.find(c => c.id === colorId || c.name.toLowerCase() === colorId.toLowerCase());
         this.state.color = match.id;
+        // Reverse-lookup the ZW Behandlung title for this color id so the
+        // sidebar shows the right label (e.g. "Black" instead of default
+        // "Natural") on URL/init and after shape switches. Picks the first
+        // Behandlung title that maps back to this color id.
+        for (const [title, mappedId] of Object.entries(BEHANDLUNG_TEXTURE_MAP)) {
+          if (mappedId === match.id) { this.state.behandlungTitle = title; break; }
+        }
+        this.state.userPickedBehandlung = true;
       }
     }
     if (params.has('length')) this.state.length = parseInt(params.get('length')) || this.state.length;
@@ -333,7 +341,7 @@ class TableConfigurator {
     this._pricesReady = false;
     fetchAllPrices().then(() => {
       this._pricesReady = true;
-      loadZWProducts().then(() => { this.updatePrice(); this.renderLegGrid(); this.updateColorSwatches(); });
+      loadZWProducts().then(() => { this.updatePrice(); this.renderLegGrid(); this.updateColorSwatches(); this.updateMaterialLabel(); this.updateMaterialSectionIcon(); });
       this.updatePrice();
     });
     this.loadModel(this.state.shape);
@@ -3561,6 +3569,9 @@ class TableConfigurator {
 
       this.updateShapeOptions();
       this.renderEdgeOptions(); // update available edges per shape
+      this.updateColorSwatches();     // rebuild swatches with active state
+      this.updateMaterialLabel();     // refresh "Eiche · <title>" label
+      this.updateMaterialSectionIcon();
       this.loadModel(shapeId);
       this.updateDimensionDisplay();
       this.updateSummary();
