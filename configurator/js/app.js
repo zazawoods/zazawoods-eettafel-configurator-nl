@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=8b1b687d';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=daf84365';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=8b1b687d';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=daf84365';
 
 class TableConfigurator {
   constructor() {
@@ -3859,10 +3859,12 @@ class TableConfigurator {
         if (legIdx >= 0) hasModel = true;
       }
       const active = this.state.zwLegName === item.title;
-      // Icon = ZW-titled grayscale photo (same file on every shape). Independent of
-      // whether a 3D model exists for the current shape — placeholder was leaking
-      // on shapes whose GLB doesn't include that leg's mesh.
-      const swatchFile = encodeURIComponent(`${item.title}.png`);
+      // Icon = ZW-titled photo. Wood legs use the color originals (customers
+      // want to see the wood grain), metal legs use the grayscale silhouettes
+      // (`_bw.png`) so black powder-coated legs still read cleanly on white.
+      const isWoodTitle = t => /Eichenholz|Stäbchenholz|Holzsäule|aus\s+Eiche/i.test(t);
+      const swatchSuffix = isWoodTitle(item.title) ? '.png' : '_bw.png';
+      const swatchFile = encodeURIComponent(`${item.title}${swatchSuffix}`);
       const swatch = `<img src="Swatches/Onderstel/${swatchFile}?v=${BUILD_VERSION}" alt="${item.title}" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','&lt;svg viewBox=&quot;0 0 60 50&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.5&quot; stroke-linecap=&quot;round&quot;&gt;&lt;line x1=&quot;5&quot; y1=&quot;6&quot; x2=&quot;55&quot; y2=&quot;6&quot;/&gt;&lt;line x1=&quot;15&quot; y1=&quot;6&quot; x2=&quot;15&quot; y2=&quot;46&quot;/&gt;&lt;line x1=&quot;45&quot; y1=&quot;6&quot; x2=&quot;45&quot; y2=&quot;46&quot;/&gt;&lt;/svg&gt;')"/>`;
       const priceTag = item.price > 0 ? `<div class="leg-price">+€${(item.price/100).toFixed(0)}</div>` : '';
       return `
