@@ -943,12 +943,8 @@ body {
 
 .leg-category-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);  /* wider cards so long words fit */
+  grid-template-columns: repeat(3, 1fr);  /* always 3 cols — wider cards */
   gap: 10px;
-}
-@media (min-width: 1500px) {
-  /* Very wide desktop: OK to fit 4 columns */
-  .leg-category-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
 .leg-grid::-webkit-scrollbar {
