@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=56394aa1';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=bf35a6ea';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=56394aa1';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=bf35a6ea';
 
 class TableConfigurator {
   constructor() {
@@ -2418,6 +2418,13 @@ class TableConfigurator {
     this.state.legId = leg.rawName;
     document.getElementById('val-legs').textContent =
       this.state.zwLegName || `${leg.displayName}${leg.isWood ? ' (Holz)' : ''}`;
+
+    // CRITICAL: apply per-length/shape leg positioning to the newly-selected
+    // leg. Without this, the leg becomes visible at its baked GLB position
+    // (usually 240cm baseline) and stays there — legs stick out on small
+    // curved tables until the user reloads the page. Reloading works because
+    // loadModel() calls applyDimensions() once, which positions ALL legs.
+    this.applyDimensions();
 
     this.updatePowderSectionVisibility();
     this.updateLegSectionIcon();
