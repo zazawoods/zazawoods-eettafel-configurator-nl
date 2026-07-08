@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=a95a9a1b';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=52812caf';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=a95a9a1b';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=52812caf';
 
 class TableConfigurator {
   constructor() {
@@ -2193,6 +2193,16 @@ class TableConfigurator {
       else if (lengthCm <= 140) dist += 6;
     } else if (shapeId === 'verbaan') {
       // Verbaan uses the base distances without extra offset
+    } else if (shapeId === 'danish-oval' || shapeId === 'halboval') {
+      // Halboval's curved short ends narrow the tabletop X-extent at the leg's
+      // Z-depth (arch base tips reach Z=±0.30). Measured tabletop X at Z=0.30
+      // is only ±0.666m for the 180cm halboval, but a Rectangle 1:1 position
+      // puts leg tips at X=±0.700m — so they poke 3.4cm past the tabletop.
+      // Pull inward on small sizes so the arch base tips clear the curve with
+      // a visible margin. Only affects Satz-type wood-set legs (Halbrunde,
+      // Butterfly ext, Wangen); the base-dist rules leave larger legs untouched.
+      if (lengthCm <= 180) dist += 8;
+      else if (lengthCm <= 200) dist += 4;
     }
 
     return dist;
