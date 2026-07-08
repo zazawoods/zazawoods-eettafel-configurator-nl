@@ -3768,15 +3768,25 @@ class TableConfigurator {
     // Sync the 3D scene to whatever zwLegName is currently chosen
     if (this.state.zwLegName) {
       const model = ZW_LEG_MODEL_MAP[this.state.zwLegName];
+      let idx = -1;
       if (model) {
-        const idx = this.legObjects.findIndex(l => l.displayName === model.name && l.isWood === model.isWood);
-        if (idx >= 0 && idx !== this.activeLegIndex) {
-          this.switchLeg(idx);
-        }
+        idx = this.legObjects.findIndex(l => l.displayName === model.name && l.isWood === model.isWood);
+      }
+      // Fallback: match external leg by ZW title directly (e.g. Halbrunde /
+      // Butterfly Eichenholz — no ZW_LEG_MODEL_MAP entry, external only).
+      if (idx < 0) {
+        idx = this.legObjects.findIndex(l => l.displayName === this.state.zwLegName);
+      }
+      if (idx >= 0) {
+        if (idx !== this.activeLegIndex) this.switchLeg(idx);
       } else {
-        // Selected ZW leg has no 3D model — hide all leg meshes (tabletop stays)
+        // Leg not yet loaded (external GLB pending) OR truly missing — hide all
+        // meshes for now. If external is still loading, userPickedLeg flag will
+        // cause its registerLoaded callback to auto-switch when it finishes.
         this.legObjects.forEach(l => { if (l.object) l.object.visible = false; });
         this.activeLegIndex = -1;
+        // Preserve userPickedLeg so pending external load knows to auto-apply.
+        this.state.userPickedLeg = true;
       }
       const vl = document.getElementById('val-legs');
       if (vl) vl.textContent = this.state.zwLegName;
