@@ -1416,3 +1416,20 @@ body {
 /* Visual feedback when user clicks a shape while a load is in progress */
 @keyframes zw-loader-pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
 .loader-pulse { animation: zw-loader-pulse 0.2s ease-out; }
+
+
+/* Prevent letter-level breaks inside leg names (e.g. "Tischgestel" / "l").
+   Break only at word boundaries, and keep all leg cards a uniform size so
+   the grid stays visually regular regardless of name length. */
+.leg-name {
+  word-break: keep-all;
+  overflow-wrap: normal;
+  hyphens: none;
+  line-height: 1.15;
+  font-size: 11px;
+  padding: 0 2px;
+}
+.leg-option {
+  min-height: 108px;
+  align-self: stretch;
+}
