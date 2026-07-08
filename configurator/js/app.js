@@ -518,7 +518,7 @@ class TableConfigurator {
       if (this.modelCache[shapeId]) {
         gltf = this.modelCache[shapeId];
       } else {
-        gltf = await this.loadGLTF(shape.glbFile + '?v=12af126');
+        gltf = await this.loadGLTF(shape.glbFile + '?v=402501d');
         if (isStale()) { return; }  // newer load took over — drop this result
         this.modelCache[shapeId] = gltf;
       }
@@ -726,7 +726,7 @@ class TableConfigurator {
       try {
         // Yield to any pending user click first
         await new Promise(r => setTimeout(r, 0));
-        const gltf = await this.loadGLTF(shape.glbFile + '?v=12af126', { silent: true });
+        const gltf = await this.loadGLTF(shape.glbFile + '?v=402501d', { silent: true });
         this.modelCache[shape.id] = gltf;
       } catch (e) {
         // Silently skip failed preloads
@@ -742,8 +742,17 @@ class TableConfigurator {
     const tabletopPatterns = [/table.?top/i, /standaard/i];
     const allowedPrefixes = shape.meshPrefix || [];
 
-    // Bootsform uses the new Boat_Table.glb — all 42 leg types + tabletop pre-baked.
-    // No special-case JS needed — behaves like Dänisch-Oval.
+    // Bootsform: 3 legs imported from DanishOval.glb need scale adjustment.
+    // DanishOval geometry uses vertex Y range ±1 (2m raw) for legs — scale 0.36
+    // brings them to ~72cm world height matching Bootsform's other legs.
+    if (shape.id === 'bootsform') {
+      const IMPORTED = /^bootsform_(Flach_Stahl|Half_spider_-_WOOD|Double_Fluted_-_WOOD)_240$/;
+      for (const child of model.children) {
+        if (child.name && IMPORTED.test(child.name)) {
+          child.scale.setScalar(0.36);
+        }
+      }
+    }
 
     model.children.forEach((child) => {
       const meshNames = [];
