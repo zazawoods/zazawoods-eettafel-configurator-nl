@@ -939,11 +939,8 @@ body {
 
 .leg-category-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);  /* was 5 — bigger cards, more air */
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
-}
-@media (min-width: 1200px) {
-  .leg-category-grid { grid-template-columns: repeat(5, 1fr); }
 }
 
 .leg-grid::-webkit-scrollbar {
@@ -1428,9 +1425,11 @@ body {
   word-break: normal;
   overflow-wrap: break-word;
   hyphens: none;
-  line-height: 1.2;
-  font-size: 11px;
-  padding: 0 6px;                /* was 2 — text no longer touches corners */
+  line-height: 1.22;
+  font-size: 10.5px;             /* smaller so long German words fit inside */
+  padding: 0 4px;
+  width: 100%;
+  box-sizing: border-box;
 }
 .leg-option {
   min-height: 128px;             /* was 108 — more room around text */
