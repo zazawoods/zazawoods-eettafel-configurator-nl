@@ -1422,8 +1422,11 @@ body {
    Break only at word boundaries, and keep all leg cards a uniform size so
    the grid stays visually regular regardless of name length. */
 .leg-name {
-  word-break: keep-all;
-  overflow-wrap: normal;
+  /* Prefer whole-word wrapping. Fall back to break-word only when the whole
+     word doesn't fit — prevents overly narrow columns and keeps every leg
+     card visible in the grid, but never letter-breaks a fitting word. */
+  word-break: normal;
+  overflow-wrap: break-word;
   hyphens: none;
   line-height: 1.15;
   font-size: 11px;
@@ -1432,4 +1435,19 @@ body {
 .leg-option {
   min-height: 108px;
   align-self: stretch;
+  min-width: 0;  /* let grid tracks shrink instead of pushing columns wide */
 }
+/* Photo area fills the card width so there's no visible small "photo inside
+   card" — the white photo bg merges with the white card bg into one surface. */
+.leg-swatch-img,
+.leg-swatch-svg {
+  width: 100% !important;
+  height: 56px !important;
+}
+.leg-swatch-img img { width: 100%; height: 100%; object-fit: contain; }
+
+
+/* Breathing room between price line and the In den Warenkorb button so the
+   button doesn't visually touch "Gesamtpreis (inkl. Lieferung)". */
+.sidebar-footer .price-bar { margin-bottom: 14px; }
+.sidebar-footer .cta-desktop { margin-top: 6px; }
