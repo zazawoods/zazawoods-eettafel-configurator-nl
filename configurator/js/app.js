@@ -274,6 +274,7 @@ class TableConfigurator {
       if (EDGE_OPTIONS.find(e => e.id === edgeId || e.name.toLowerCase() === edgeId.toLowerCase())) {
         const match = EDGE_OPTIONS.find(e => e.id === edgeId || e.name.toLowerCase() === edgeId.toLowerCase());
         this.state.edge = match.id;
+        this.state.userPickedEdge = true; // URL-based config is a completed choice
       }
     }
     if (params.has('leg')) {
@@ -4898,13 +4899,19 @@ class TableConfigurator {
         const catLeg = CATALOG_ONLY_LEGS.find(c => c.title === this.state.zwLegName);
         if (catLeg) { legAddon = { variantId: catLeg.variantId, price: catLeg.price }; total += catLeg.price; }
       }
-      // Preserve any already-picked Behandlung variant (price is €0 so it doesn't affect total)
-      const prevBehandlung = this._selectedVariants?.behandlung;
+      // Preserve any already-picked Behandlung variant. If none yet (URL-init
+      // seeded behandlungTitle but user hasn't clicked a swatch), reverse-lookup
+      // the ZW Behandlung addon by title so the cart line-item is included.
+      let behandlungVariant = this._selectedVariants?.behandlung;
+      if (!behandlungVariant && this.state.behandlungTitle) {
+        const bAddon = product.addons.Behandlung.find(a => a.title === this.state.behandlungTitle);
+        if (bAddon) behandlungVariant = bAddon.variantId;
+      }
       this._selectedVariants = {
         base: baseVariant?.id,
         edge: edgeAddon?.variantId,
         leg:  legAddon?.variantId,
-        behandlung: prevBehandlung
+        behandlung: behandlungVariant
       };
       total = total / 100; // ZW data is in cents; legacy formatPrice expects EUR units
     } else {
