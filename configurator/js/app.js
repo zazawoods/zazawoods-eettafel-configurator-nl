@@ -749,7 +749,7 @@ class TableConfigurator {
       const IMPORTED = /^bootsform_(Flach_Stahl|Half_spider_-_WOOD|Double_Fluted_-_WOOD)_240$/;
       for (const child of model.children) {
         if (child.name && IMPORTED.test(child.name)) {
-          child.scale.setScalar(0.36);
+          child.scale.setScalar(1.0);
         }
       }
     }
