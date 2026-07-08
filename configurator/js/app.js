@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=52e032b7';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=8b1b687d';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=52e032b7';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=8b1b687d';
 
 class TableConfigurator {
   constructor() {
@@ -1742,8 +1742,13 @@ class TableConfigurator {
       this.currentModel.add(newMesh);
     });
 
-    // Restore original visibility
-    tabletopWrapper.visible = wasVisible;
+    // Restore wrapper visibility — BUT if the wrapper is itself a Mesh and the
+    // loop just hid it (Bootsform's flat tabletop is stored directly as a mesh,
+    // not inside a Group), keep it hidden. Otherwise the faceted custom_tabletop
+    // and the flat original would render z-fighting on top of each other and
+    // the Schweizer Kante would appear to do nothing.
+    const wrapperHiddenByLoop = tabletopWrapper.isMesh && tabletopWrapper.visible === false;
+    tabletopWrapper.visible = wrapperHiddenByLoop ? false : wasVisible;
   }
 
   // Restore GLB tabletop geometry to original (undo edge profile)
@@ -3688,10 +3693,10 @@ class TableConfigurator {
     // Image swatches for each leg type, mapped by display name
     const legSwatchFiles = {
       // ─── HOUT ───
-      'Konische Spider': 'Konisches Spidertischgestell_bw.png',
-      'Pilares': 'Runde Holzsäule aus Eichenholz (Satz) (A)_bw.png',
-      'Hannah': 'Butterfly Tischbeine aus Eichenholz (Satz) (A)_bw.png',
-      'Wellen-Säule': 'Ovale Holzsäule aus Stäbchenholz, Eiche_bw.png',
+      'Konische Spider': 'Konisches Spidertischgestell.png',
+      'Pilares': 'Runde Holzsäule aus Eichenholz (Satz) (A).png',
+      'Hannah': 'Butterfly Tischbeine aus Eichenholz (Satz) (A).png',
+      'Wellen-Säule': 'Ovale Holzsäule aus Stäbchenholz, Eiche.png',
       'Lara': null, // handled specially for wood/metal
       'Diablo': 'Column in Middle.png',
       'Ferdo': 'Pilaar.png',
@@ -3700,22 +3705,22 @@ class TableConfigurator {
       'Bernard': 'Schuin 2.5.png',
       'Demi Lune': 'Demi Lune.png',
       'Blok': 'Blok.png',
-      'Hapa': 'Halbrunde Tischbeine aus Eichenholz (Satz) (A)_bw.png',
+      'Hapa': 'Halbrunde Tischbeine aus Eichenholz (Satz) (A).png',
       'Base': 'Base.png',
-      'Wellen-Duo': 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)_bw.png',
-      'Wellen-Rund': 'Runde Holzsäule aus Stäbchenholz, Eiche_bw.png',
+      'Wellen-Duo': 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz).png',
+      'Wellen-Rund': 'Runde Holzsäule aus Stäbchenholz, Eiche.png',
       'Moda': 'Klassiek Midden.png',
       // ─── METAAL ───
       'Vera': '4 Legs on pole.png',
-      'A-Form': 'A Tischgestell (Satz)_bw.png',
+      'A-Form': 'A Tischgestell (Satz).png',
       'Butterfly': 'Butterfly.png',
       'Diago': 'Diagonal Pole.png',
-      'V-Form': 'V Tischgestell_bw.png',
+      'V-Form': 'V Tischgestell.png',
       'Walrus': 'Walrus.png',
       'Ekso': 'X modern.png',
-      'X-Form': 'X Tischgestell (Satz)_bw.png',
+      'X-Form': 'X Tischgestell (Satz).png',
       'Hairpin': 'Hairpin.png',
-      'Matrix': 'Spider Tischgestell (S)_bw.png',
+      'Matrix': 'Spider Tischgestell (S).png',
       'Stative': 'Stative.png',
       'Vedo': 'Flat Dining V.png',
       'Thore': 'Thore.png',
@@ -3723,32 +3728,32 @@ class TableConfigurator {
       'Pluto': 'Kolom Plus.png',
       'Oval-Säule': 'Kolom Oval.png',
       'Tapse Spin': 'Tapse Spin.png',
-      'Pedro': 'Thorn Tischgestelle (Satz)_bw.png',
+      'Pedro': 'Thorn Tischgestelle (Satz).png',
       'VN': 'VN Tafelpoot.png',
       'Cona': 'Conisch.png',
       'Positivo': 'Halve Plus.png',
       'Rund-Säule': 'Kolom Rod.png',
       'Twist': 'Twist Tafelpoot Rond.png',
       'Vierpoot': 'Vierpoot.png',
-      'Spider Tischgestell (L)': 'Spider Tischgestell (L)_bw.png',
-      'Spider Tischgestell (M)': 'Spider Tischgestell (M)_bw.png',
-      'Spider Tischgestell Edelstahl': 'Spider Tischgestell Edelstahl_bw.png',
-      'Spider Tischgestell Edelstahl (S)': 'Spider Tischgestell Edelstahl (S)_bw.png',
-      'U Tischgestell (Satz)': 'U Tischgestell (Satz)_bw.png',
-      'U Tischgestell (M) (Satz)': 'U Tischgestell (M) (Satz)_bw.png',
-      'U Tischgestell (schmal) (Satz)': 'U Tischgestell (schmal) (Satz)_bw.png',
-      'Trapezium Tischgestell (Satz)': 'Trapezium Tischgestell (Satz)_bw.png',
-      'Drone Tischbeine (Satz)': 'Drone Tischbeine (Satz)_bw.png',
-      'Stahlwangen Tischgestell (Satz)': 'Stahlwangen Tischgestell (Satz)_bw.png',
-      'Stahlwangen Tischgestell (S) (Satz)': 'Stahlwangen Tischgestell (S) (Satz)_bw.png',
-      'Spider Gestell (rund)': 'Spider Gestell (rund)_bw.png',
-      'Spider Gestell - Schmal (Rund)': 'Spider Gestell - Schmal (Rund)_bw.png',
+      'Spider Tischgestell (L)': 'Spider Tischgestell (L).png',
+      'Spider Tischgestell (M)': 'Spider Tischgestell (M).png',
+      'Spider Tischgestell Edelstahl': 'Spider Tischgestell Edelstahl.png',
+      'Spider Tischgestell Edelstahl (S)': 'Spider Tischgestell Edelstahl (S).png',
+      'U Tischgestell (Satz)': 'U Tischgestell (Satz).png',
+      'U Tischgestell (M) (Satz)': 'U Tischgestell (M) (Satz).png',
+      'U Tischgestell (schmal) (Satz)': 'U Tischgestell (schmal) (Satz).png',
+      'Trapezium Tischgestell (Satz)': 'Trapezium Tischgestell (Satz).png',
+      'Drone Tischbeine (Satz)': 'Drone Tischbeine (Satz).png',
+      'Stahlwangen Tischgestell (Satz)': 'Stahlwangen Tischgestell (Satz).png',
+      'Stahlwangen Tischgestell (S) (Satz)': 'Stahlwangen Tischgestell (S) (Satz).png',
+      'Spider Gestell (rund)': 'Spider Gestell (rund).png',
+      'Spider Gestell - Schmal (Rund)': 'Spider Gestell - Schmal (Rund).png',
     };
 
     const getLegSwatch = (name, isWood) => {
       // Special handling for Lara (different images for wood/metal)
       if (name === 'Lara') {
-        const file = 'Aeris Tischgestell aus Eichenholz_bw.png';
+        const file = 'Aeris Tischgestell aus Eichenholz.png';
         void isWood;
         return `<img src="Swatches/Onderstel/${file}?v=${BUILD_VERSION}" alt="${name}"/>`;
       }
@@ -3857,7 +3862,7 @@ class TableConfigurator {
       // Icon = ZW-titled grayscale photo (same file on every shape). Independent of
       // whether a 3D model exists for the current shape — placeholder was leaking
       // on shapes whose GLB doesn't include that leg's mesh.
-      const swatchFile = encodeURIComponent(`${item.title}_bw.png`);
+      const swatchFile = encodeURIComponent(`${item.title}.png`);
       const swatch = `<img src="Swatches/Onderstel/${swatchFile}?v=${BUILD_VERSION}" alt="${item.title}" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','&lt;svg viewBox=&quot;0 0 60 50&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.5&quot; stroke-linecap=&quot;round&quot;&gt;&lt;line x1=&quot;5&quot; y1=&quot;6&quot; x2=&quot;55&quot; y2=&quot;6&quot;/&gt;&lt;line x1=&quot;15&quot; y1=&quot;6&quot; x2=&quot;15&quot; y2=&quot;46&quot;/&gt;&lt;line x1=&quot;45&quot; y1=&quot;6&quot; x2=&quot;45&quot; y2=&quot;46&quot;/&gt;&lt;/svg&gt;')"/>`;
       const priceTag = item.price > 0 ? `<div class="leg-price">+€${(item.price/100).toFixed(0)}</div>` : '';
       return `
