@@ -751,10 +751,11 @@ class TableConfigurator {
         child.rotation.set(-Math.PI / 2, 0, 0);
         child.position.set(0, 0, 0);
         child.updateMatrixWorld(true);
-        // Compute post-transform bbox to find bottom Y
+        // Compute post-transform bbox and center X/Z at 0, bottom Y at 0
         const box = new THREE.Box3().setFromObject(child);
-        // Shift up so bottom lands at Y = 0
         if (isFinite(box.min.y)) child.position.y = -box.min.y;
+        if (isFinite(box.min.x)) child.position.x = -(box.min.x + box.max.x) / 2;
+        if (isFinite(box.min.z)) child.position.z = -(box.min.z + box.max.z) / 2;
       };
       for (const child of model.children) {
         if (!child.name) continue;
