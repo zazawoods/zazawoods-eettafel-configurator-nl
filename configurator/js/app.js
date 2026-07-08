@@ -742,16 +742,8 @@ class TableConfigurator {
     const tabletopPatterns = [/table.?top/i, /standaard/i];
     const allowedPrefixes = shape.meshPrefix || [];
 
-    // Bootsform: imports from rectangle.glb (Flach_Stahl=Thorn, Half_spider_WOOD=Aeris)
-    // Rectangle geometry ~0.7m Y range; scale 1 renders 70cm tall (matches other legs)
-    if (shape.id === 'bootsform') {
-      for (const child of model.children) {
-        if (child.name === 'bootsform_Flach_Stahl_240' || child.name === 'bootsform_Half_spider_-_WOOD_240') {
-          child.scale.setScalar(1.0);
-          child.rotation.set(0, 0, 0);
-        }
-      }
-    }
+    // Bootsform uses the new Boat_Table.glb — all 42 leg types + tabletop pre-baked.
+    // No special-case JS needed — behaves like Dänisch-Oval.
 
     model.children.forEach((child) => {
       const meshNames = [];

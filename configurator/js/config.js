@@ -88,9 +88,6 @@ export const TABLE_SHAPES = [
     glbFile: `${BASE_PATH}/glb files tables and legs/Bootsform.glb`,
     icon: `<img src="Swatches/Vorm/Bootsform_bw.png?v=bec141f-v3" alt="Bootsform"/>`,
     meshPrefix: ['bootsform_', 'Bootsform_'],
-    // Bootsform GLB has only Straight/gerade edge — Schweizer/Baumstamm variants
-    // caused visible tilt in top face, so we restrict to Gerade Kante only.
-    allowedEdges: ['standaard'],
     defaultLength: 240,
     defaultWidth: 110,
     fixedDimensions: [
