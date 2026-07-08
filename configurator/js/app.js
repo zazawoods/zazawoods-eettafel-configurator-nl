@@ -2972,53 +2972,26 @@ class TableConfigurator {
           else if (currentLength < 240) legInwardCm += 10 - (currentLength - 200) / 40 * 10;
         }
 
-        // A/X/Thorn + Butterfly (Hannah): position halves ABSOLUTELY at
-        // ±currentTargetOuter (matches external U/Trapezium legs' edge distance).
-        // Other set legs keep the legacy spreadShift-from-default behaviour.
-        const ABSOLUTE_LEGS = new Set(['A-Form', 'X-Form', 'Pedro', 'Butterfly', 'Hannah']);
-        if (ABSOLUTE_LEGS.has(leg.displayName)) {
-          const targetOuterM = (currentTargetOuter - legInwardCm) / 100;
-          leg.splitHalves.forEach(half => {
-            const refMesh = half.left || half.right;
-            if (!refMesh) return;
-            let cumulativeScaleX = 1;
-            let node = refMesh.parent;
-            while (node && node !== this.currentModel) {
-              cumulativeScaleX *= node.scale.x;
-              node = node.parent;
-            }
-            const localTarget = targetOuterM / cumulativeScaleX;
-            const centerCorrection = (leg.geomCenterX || 0) / cumulativeScaleX;
-            if (half.left)  half.left.position.x  = -localTarget - centerCorrection;
-            if (half.right) half.right.position.x =  localTarget - centerCorrection;
-          });
-        } else {
-          const totalShiftM = (spreadShiftCm - legInwardCm) / 100;
-          if (Math.abs(totalShiftM) > 0.001) {
-          // Move split halves: left half shifts left, right half shifts right.
-          // The shift must be converted to the LOCAL space of each split mesh's parent.
-          leg.splitHalves.forEach(half => {
-            const refMesh = half.left || half.right;
-            if (!refMesh) return;
-
-            let cumulativeScaleX = 1;
-            let node = refMesh.parent;
-            while (node && node !== this.currentModel) {
-              cumulativeScaleX *= node.scale.x;
-              node = node.parent;
-            }
-
-            const localShift = totalShiftM / cumulativeScaleX;
-            const centerCorrection = (leg.geomCenterX || 0) / cumulativeScaleX;
-
-            if (half.left && half.origLeftPos) {
-              half.left.position.x = half.origLeftPos.x - localShift - centerCorrection;
-            }
-            if (half.right && half.origRightPos) {
-              half.right.position.x = half.origRightPos.x + localShift - centerCorrection;
-            }
-          });
+        const totalShiftM = (spreadShiftCm - legInwardCm) / 100;
+        if (Math.abs(totalShiftM) > 0.001) {
+        leg.splitHalves.forEach(half => {
+          const refMesh = half.left || half.right;
+          if (!refMesh) return;
+          let cumulativeScaleX = 1;
+          let node = refMesh.parent;
+          while (node && node !== this.currentModel) {
+            cumulativeScaleX *= node.scale.x;
+            node = node.parent;
           }
+          const localShift = totalShiftM / cumulativeScaleX;
+          const centerCorrection = (leg.geomCenterX || 0) / cumulativeScaleX;
+          if (half.left && half.origLeftPos) {
+            half.left.position.x = half.origLeftPos.x - localShift - centerCorrection;
+          }
+          if (half.right && half.origRightPos) {
+            half.right.position.x = half.origRightPos.x + localShift - centerCorrection;
+          }
+        });
         }
       }
 
