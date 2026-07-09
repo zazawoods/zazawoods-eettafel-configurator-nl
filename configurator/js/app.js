@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=4597b32c';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=4a0c3519';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=4597b32c';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=4a0c3519';
 
 class TableConfigurator {
   constructor() {
@@ -1744,7 +1744,11 @@ class TableConfigurator {
   }
 
   applyEdgeProfileToGLBTabletop() {
-    if (this.state.edge === 'standaard') return;
+    // 'standaard' normally keeps the baked GLB edge — except on shapes whose
+    // GLB edge is slanted (Oval/Organisch): those rebuild with the straight
+    // extrusion (applyEdgeProfile no-ops for standaard → clean vertical edge).
+    if (this.state.edge === 'standaard' &&
+        !['oval', 'organic', 'kiezel'].includes(this.state.shape)) return;
 
     this.currentModel.updateMatrixWorld(true);
 
@@ -2995,8 +2999,13 @@ class TableConfigurator {
       if (!this.tabletopVariantA) {
         this.applyScaleWithRotationAndThickness(this.tabletopObject, this.tabletopOriginalScale, scaleX, scaleZ, scaleY);
       }
-      // Apply edge profile to GLB mesh if non-standard edge selected
-      if (this.state.edge !== 'standaard') {
+      // Apply edge profile to GLB mesh if non-standard edge selected.
+      // Oval/Organisch: their GLBs ship with a slanted edge profile baked into
+      // the mesh — even with 'Gerade Kante' the corners didn't run straight
+      // like every other shape (user report 2026-07-10). Force the straight
+      // extrusion rebuild for them so gerade is truly gerade.
+      const needsStraightRebuild = ['oval', 'organic', 'kiezel'].includes(shape.id);
+      if (this.state.edge !== 'standaard' || needsStraightRebuild) {
         this.applyEdgeProfileToGLBTabletop();
       } else {
         this.restoreGLBTabletopGeometry();
