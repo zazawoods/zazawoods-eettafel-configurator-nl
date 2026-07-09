@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=bee724ea';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=928d4fc9';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=bee724ea';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=928d4fc9';
 
 class TableConfigurator {
   constructor() {
@@ -558,7 +558,7 @@ class TableConfigurator {
       if (this.modelCache[shapeId]) {
         gltf = this.modelCache[shapeId];
       } else {
-        gltf = await this.loadGLTF(shape.glbFile + '?v=${BUILD_VERSION}');
+        gltf = await this.loadGLTF(shape.glbFile + '?v=' + BUILD_VERSION);
         if (isStale()) { return; }  // newer load took over — drop this result
         this.modelCache[shapeId] = gltf;
       }
@@ -777,7 +777,7 @@ class TableConfigurator {
       try {
         // Yield to any pending user click first
         await new Promise(r => setTimeout(r, 0));
-        const gltf = await this.loadGLTF(shape.glbFile + '?v=${BUILD_VERSION}', { silent: true });
+        const gltf = await this.loadGLTF(shape.glbFile + '?v=' + BUILD_VERSION, { silent: true });
         this.modelCache[shape.id] = gltf;
       } catch (e) {
         // Silently skip failed preloads
@@ -1137,8 +1137,12 @@ class TableConfigurator {
   }
 
   _remapVariantUVs(variant) {
-    // For Bootsform: skip side/top split, use pure planar XZ (fixes wood grain jumps on boat curves)
-    const forcePlanar = false;
+    // Curved-rim GLB shapes (Oval, Organisch): the angle-wrap side UV smears
+    // the grain tangentially along the rounded rim and leaves a visible seam —
+    // the corners looked different from every other shape (user report
+    // 2026-07-10). Pure planar XZ projection lets the tabletop grain continue
+    // straight over the edge, so corners run along the table like Rechteck.
+    const forcePlanar = ['oval', 'organic', 'kiezel'].includes(this.state.shape);
     variant.traverse((child) => {
       if (!child.isMesh || !child.geometry) return;
 
