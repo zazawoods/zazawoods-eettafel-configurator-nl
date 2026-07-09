@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=4fb1728a';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=cdb9666a';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=4fb1728a';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=cdb9666a';
 
 class TableConfigurator {
   constructor() {
@@ -2192,40 +2192,16 @@ class TableConfigurator {
     else if (lengthCm <= 350) dist = 70;
     else dist = 75; // 400+
 
-    // Per-user request: Satz legs positioned identically on all shapes (1:1 with
-    // Rectangle). No per-shape inward offsets for curved shapes — pure base
-    // distance applies. Round is the only shape that keeps a special table
-    // because its edge is circular from every direction, not just short ends.
+    // Per-user request (2026-07-09): Satz legs are positioned 1:1 with
+    // Rechteck on ALL shapes — same base edge distances, no per-shape inward
+    // offsets. The only exception is Rund, whose circular edge needs its own
+    // table (different legs are appropriate there anyway).
     if (shapeId === 'round') {
       if (lengthCm <= 100) dist += 13;
       else if (lengthCm <= 110) dist += 10;
       else if (lengthCm <= 120) dist += 9;
       else if (lengthCm <= 130) dist += 7;
       else if (lengthCm <= 140) dist += 6;
-    } else if (shapeId === 'verbaan') {
-      // Verbaan uses the base distances without extra offset
-    } else if (shapeId === 'danish-oval' || shapeId === 'halboval') {
-      if (lengthCm <= 180) dist += 20;
-      else if (lengthCm <= 200) dist += 12;
-      else if (lengthCm <= 220) dist += 8;
-      else if (lengthCm <= 240) dist += 6;
-      else if (lengthCm <= 260) dist += 4;
-    } else if (shapeId === 'oval') {
-      if (lengthCm <= 160) dist += 25;
-      else if (lengthCm <= 180) dist += 20;
-      else if (lengthCm <= 200) dist += 12;
-      else if (lengthCm <= 220) dist += 6;
-    } else if (shapeId === 'organic') {
-      if (lengthCm <= 200) dist += 20;
-      else if (lengthCm <= 220) dist += 10;
-      else if (lengthCm <= 240) dist += 5;
-    } else if (shapeId === 'halfrond') {
-      if (lengthCm <= 180) dist += 20;
-      else if (lengthCm <= 200) dist += 12;
-      else if (lengthCm <= 220) dist += 6;
-    } else if (shapeId === 'bootsform') {
-      if (lengthCm <= 180) dist += 12;
-      else if (lengthCm <= 200) dist += 6;
     }
 
     return dist;
@@ -2235,6 +2211,16 @@ class TableConfigurator {
   // Faces are classified based on their X position relative to the geometry extent.
   // Left third → left group, right third → right group, center third → stays in place.
   splitSetLeg(leg) {
+    // Idempotency guard (fix 2026-07-09): cached external Satz legs are split
+    // inside registerLoaded() during discoverModelParts (synchronous cache-hit
+    // path on shape switch). loadModel's split pass then ran splitSetLeg AGAIN
+    // on the same legEntry: it reset splitHalves to [] and found only the
+    // already-split non-indexed meshes (geometry.index === null), so nothing
+    // was pushed. Result: splitHalves stayed empty and applyDimensions could
+    // never move the halves — legs stuck at their baked GLB position until a
+    // full page reload (async load path splits only once). Re-splitting an
+    // already-split leg is never correct, so bail out early.
+    if (leg.splitHalves && leg.splitHalves.length > 0) return;
     // If leg.object is a bare Mesh (new Bootsform flat structure), wrap it in
     // a Group so splitSetLeg's existing logic (which expects meshes inside a
     // container) can operate on it.
