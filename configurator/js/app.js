@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=6d4ae0cf';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=d1034912';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=6d4ae0cf';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=d1034912';
 
 class TableConfigurator {
   constructor() {
@@ -3174,6 +3174,13 @@ class TableConfigurator {
       }
     });
 
+    // Generic overhang clamp (2026-07-09): after all positioning rules, verify
+    // the ACTIVE Satz/pair leg against the real tabletop outline and pull it
+    // further inward if any part still pokes past the edge. Catches corner
+    // cases (U/A/X/Trapezium frames on tapered ends) that per-leg offset
+    // tables miss. Zero-tolerance requirement from the user.
+    this.clampActiveLegOverhang();
+
     // Ensure tabletop sits flush on top of the active leg (prevent floating)
     this.alignTabletopToLeg();
 
@@ -3194,6 +3201,116 @@ class TableConfigurator {
     this.updateShadowCamera();
     this.applyVariant();
     this.renderLegGrid();
+  }
+
+  // Pull the active Satz-pair leg inward until every visible vertex sits at
+  // least `margin` inside the tabletop outline (world XZ). Works for split-
+  // halves Satz legs and external pair legs. No-op on rectangle/round.
+  clampActiveLegOverhang() {
+    try {
+      const shape = TABLE_SHAPES.find(s => s.id === this.state.shape);
+      if (!shape || shape.id === 'rectangle' || shape.id === 'round' || shape.id === 'verbaan') return;
+      const leg = this.legObjects[this.activeLegIndex];
+      if (!leg || !leg.object) return;
+      const hasHalves = leg.splitHalves && leg.splitHalves.length > 0;
+      const isPair = leg.external && leg.object.children.length === 2;
+      const isSet = this.isSetLeg(leg.displayName);
+      if (!isPair && !(isSet && hasHalves)) return;
+      const tops = [];
+      if (this.tabletopObject && this.tabletopObject.visible !== false) tops.push(this.tabletopObject);
+      if (this.tabletopVariantA && this.tabletopVariantA.visible) tops.push(this.tabletopVariantA);
+      if (this.tabletopVariantB && this.tabletopVariantB.visible) tops.push(this.tabletopVariantB);
+      if (!tops.length) return;
+
+      // Outline table: per 1cm Z-bin, max +X and min -X of the tabletop.
+      const binSize = 0.01;
+      const W = this.state.width / 100;
+      const nb = Math.ceil(W / binSize) + 8;
+      const z0 = -W / 2 - 0.04;
+      const right = new Float64Array(nb).fill(-Infinity);
+      const left = new Float64Array(nb).fill(Infinity);
+      const seen = new Set();
+      const collect = (root) => root.traverse(m => {
+        if (!m.isMesh || !m.geometry || seen.has(m.uuid)) return;
+        seen.add(m.uuid);
+        m.updateWorldMatrix(true, false);
+        const e = m.matrixWorld.elements;
+        const pos = m.geometry.attributes.position;
+        const stride = Math.max(1, Math.floor(pos.count / 25000));
+        for (let i = 0; i < pos.count; i += stride) {
+          const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+          const wx = e[0]*x + e[4]*y + e[8]*z + e[12];
+          const wz = e[2]*x + e[6]*y + e[10]*z + e[14];
+          const b = Math.round((wz - z0) / binSize);
+          if (b < 0 || b >= nb) continue;
+          if (wx > right[b]) right[b] = wx;
+          if (wx < left[b]) left[b] = wx;
+        }
+      });
+      tops.forEach(collect);
+      // Fill empty bins from nearest valid neighbour so gaps don't read as "no table".
+      for (let b = 0; b < nb; b++) {
+        if (right[b] === -Infinity) {
+          let src = -1;
+          for (let d = 1; d < nb; d++) {
+            if (b-d >= 0 && right[b-d] !== -Infinity) { src = b-d; break; }
+            if (b+d < nb && right[b+d] !== -Infinity) { src = b+d; break; }
+          }
+          if (src >= 0) { right[b] = right[src]; left[b] = left[src]; }
+        }
+      }
+
+      const margin = 0.01; // 1cm safety inside the edge
+      const measureNeed = () => {
+        let need = 0;
+        leg.object.updateWorldMatrix(true, true);
+        const walk = (n, vis) => {
+          vis = vis && n.visible;
+          if (n.isMesh && vis && n.geometry) {
+            const e = n.matrixWorld.elements;
+            const pos = n.geometry.attributes.position;
+            const stride = Math.max(1, Math.floor(pos.count / 8000));
+            for (let i = 0; i < pos.count; i += stride) {
+              const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+              const wx = e[0]*x + e[4]*y + e[8]*z + e[12];
+              const wz = e[2]*x + e[6]*y + e[10]*z + e[14];
+              let b = Math.round((wz - z0) / binSize);
+              if (b < 0) b = 0; else if (b >= nb) b = nb - 1;
+              const lim = wx >= 0 ? right[b] : -left[b];
+              if (!isFinite(lim)) continue;
+              const over = Math.abs(wx) - (lim - margin);
+              if (over > need) need = over;
+            }
+          }
+          for (const ch of n.children) walk(ch, vis);
+        };
+        walk(leg.object, true);
+        return need;
+      };
+
+      let totalShift = 0;
+      for (let iter = 0; iter < 4; iter++) {
+        const need = measureNeed();
+        if (need <= 0.001) break;
+        if (totalShift + need > 0.35) break; // give up — leg fundamentally too wide
+        totalShift += need;
+        if (isPair) {
+          const c0 = leg.object.children[0], c1 = leg.object.children[1];
+          c0.position.x += (c0.position.x >= 0 ? -need : need);
+          c1.position.x += (c1.position.x >= 0 ? -need : need);
+        } else {
+          leg.splitHalves.forEach(half => {
+            const refMesh = half.left || half.right;
+            if (!refMesh) return;
+            let cum = 1, node = refMesh.parent;
+            while (node && node !== this.currentModel) { cum *= node.scale.x; node = node.parent; }
+            const local = need / (cum || 1);
+            if (half.left) half.left.position.x += local;
+            if (half.right) half.right.position.x -= local;
+          });
+        }
+      }
+    } catch (e) { console.warn('[ZW] clampActiveLegOverhang failed', e); }
   }
 
   applyVariant() {
