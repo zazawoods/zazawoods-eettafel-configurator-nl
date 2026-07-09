@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=cdb9666a';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=1f100829';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=cdb9666a';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=1f100829';
 
 class TableConfigurator {
   constructor() {
@@ -262,9 +262,16 @@ class TableConfigurator {
         // sidebar shows the right label (e.g. "Black" instead of default
         // "Natural") on URL/init and after shape switches. Picks the first
         // Behandlung title that maps back to this color id.
+        // Prefer the title that exactly matches the color's own name (e.g.
+        // color 'natural' → Behandlung 'Natural', NOT 'Unsichtbarer Skylt-Lack'
+        // which merely maps to the same texture). Fall back to first match.
+        let btFirst = null, btExact = null;
         for (const [title, mappedId] of Object.entries(BEHANDLUNG_TEXTURE_MAP)) {
-          if (mappedId === match.id) { this.state.behandlungTitle = title; break; }
+          if (mappedId !== match.id) continue;
+          if (!btFirst) btFirst = title;
+          if (title.toLowerCase() === match.name.toLowerCase()) { btExact = title; break; }
         }
+        if (btExact || btFirst) this.state.behandlungTitle = btExact || btFirst;
         this.state.userPickedBehandlung = true;
       }
     }
