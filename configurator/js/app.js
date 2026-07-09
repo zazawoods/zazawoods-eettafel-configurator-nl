@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=55717ed4';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=9b450919';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=55717ed4';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=9b450919';
 
 class TableConfigurator {
   constructor() {
@@ -4255,13 +4255,29 @@ class TableConfigurator {
       'Butterfly Tischbeine aus Eichenholz (Satz) (A)',
       'Halbrunde Tischbeine aus Eichenholz (Satz) (A)'
     ];
+    // Gap audit 2026-07-10: with the zero-overhang clamp active, some Satz
+    // legs end up with their two units nearly touching (< 20cm apart) — the
+    // customer sees "one leg". Per user decision those combinations are
+    // hidden from the picker.
     const HIDE_LEGS_BY_SHAPE_LENGTH = {
+      'rectangle': {
+        180: ['Drone Tischbeine (Satz)']
+      },
       'danish-oval': {
-        180: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)', 'U Tischgestell (schmal) (Satz)', 'X Tischgestell (Satz)'],
-        200: ['U Tischgestell (M) (Satz)']
+        180: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)', 'U Tischgestell (schmal) (Satz)', 'X Tischgestell (Satz)', 'Drone Tischbeine (Satz)'],
+        200: ['U Tischgestell (M) (Satz)', 'Drone Tischbeine (Satz)']
       },
       'oval': {
-        180: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (M) (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)']
+        180: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (M) (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)', 'Drone Tischbeine (Satz)', 'U Tischgestell (Satz)'],
+        200: ['Thorn Tischgestelle (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)'],
+        220: ['Thorn Tischgestelle (Satz)'],
+        240: ['Thorn Tischgestelle (Satz)']
+      },
+      'bootsform': {
+        180: ['Drone Tischbeine (Satz)']
+      },
+      'halfrond': {
+        180: ['Drone Tischbeine (Satz)']
       },
       'organic': {
         200: ORGANIC_HIDDEN_SATZ, 220: ORGANIC_HIDDEN_SATZ, 240: ORGANIC_HIDDEN_SATZ,
