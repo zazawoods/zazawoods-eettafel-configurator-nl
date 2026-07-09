@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=07fa27cd';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=bee724ea';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=07fa27cd';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=bee724ea';
 
 class TableConfigurator {
   constructor() {
@@ -4046,6 +4046,10 @@ class TableConfigurator {
     // U Tischgestell (M) on Halboval 180 = 50% narrower). Organic's blob
     // outline forces 36-54% on every frame-type Satz leg at all sizes.
     const ORGANIC_HIDDEN_SATZ = [
+      // Thorn: the Organic GLB has no Pedro mesh — the button selected the leg
+      // for the cart while the 3D silently kept showing Spider. Hidden until a
+      // model exists (QA 2026-07-10).
+      'Thorn Tischgestelle (Satz)',
       'Drone Tischbeine (Satz)',
       'U Tischgestell (Satz)',
       'U Tischgestell (M) (Satz)',
