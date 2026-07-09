@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=b3af5067';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=1f902bcb';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=b3af5067';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=1f902bcb';
 
 class TableConfigurator {
   constructor() {
@@ -2512,10 +2512,15 @@ class TableConfigurator {
   }
 
   updateLegSectionIcon() {
+    // Per user request (2026-07-10): the Tischgestell section icon is a fixed
+    // flat spider silhouette (transparent PNG — no visible photo square) and
+    // never changes with the selected leg. Leg photos remain in the picker.
     const icon = document.getElementById('leg-section-icon');
     if (!icon) return;
-    const activeBtn = document.querySelector('.leg-option.active .leg-swatch-img') || document.querySelector('.leg-option.active .leg-swatch-svg');
-    if (activeBtn) icon.innerHTML = activeBtn.innerHTML;
+    const src = `Swatches/tischgestell-section-icon.png?v=${BUILD_VERSION}`;
+    if (!icon.querySelector(`img[src="${src}"]`)) {
+      icon.innerHTML = `<img src="${src}" alt="Tischgestell"/>`;
+    }
   }
 
   updatePowderSectionVisibility() {
