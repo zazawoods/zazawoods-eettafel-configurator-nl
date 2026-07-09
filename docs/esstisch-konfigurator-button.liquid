@@ -85,7 +85,7 @@
   {%- endif -%}
 {%- endfor -%}
 
-{%- assign target_url = 'https://zazawoods-esstisch-konfigurator-production.up.railway.app/?shape=' | append: init_shape -%}
+{%- assign target_url = 'https://zazawoods-esstisch-konfigurator-production.up.railway.app/?shape=' | append: init_shape | append: '&product=' | append: product.handle -%}
 {%- if init_length != '' -%}
   {%- assign target_url = target_url | append: '&length=' | append: init_length -%}
 {%- endif -%}
@@ -211,6 +211,7 @@
       });
 
       var url = 'https://zazawoods-esstisch-konfigurator-production.up.railway.app/?shape=' + encodeURIComponent(INIT_SHAPE);
+      url += '&product=' + encodeURIComponent({{ product.handle | json }});
       if (length) url += '&length=' + length;
       if (width)  url += '&width=' + width;
       if (behandlung) url += '&behandlung=' + encodeURIComponent(behandlung);

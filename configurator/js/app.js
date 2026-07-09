@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=e9a705a2';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=55717ed4';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -51,6 +51,10 @@ const ZW_LEG_LIST = [
 
 // ─── ZW live product data (loaded async from zw-products.json) ───
 let ZW_PRODUCTS_DATA = null;
+// Per-product (per-handle) base variants: colour-variant tables (Deep Black,
+// Chocolate, …) have their OWN variant ids and prices even though they share
+// a shape. Keyed by Shopify product handle.
+let ZW_PRODUCTS_BY_HANDLE = null;
 async function loadZWProducts() {
   if (ZW_PRODUCTS_DATA) return ZW_PRODUCTS_DATA;
   try {
@@ -64,6 +68,13 @@ async function loadZWProducts() {
   } catch (e) {
     console.warn('[ZW] could not load zw-products.json', e);
   }
+  try {
+    const r2 = await fetch('/configurator/js/zw-products-by-handle.json?v=' + Date.now(), { cache: 'no-store' });
+    if (r2.ok) {
+      ZW_PRODUCTS_BY_HANDLE = await r2.json();
+      console.log('[ZW] per-handle product data loaded', Object.keys(ZW_PRODUCTS_BY_HANDLE).length);
+    }
+  } catch (e) { console.warn('[ZW] could not load zw-products-by-handle.json', e); }
   return ZW_PRODUCTS_DATA;
 }
 
@@ -189,6 +200,15 @@ function buildZWSizeKey(shape, state) {
 }
 
 function findBaseVariant(product, shape, state) {
+  // Per-product override (?product=<handle>): sell exactly the table the
+  // customer came from — its own variant ids AND its own prices.
+  if (state.productHandle && ZW_PRODUCTS_BY_HANDLE && ZW_PRODUCTS_BY_HANDLE[state.productHandle]) {
+    const vars = ZW_PRODUCTS_BY_HANDLE[state.productHandle].variants || [];
+    const want = buildZWSizeKey(shape, state);
+    let v = vars.find(x => x.title === want);
+    if (!v) { const lp = `${state.length}cm`; v = vars.find(x => (x.title || '').startsWith(lp)); }
+    if (v) return { id: v.id, title: v.title, opt1: v.title, price: v.price };
+  }
   if (!product) return null;
   const want = buildZWSizeKey(shape, state);
   const direct = product.baseVariants.find(v => v.title === want || v.opt1 === want);
@@ -197,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=e9a705a2';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=55717ed4';
 
 class TableConfigurator {
   constructor() {
@@ -356,6 +376,8 @@ class TableConfigurator {
     }
     // ar=1 (QR-code scans): auto-offer AR right after the model loads.
     if (params.has('ar')) this._autoAR = true;
+    // product=<shopify handle>: sell this exact product (own variants/prices)
+    if (params.has('product')) this.state.productHandle = params.get('product');
     if (params.has('variant')) {
       const v = params.get('variant').toLowerCase();
       if (v === 'a' || v === 'b') this.state.variant = v;
@@ -385,6 +407,7 @@ class TableConfigurator {
     if (legTitle) params.set('leg', legTitle);
     params.set('powder', s.powderCoat);
     if (s.userPickedBehandlung && s.behandlungTitle) params.set('behandlung', s.behandlungTitle);
+    if (s.productHandle) params.set('product', s.productHandle);
     if (s.variant && s.variant !== 'a') params.set('variant', s.variant);
     if (s.topThickness && s.topThickness !== 4) params.set('thickness', s.topThickness);
     if (s.radius) params.set('radius', s.radius);
