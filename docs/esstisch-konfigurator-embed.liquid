@@ -85,7 +85,7 @@
   // Same defer-and-set pattern as Picknick: pass through URL params from the
   // Shopify page to the iframe AFTER the iframe is in the DOM.
   // Whitelist matches the Esstisch configurator's accepted URL params.
-  var WHITELIST = ['shape','length','width','color','edge','leg','powder','material'];
+  var WHITELIST = ['shape','length','width','color','edge','leg','powder','material','behandlung','variant','thickness','ar'];
   var iframe = document.getElementById('zw-esstisch-iframe-{{ section.id }}');
   if (!iframe) return;
 

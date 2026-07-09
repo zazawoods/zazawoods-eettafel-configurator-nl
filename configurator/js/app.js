@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=5e019721';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=c8612fd4';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=5e019721';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=c8612fd4';
 
 class TableConfigurator {
   constructor() {
@@ -354,6 +354,8 @@ class TableConfigurator {
         this.state.powderCoat = match.id;
       }
     }
+    // ar=1 (QR-code scans): auto-offer AR right after the model loads.
+    if (params.has('ar')) this._autoAR = true;
     if (params.has('variant')) {
       const v = params.get('variant').toLowerCase();
       if (v === 'a' || v === 'b') this.state.variant = v;
@@ -382,6 +384,7 @@ class TableConfigurator {
     const legTitle = s.zwLegName || leg?.displayName;
     if (legTitle) params.set('leg', legTitle);
     params.set('powder', s.powderCoat);
+    if (s.userPickedBehandlung && s.behandlungTitle) params.set('behandlung', s.behandlungTitle);
     if (s.variant && s.variant !== 'a') params.set('variant', s.variant);
     if (s.topThickness && s.topThickness !== 4) params.set('thickness', s.topThickness);
     if (s.radius) params.set('radius', s.radius);
@@ -407,6 +410,7 @@ class TableConfigurator {
     fetchAllPrices().then(() => {
       this._pricesReady = true;
       loadZWProducts().then(() => { this.updatePrice(); this.renderLegGrid(); this.updateColorSwatches(); this.updateMaterialLabel(); this.updateMaterialSectionIcon(); });
+      setTimeout(() => this._maybeAutoAR(), 1200);
       this.updatePrice();
     });
     this.loadModel(this.state.shape);
@@ -5260,6 +5264,29 @@ class TableConfigurator {
     return new Blob([arrayBuffer], { type: 'model/vnd.usdz+zip' });
   }
 
+  // Called after the initial model load when the page was opened via a
+  // scanned QR code (?ar=1). iOS Safari requires a user gesture to launch
+  // Quick Look, so we show a single prominent tap target instead of the
+  // regular UI — one tap and the table stands in the customer's room.
+  _maybeAutoAR() {
+    if (!this._autoAR) return;
+    this._autoAR = false;
+    const ua = navigator.userAgent;
+    const isIOS = /iPhone|iPod|iPad/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    if (!isIOS) return; // Android/desktop: just show the configurator
+    const ov = document.createElement('div');
+    ov.id = 'ar-auto-overlay';
+    ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(255,255,255,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;font-family:Inter,-apple-system,sans-serif;text-align:center;padding:24px;';
+    ov.innerHTML =
+      '<div style="font-size:19px;font-weight:600;color:#2f2f2f;">Ihren Tisch in AR ansehen</div>' +
+      '<div style="font-size:14px;color:#777;max-width:280px;">Stellen Sie den konfigurierten Tisch direkt in Ihren Raum.</div>' +
+      '<button id="ar-auto-go" style="background:#577476;color:#fff;border:0;border-radius:8px;padding:15px 40px;font-size:16px;cursor:pointer;">AR starten</button>' +
+      '<button id="ar-auto-skip" style="background:none;border:0;color:#999;font-size:13px;text-decoration:underline;cursor:pointer;">Weiter zum Konfigurator</button>';
+    document.body.appendChild(ov);
+    ov.querySelector('#ar-auto-go').addEventListener('click', () => { ov.remove(); this.handleAR(); });
+    ov.querySelector('#ar-auto-skip').addEventListener('click', () => ov.remove());
+  }
+
   showARPopup() {
     const popup = document.getElementById('ar-popup');
     popup.classList.remove('hidden');
@@ -5267,7 +5294,8 @@ class TableConfigurator {
     const qrContainer = document.getElementById('ar-qr');
     qrContainer.innerHTML = '';
 
-    const params = new URL(window.location.href).search;
+    const rawParams = new URL(window.location.href).search;
+    const params = rawParams ? rawParams + '&ar=1' : '?ar=1';
     const currentUrl = 'https://zazawoods.de/pages/esstisch-konfigurator' + params;
     const qrImg = document.createElement('img');
     qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(currentUrl)}&margin=8`;
