@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=1f902bcb';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=25668f1a';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=1f902bcb';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=25668f1a';
 
 class TableConfigurator {
   constructor() {
@@ -277,6 +277,33 @@ class TableConfigurator {
     }
     if (params.has('length')) this.state.length = parseInt(params.get('length')) || this.state.length;
     if (params.has('width')) this.state.width = parseInt(params.get('width')) || this.state.width;
+    // Snap URL-provided dimensions to the nearest size this shape actually
+    // sells (product-page buttons may pass length only, or a size that
+    // doesn't exist for this shape). Without this, width stayed at the shape
+    // default and the configurator showed a size the customer didn't pick.
+    if (params.has('length') || params.has('width')) {
+      const shp = TABLE_SHAPES.find(sh => sh.id === this.state.shape);
+      if (shp) {
+        const hasW = params.has('width');
+        if (Array.isArray(shp.fixedDimensions) && shp.fixedDimensions.length) {
+          let best = null, bestD = Infinity;
+          for (const [L, W] of shp.fixedDimensions) {
+            const d = Math.abs(L - this.state.length) * 1000 + (hasW ? Math.abs(W - this.state.width) : 0);
+            if (d < bestD) { bestD = d; best = [L, W]; }
+          }
+          if (best) { this.state.length = best[0]; this.state.width = best[1]; }
+        } else {
+          const lens = shp.lengths || [shp.defaultLength];
+          this.state.length = lens.reduce((a, b) => Math.abs(b - this.state.length) < Math.abs(a - this.state.length) ? b : a);
+          if (shp.lockAspect) {
+            this.state.width = this.state.length;
+          } else {
+            const wids = shp.widths || [shp.defaultWidth];
+            this.state.width = wids.reduce((a, b) => Math.abs(b - this.state.width) < Math.abs(a - this.state.width) ? b : a);
+          }
+        }
+      }
+    }
     if (params.has('edge')) {
       const edgeId = params.get('edge');
       if (EDGE_OPTIONS.find(e => e.id === edgeId || e.name.toLowerCase() === edgeId.toLowerCase())) {

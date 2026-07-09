@@ -9,6 +9,7 @@
 
 {%- assign init_shape  = 'rectangle' -%}
 {%- assign init_length = '' -%}
+{%- assign init_width  = '' -%}
 
 {%- assign h = product.handle | downcase -%}
 {%- if h == 'rechteckiger-esstisch-milano-aus-massiver-eichenholz-mit-baumstammkanten' -%}
@@ -17,6 +18,10 @@
   {%- assign init_shape = 'oval' -%}
 {%- elsif h == 'danisch-ovaler-esstisch-aus-massivem-eichenholz-andreas-mit-abgeschragter-kante' -%}
   {%- assign init_shape = 'danish-oval' -%}
+{%- elsif h == 'ovaler-esstisch-white-5-aus-massivem-eichenholz' -%}
+  {%- assign init_shape = 'danish-oval' -%}
+{%- elsif h == 'bootsform-esstisch-sergio-aus-massivem-eichenholz' -%}
+  {%- assign init_shape = 'bootsform' -%}
 {%- elsif h == 'runder-esstisch-romano-aus-massiver-eichenholz' -%}
   {%- assign init_shape = 'round' -%}
 {%- elsif h == 'esstisch-milano-aus-massivem-eichenholz-mit-baumstammkanten-copy' -%}
@@ -35,8 +40,11 @@
     {%- assign parts = digits | split: ' ' -%}
     {%- for p in parts -%}
       {%- assign n = p | strip | times: 1 -%}
-      {%- if n > 0 and init_length == '' -%}
+      {%- comment -%} numbers < 40 are the plate thickness (4cm) — skip {%- endcomment -%}
+      {%- if n >= 40 and init_length == '' -%}
         {%- assign init_length = n -%}
+      {%- elsif n >= 40 and init_length != '' and init_width == '' -%}
+        {%- assign init_width = n -%}
       {%- endif -%}
     {%- endfor -%}
   {%- endif -%}
@@ -45,6 +53,9 @@
 {%- assign target_url = 'https://zazawoods-esstisch-konfigurator-production.up.railway.app/?shape=' | append: init_shape -%}
 {%- if init_length != '' -%}
   {%- assign target_url = target_url | append: '&length=' | append: init_length -%}
+{%- endif -%}
+{%- if init_width != '' -%}
+  {%- assign target_url = target_url | append: '&width=' | append: init_width -%}
 {%- endif -%}
 
 <a href="{{ target_url }}"
@@ -122,15 +133,25 @@
   function refresh() {
     try {
       var picked = readSelectedOptions();
-      var length = null;
+      var length = null, width = null, color = null, edge = null;
       Object.keys(picked).forEach(function (k) {
+        var v = picked[k] || '';
         if (/maß|länge|lange|durchmesser|size|length/i.test(k)) {
-          var L = firstInt(picked[k]);
-          if (L) length = L;
+          // e.g. "240cm x 100cm x 4cm" — numbers < 40 are the plate thickness
+          var nums = (v.match(/\d+/g) || []).map(Number).filter(function (n) { return n >= 40; });
+          if (nums[0]) length = nums[0];
+          if (nums[1]) width = nums[1];
+        } else if (/behandlung|farbe|colou?r/i.test(k)) {
+          color = v;
+        } else if (/kante|edge/i.test(k)) {
+          edge = v;
         }
       });
       var url = 'https://zazawoods-esstisch-konfigurator-production.up.railway.app/?shape=' + encodeURIComponent(INIT_SHAPE);
       if (length) url += '&length=' + length;
+      if (width)  url += '&width=' + width;
+      if (color)  url += '&color=' + encodeURIComponent(color);
+      if (edge)   url += '&edge=' + encodeURIComponent(edge);
       btn.setAttribute('href', url);
     } catch (e) {}
   }
