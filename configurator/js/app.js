@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=928d4fc9';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=4597b32c';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=928d4fc9';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=4597b32c';
 
 class TableConfigurator {
   constructor() {
@@ -1137,12 +1137,7 @@ class TableConfigurator {
   }
 
   _remapVariantUVs(variant) {
-    // Curved-rim GLB shapes (Oval, Organisch): the angle-wrap side UV smears
-    // the grain tangentially along the rounded rim and leaves a visible seam —
-    // the corners looked different from every other shape (user report
-    // 2026-07-10). Pure planar XZ projection lets the tabletop grain continue
-    // straight over the edge, so corners run along the table like Rechteck.
-    const forcePlanar = ['oval', 'organic', 'kiezel'].includes(this.state.shape);
+    const forcePlanar = false;
     variant.traverse((child) => {
       if (!child.isMesh || !child.geometry) return;
 
@@ -1178,8 +1173,12 @@ class TableConfigurator {
       const centerX = (minX + maxX) / 2;
       const centerZ = (minZ + maxZ) / 2;
 
-      // Second pass: assign UVs based on face orientation
+      // Second pass: assign UVs based on face orientation. Side vertices are
+      // collected first and mapped with an arc-length rim parametrisation so
+      // the grain density is uniform around the whole edge on every shape.
       const uvArray = new Float32Array(pos.count * 2);
+      const sideIdx = [];
+      const sideSamples = [];
 
       for (let i = 0; i < pos.count; i++) {
         tempVec.set(pos.getX(i), pos.getY(i), pos.getZ(i));
@@ -1195,13 +1194,13 @@ class TableConfigurator {
         }
 
         if (isSide) {
-          // Edge/side: use angle around center for U, height for V
-          // This wraps the texture around the perimeter like real endgrain
-          const angle = Math.atan2(tempVec.z - centerZ, tempVec.x - centerX);
-          const perimeter = (angle + Math.PI) / (2 * Math.PI); // 0..1 around the shape
-          const height = (tempVec.y - minY) / rangeY; // 0..1 bottom to top
-          uvArray[i * 2] = perimeter * 4; // repeat 4x around perimeter
-          uvArray[i * 2 + 1] = height * 2; // repeat 2x over height
+          const dx = tempVec.x - centerX, dz = tempVec.z - centerZ;
+          const theta = Math.atan2(dz, dx);
+          sideIdx.push(i, i); // placeholder pairing with samples
+          sideSamples.push(theta, Math.hypot(dx, dz));
+          sideIdx[sideIdx.length - 1] = (tempVec.y - minY) / rangeY; // height in second slot
+          uvArray[i * 2] = 0; // filled after rim map is built
+          uvArray[i * 2 + 1] = 0;
         } else {
           // Top/bottom face: planar projection
           // Reference: 300cm x 120cm = full texture visible
@@ -1223,6 +1222,19 @@ class TableConfigurator {
 
           uvArray[i * 2] = uOff + normX * uScale;
           uvArray[i * 2 + 1] = vOff + normZ * vScale;
+        }
+      }
+
+      if (sideSamples.length) {
+        const rim = this._buildRimArcMap(sideSamples);
+        // Constant grain density: one texture repeat per ~1.7m of rim (matches
+        // the previous 4-repeat look on a 240x100 Rechteck).
+        const repeats = Math.max(2, Math.round(rim.total / 1.7));
+        for (let k = 0; k < sideSamples.length; k += 2) {
+          const vi = sideIdx[k];
+          const height = sideIdx[k + 1];
+          uvArray[vi * 2] = rim.u(sideSamples[k]) * repeats;
+          uvArray[vi * 2 + 1] = height * 2;
         }
       }
 
@@ -1612,6 +1624,51 @@ class TableConfigurator {
     return hull;
   }
 
+  // Build an arc-length parametrisation of the tabletop rim from side-vertex
+  // samples (theta = angle around centre, r = distance from centre). The old
+  // side UVs used the raw ANGLE as U, which is heavily non-uniform on
+  // elongated shapes (Oval, Organisch): grain got compressed at the rounded
+  // ends and stretched on the long sides, so the "corners" looked different
+  // from every other shape. Arc length makes grain density constant all the
+  // way around, on every shape (user report 2026-07-10).
+  _buildRimArcMap(samples) {
+    const BINS = 512;
+    const rSum = new Float64Array(BINS), rCnt = new Uint32Array(BINS);
+    for (let k = 0; k < samples.length; k += 2) {
+      const theta = samples[k], r = samples[k + 1];
+      let b = Math.floor((theta + Math.PI) / (2 * Math.PI) * BINS);
+      if (b >= BINS) b = BINS - 1; if (b < 0) b = 0;
+      rSum[b] += r; rCnt[b]++;
+    }
+    const r = new Float64Array(BINS);
+    for (let i = 0; i < BINS; i++) if (rCnt[i]) r[i] = rSum[i] / rCnt[i];
+    for (let i = 0; i < BINS; i++) {
+      if (rCnt[i]) continue;
+      for (let d = 1; d < BINS; d++) {
+        const a = (i - d + BINS) % BINS, b2 = (i + d) % BINS;
+        if (rCnt[a]) { r[i] = r[a]; break; }
+        if (rCnt[b2]) { r[i] = r[b2]; break; }
+      }
+    }
+    const cum = new Float64Array(BINS + 1);
+    const dTh = 2 * Math.PI / BINS;
+    for (let i = 0; i < BINS; i++) {
+      const th0 = -Math.PI + i * dTh, th1 = th0 + dTh;
+      const r1 = r[(i + 1) % BINS];
+      const x0 = r[i] * Math.cos(th0), z0 = r[i] * Math.sin(th0);
+      const x1 = r1 * Math.cos(th1), z1 = r1 * Math.sin(th1);
+      cum[i + 1] = cum[i] + Math.hypot(x1 - x0, z1 - z0);
+    }
+    const total = cum[BINS] || 1;
+    const u = (theta) => {
+      let t = (theta + Math.PI) / (2 * Math.PI) * BINS;
+      if (t < 0) t = 0; if (t >= BINS) t = BINS - 1e-6;
+      const i = Math.floor(t), f = t - i;
+      return (cum[i] + f * (cum[i + 1] - cum[i])) / total;
+    };
+    return { u, total };
+  }
+
   // Apply consistent top-down UV mapping to a tabletop geometry
   applyTabletopUVs(geometry) {
     const pos = geometry.attributes.position;
@@ -1635,6 +1692,8 @@ class TableConfigurator {
     const refX = 3.0, refZ = 1.2; // 300cm x 120cm reference
 
     const uv = new Float32Array(pos.count * 2);
+    const sideIdx2 = [];
+    const sideSamples2 = [];
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
 
@@ -1646,11 +1705,10 @@ class TableConfigurator {
       }
 
       if (isSide) {
-        const angle = Math.atan2(z - centerZ, x - centerX);
-        const perimeter = (angle + Math.PI) / (2 * Math.PI);
-        const height = (y - minY) / rangeY;
-        uv[i * 2] = perimeter * 4;
-        uv[i * 2 + 1] = height * 2;
+        const dx = x - centerX, dz = z - centerZ;
+        sideIdx2.push(i, (y - minY) / rangeY);
+        sideSamples2.push(Math.atan2(dz, dx), Math.hypot(dx, dz));
+        uv[i * 2] = 0; uv[i * 2 + 1] = 0; // filled after rim map is built
       } else {
         // Top/bottom: crop-based UV (same logic as remapTabletopUVs)
         const aspectRatio = rangeX / rangeZ;
@@ -1670,6 +1728,16 @@ class TableConfigurator {
           uv[i * 2] = uOff + normX * uScale;
           uv[i * 2 + 1] = vOff + normZ * vScale;
         }
+      }
+    }
+    if (sideSamples2.length) {
+      const rim = this._buildRimArcMap(sideSamples2);
+      const repeats = Math.max(2, Math.round(rim.total / 1.7));
+      for (let k = 0; k < sideSamples2.length; k += 2) {
+        const vi = sideIdx2[k];
+        const height = sideIdx2[k + 1];
+        uv[vi * 2] = rim.u(sideSamples2[k]) * repeats;
+        uv[vi * 2 + 1] = height * 2;
       }
     }
     geometry.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
