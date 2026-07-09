@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=ac4d9625';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=d968d2ef';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=ac4d9625';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=d968d2ef';
 
 class TableConfigurator {
   constructor() {
@@ -4018,10 +4018,37 @@ class TableConfigurator {
     // for the current shape+length. Data from an automated audit measuring the
     // leg-mesh vertices against the tabletop's convex outline. Threshold: >5cm
     // past the edge = hidden from the picker for that size.
-    // Per-user request: show ALL legs on every shape 1:1 with Rectangle. Previous
-    // per-shape hide-list is retained empty in case a specific combination needs
-    // to be hidden later based on visual audit.
-    const HIDE_LEGS_BY_SHAPE_LENGTH = {};
+    // Visual audit 2026-07-09 (user request): hide Satz legs whose stance the
+    // overhang clamp squeezes ≥25% narrower than their Rechteck reference —
+    // they fit under the top but look uncomfortably narrow (anchor case:
+    // U Tischgestell (M) on Halboval 180 = 50% narrower). Organic's blob
+    // outline forces 36-54% on every frame-type Satz leg at all sizes.
+    const ORGANIC_HIDDEN_SATZ = [
+      'Drone Tischbeine (Satz)',
+      'U Tischgestell (Satz)',
+      'U Tischgestell (M) (Satz)',
+      'U Tischgestell (schmal) (Satz)',
+      'X Tischgestell (Satz)',
+      'Trapezium Tischgestell (Satz)',
+      'Stahlwangen Tischgestell (Satz)',
+      'Stahlwangen Tischgestell (S) (Satz)',
+      'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)',
+      'Butterfly Tischbeine aus Eichenholz (Satz) (A)',
+      'Halbrunde Tischbeine aus Eichenholz (Satz) (A)'
+    ];
+    const HIDE_LEGS_BY_SHAPE_LENGTH = {
+      'danish-oval': {
+        180: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)', 'U Tischgestell (schmal) (Satz)', 'X Tischgestell (Satz)'],
+        200: ['U Tischgestell (M) (Satz)']
+      },
+      'oval': {
+        180: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (M) (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)']
+      },
+      'organic': {
+        200: ORGANIC_HIDDEN_SATZ, 220: ORGANIC_HIDDEN_SATZ, 240: ORGANIC_HIDDEN_SATZ,
+        260: ORGANIC_HIDDEN_SATZ, 280: ORGANIC_HIDDEN_SATZ, 300: ORGANIC_HIDDEN_SATZ
+      }
+    };
     const hideList = HIDE_LEGS_BY_SHAPE_LENGTH[this.state.shape]?.[this.state.length] || [];
     if (hideList.length > 0) {
       tischgestellList = tischgestellList.filter(a => !hideList.includes(a.title));
