@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=1f100829';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=6d4ae0cf';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=1f100829';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=6d4ae0cf';
 
 class TableConfigurator {
   constructor() {
@@ -3097,6 +3097,18 @@ class TableConfigurator {
         if (leg.displayName === 'Walrus') {
           legInwardCm += currentTargetOuter * 0.15;
         }
+        // Wellen-Duo: deep wavy panels (~63cm in Z) poke past the tapered ends
+        // of curved shapes at small lengths. Audited 2026-07-09: oval/halboval
+        // 180 stick out 10.5cm, 200 ~9cm, 220 ~3cm; halfrond ~3cm at 180-200.
+        if (leg.displayName === 'Wellen-Duo') {
+          if (shape.id === 'oval' || shape.id === 'danish-oval' || shape.id === 'halboval') {
+            if (currentLength <= 180) legInwardCm += 13;
+            else if (currentLength <= 200) legInwardCm += 11;
+            else if (currentLength <= 220) legInwardCm += 5;
+          } else if (shape.id === 'halfrond') {
+            if (currentLength <= 200) legInwardCm += 5;
+          }
+        }
         // Hairpin: 10cm more inward at 180-200cm, taper to 0 at 240
         if (leg.displayName === 'Hairpin') {
           if (currentLength <= 200) legInwardCm += 10;
@@ -3143,6 +3155,14 @@ class TableConfigurator {
         // Drone-specific: pull further inward (Drone models are longer / spread
         // wider than other set-legs, so they hang off the table without extra
         // inward offset that scales with table length).
+        // Ovale Stäbchenholz pair: mounting plates (~66cm span in Z) poke past
+        // the organic blob outline. Audited 2026-07-09: 15cm out at 200, 8cm
+        // at 220-240. Pull inward on organic only.
+        if (/^Ovale Tischgestelle|^Ovale Tischbeine/i.test(leg.displayName) && shape.id === 'organic') {
+          if (currentLength <= 200) edgeDistCm += 17;
+          else if (currentLength <= 240) edgeDistCm += 11;
+          else edgeDistCm += 9;
+        }
         if (/^Drone/i.test(leg.displayName)) {
           // Add 15% of half-length as extra inward pull, min 20cm, max 45cm
           const extraCm = Math.max(20, Math.min(45, currentLength * 0.075));
