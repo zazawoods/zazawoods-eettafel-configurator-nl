@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=1e6b7765';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=07fa27cd';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=1e6b7765';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=07fa27cd';
 
 class TableConfigurator {
   constructor() {
@@ -294,6 +294,7 @@ class TableConfigurator {
       // shape-switch cases for legs like Halbrunde/Butterfly Eichenholz.
       this.state.zwLegName = legParam;
       this.state.userPickedLeg = true;
+      this._desiredLegTitle = legParam;
     }
     if (params.has('powder')) {
       const pwId = params.get('powder');
@@ -4107,6 +4108,15 @@ class TableConfigurator {
       }
     }
 
+    // Restore the user's explicitly chosen leg if it is available again for
+    // this shape+size (it may have been temporarily replaced by the Spider
+    // fallback while hidden on another shape/size).
+    if (this._desiredLegTitle &&
+        this.state.zwLegName !== this._desiredLegTitle &&
+        tischgestellList.find(a => a.title === this._desiredLegTitle)) {
+      this.state.zwLegName = this._desiredLegTitle;
+      this.state.userPickedLeg = true;
+    }
     // Sync zwLegName from current GLB leg, OR default. Default preference:
     //   1. "Spider Tischgestell (S)" if it exists for this shape (user request)
     //   2. First ZW addon that also has a matching 3D model
@@ -4204,6 +4214,10 @@ class TableConfigurator {
       const item = tischgestellList[zwIdx];
       this.state.zwLegName = item.title;
       this.state.userPickedLeg = true;
+      // Remember the user's explicit choice so shape/size switches can restore
+      // it whenever it becomes available again (2026-07-10 request: only the
+      // thing the user switched should change — everything else persists).
+      this._desiredLegTitle = item.title;
 
       // Re-scan legObjects at click time: async external-leg loading may have
       // completed after render, but data-leg-index is a stale -1. Try to find
