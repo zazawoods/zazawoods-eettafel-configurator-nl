@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=d968d2ef';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=1e6b7765';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=d968d2ef';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=1e6b7765';
 
 class TableConfigurator {
   constructor() {
@@ -3791,8 +3791,29 @@ class TableConfigurator {
       this.state.variant = 'a'; // reset variant on shape change
       const shape = TABLE_SHAPES.find(s => s.id === shapeId);
 
-      this.state.length = shape.defaultLength;
-      this.state.width = shape.defaultWidth;
+      // Keep the user's size across shape switches (2026-07-09 request):
+      // snap the current length/width to the nearest size the new shape
+      // offers instead of resetting to the shape default.
+      const prevLen = this.state.length, prevWid = this.state.width;
+      let snapL = shape.defaultLength, snapW = shape.defaultWidth;
+      if (Array.isArray(shape.fixedDimensions) && shape.fixedDimensions.length) {
+        let bestD = Infinity;
+        for (const [L, W] of shape.fixedDimensions) {
+          const d = Math.abs(L - prevLen) * 1000 + Math.abs(W - prevWid);
+          if (d < bestD) { bestD = d; snapL = L; snapW = W; }
+        }
+      } else {
+        const lens = shape.lengths || [shape.defaultLength];
+        snapL = lens.reduce((a, b) => Math.abs(b - prevLen) < Math.abs(a - prevLen) ? b : a);
+        if (shape.lockAspect) {
+          snapW = snapL; // round: width follows diameter
+        } else {
+          const wids = shape.widths || [shape.defaultWidth];
+          snapW = wids.reduce((a, b) => Math.abs(b - prevWid) < Math.abs(a - prevWid) ? b : a);
+        }
+      }
+      this.state.length = snapL;
+      this.state.width = snapW;
       this.state.radius = 0;
       // Snap edge to the shape's default when the user hasn't chosen one, or
       // when their current edge isn't compatible with the new shape's
