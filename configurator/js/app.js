@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=9b450919';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=95a24e6b';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=9b450919';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=95a24e6b';
 
 class TableConfigurator {
   constructor() {
@@ -5248,64 +5248,67 @@ class TableConfigurator {
     const btn = document.getElementById('btn-ar');
     if (!btn) return;
 
-    // Android: intentionally unsupported (Apple Quick Look is iOS-only).
-    if (isAndroid) {
-      this.showToast('AR ist derzeit nur auf iPhone / iPad verfügbar.');
-      return;
-    }
-
-    // Desktop: QR popup so the user can scan the config on their iPhone.
-    if (!isIOS) {
+    // Desktop: QR popup so the user can scan the config on their phone.
+    if (!isIOS && !isAndroid) {
       this.showARPopup();
       return;
     }
 
-    // iPhone / iPad — real AR path.
-    //
-    // iOS Quick Look ONLY understands `.usdz` / `.reality`. Handing it a `.glb`
-    // makes Safari navigate to the blob URL as if it were a webpage (which is
-    // why users saw an "empty zazawoods page" flash by). We therefore export
-    // USDZ client-side using three.js's USDZExporter and open it via a plain
-    // <a rel="ar"> anchor — the same pattern Apple's own examples use.
     btn.classList.add('loading');
     const cleanup = () => btn.classList.remove('loading');
-    const hangTimer = setTimeout(cleanup, 12000);
+    const hangTimer = setTimeout(cleanup, 15000);
 
     try {
-      const usdzBlob = await this.exportSceneToUSDZ();
-      if (!usdzBlob || usdzBlob.size < 1000) throw new Error('Empty USDZ');
-
-      // Safari inspects the file extension in the URL. Blob URLs don't have
-      // one, so we use a File object which gives us a proper name.
-      const usdzFile = new File([usdzBlob], 'zazawoods-tisch.usdz', { type: 'model/vnd.usdz+zip' });
-      const usdzUrl = URL.createObjectURL(usdzFile);
-
-      // Build the AR link exactly as Apple recommends.
-      const link = document.createElement('a');
-      link.rel = 'ar';
-      link.href = usdzUrl;
-      link.style.cssText = 'position:fixed;top:-9999px;left:-9999px;';
-      // Safari requires a child <img> — anything, doesn't need to be real.
-      const img = document.createElement('img');
-      img.alt = '';
-      img.style.cssText = 'width:1px;height:1px;';
-      link.appendChild(img);
-      document.body.appendChild(link);
-
-      // Programmatic click launches Quick Look.
-      link.click();
-
+      if (isIOS) {
+        // iOS Quick Look. The old approach (blob URL + <a rel=ar>) silently
+        // does nothing inside the shop's cross-origin iframe — the reason AR
+        // "didn't work" on iPhones. Hosting the USDZ on our server and opening
+        // it as a plain URL works everywhere (Safari launches Quick Look for
+        // the model/vnd.usdz+zip content type).
+        const usdzBlob = await this.exportSceneToUSDZ();
+        if (!usdzBlob || usdzBlob.size < 1000) throw new Error('Empty USDZ');
+        const up = await fetch('/api/upload-usdz', { method: 'POST', body: usdzBlob });
+        const j = await up.json();
+        if (!j || !j.url) throw new Error('USDZ upload failed');
+        const w = window.open(j.url, '_blank');
+        if (!w) {
+          // Pop-up blocked — fall back to the rel=ar anchor pattern.
+          const link = document.createElement('a');
+          link.rel = 'ar';
+          link.href = j.url;
+          link.style.cssText = 'position:fixed;top:-9999px;left:-9999px;';
+          const img = document.createElement('img');
+          img.alt = '';
+          img.style.cssText = 'width:1px;height:1px;';
+          link.appendChild(img);
+          document.body.appendChild(link);
+          link.click();
+          setTimeout(() => { try { link.remove(); } catch (e) {} }, 30000);
+        }
+      } else {
+        // Android: Google Scene Viewer with a server-hosted GLB.
+        const glbBlob = await this.exportSceneToGLB();
+        if (!glbBlob || glbBlob.size < 1000) throw new Error('Empty GLB');
+        const up = await fetch('/api/upload-glb', { method: 'POST', body: glbBlob });
+        const j = await up.json();
+        if (!j || !j.url) throw new Error('GLB upload failed');
+        const viewer = 'https://arvr.google.com/scene-viewer/1.0?file=' + encodeURIComponent(j.url) +
+          '&mode=ar_preferred&title=' + encodeURIComponent('Zaza Woods Esstisch');
+        const intent = 'intent://arvr.google.com/scene-viewer/1.0?file=' + encodeURIComponent(j.url) +
+          '&mode=ar_preferred#Intent;scheme=https;package=com.google.android.googlequicksearchbox;' +
+          'action=android.intent.action.VIEW;S.browser_fallback_url=' + encodeURIComponent(viewer) + ';end;';
+        if (window.top === window) {
+          // Standalone page: intent:// navigation opens Scene Viewer directly.
+          window.location.href = intent;
+        } else {
+          // Inside the shop iframe: intent needs a top-level navigation —
+          // window.open gets routed to Scene Viewer by Chrome as well.
+          const w = window.open(intent, '_blank');
+          if (!w) window.open(viewer, '_blank');
+        }
+      }
       clearTimeout(hangTimer);
       cleanup();
-
-      // Revoke the blob URL after Safari has consumed it. Keep it alive long
-      // enough for Quick Look to open (about a second is usually enough, but
-      // we're generous).
-      setTimeout(() => {
-        try { URL.revokeObjectURL(usdzUrl); } catch (e) {}
-        try { link.remove(); } catch (e) {}
-      }, 30000);
-
     } catch (err) {
       console.error('AR error:', err);
       clearTimeout(hangTimer);
@@ -5341,7 +5344,8 @@ class TableConfigurator {
     this._autoAR = false;
     const ua = navigator.userAgent;
     const isIOS = /iPhone|iPod|iPad/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
-    if (!isIOS) return; // Android/desktop: just show the configurator
+    const isAndroid = /Android/i.test(ua);
+    if (!isIOS && !isAndroid) return; // desktop: just show the configurator
     const ov = document.createElement('div');
     ov.id = 'ar-auto-overlay';
     ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(255,255,255,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;font-family:Inter,-apple-system,sans-serif;text-align:center;padding:24px;';

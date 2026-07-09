@@ -92,6 +92,44 @@ app.post('/api/upload-glb', async (req, res) => {
   }
 });
 
+// API: upload-usdz (POST) — hosts the client-exported USDZ so iOS Quick Look
+// can open it via a plain URL (blob:/rel=ar links don't launch Quick Look from
+// inside the shop iframe).
+app.post('/api/upload-usdz', async (req, res) => {
+  try {
+    const chunks = [];
+    for await (const chunk of req) chunks.push(chunk);
+    const buffer = Buffer.concat(chunks);
+    if (buffer.length < 1000) return res.status(400).json({ error: 'Empty or invalid USDZ' });
+    if (buffer.length > 30 * 1024 * 1024) return res.status(413).json({ error: 'File too large (max 30MB)' });
+    const id = randomBytes(8).toString('hex');
+    if (!existsSync(TEMP_DIR)) await mkdir(TEMP_DIR, { recursive: true });
+    await writeFile(`${TEMP_DIR}/${id}.usdz`, buffer);
+    const host = req.headers.host || 'localhost:3000';
+    const protocol = req.headers['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https');
+    const url = `${protocol}://${host}/api/usdz/${id}.usdz`;
+    return res.status(200).json({ url, id });
+  } catch (err) {
+    console.error('upload-usdz error:', err);
+    return res.status(500).json({ error: 'Upload failed' });
+  }
+});
+
+// Serve hosted USDZ with the exact MIME type Quick Look expects.
+app.get('/api/usdz/:name', async (req, res) => {
+  const name = req.params.name;
+  if (!/^[a-f0-9]+\.usdz$/.test(name)) return res.status(400).json({ error: 'Invalid name' });
+  try {
+    const data = await readFile(`${TEMP_DIR}/${name}`);
+    res.setHeader('Content-Type', 'model/vnd.usdz+zip');
+    res.setHeader('Content-Disposition', `inline; filename="zazawoods-tisch.usdz"`);
+    res.setHeader('Cache-Control', 'public, max-age=600');
+    return res.status(200).send(data);
+  } catch {
+    return res.status(404).json({ error: 'Model not found or expired' });
+  }
+});
+
 // API: upload-icon (POST) — persists rendered PNG icons to /tmp/icons/
 app.post('/api/upload-icon', async (req, res) => {
   try {
