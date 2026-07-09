@@ -28,6 +28,41 @@
   {%- assign init_shape = 'organic' -%}
 {%- elsif h == 'halbkreisform-esstisch-aus-massivem-eichenholz' -%}
   {%- assign init_shape = 'halfrond' -%}
+{%- else -%}
+  {%- comment -%}
+    Fallback for products not in the explicit map (colour/edge variants of the
+    same table lines): infer the shape from the handle so e.g. an oval variant
+    never opens the configurator as a rectangle.
+  {%- endcomment -%}
+  {%- if h contains 'danisch-oval' or h contains 'halboval' -%}
+    {%- assign init_shape = 'danish-oval' -%}
+  {%- elsif h contains 'bootsform' -%}
+    {%- assign init_shape = 'bootsform' -%}
+  {%- elsif h contains 'halbkreis' or h contains 'halbrund' -%}
+    {%- assign init_shape = 'halfrond' -%}
+  {%- elsif h contains 'oval' -%}
+    {%- assign init_shape = 'oval' -%}
+  {%- elsif h contains 'runder' or h contains 'rund-' -%}
+    {%- assign init_shape = 'round' -%}
+  {%- elsif h contains 'organisch' or h contains 'organic' -%}
+    {%- assign init_shape = 'organic' -%}
+  {%- endif -%}
+{%- endif -%}
+
+{%- comment -%}
+  Colour-variant products carry the Behandlung in the product title
+  (e.g. Esstisch "Deep Black"). Pre-select it in the configurator.
+{%- endcomment -%}
+{%- assign init_behandlung = '' -%}
+{%- assign tl = product.title | downcase -%}
+{%- if tl contains 'deep black' -%}{%- assign init_behandlung = 'Deep Black' -%}
+{%- elsif tl contains 'white 5' -%}{%- assign init_behandlung = 'White 5%' -%}
+{%- elsif tl contains 'chocolate' -%}{%- assign init_behandlung = 'Chocolate' -%}
+{%- elsif tl contains 'cortado' -%}{%- assign init_behandlung = 'Cortado' -%}
+{%- elsif tl contains 'shell grey' -%}{%- assign init_behandlung = 'Shell Grey' -%}
+{%- elsif tl contains 'yakisugi' -%}{%- assign init_behandlung = 'Black' -%}
+{%- elsif tl contains 'macchiato' -%}{%- assign init_behandlung = 'Macchiato' -%}
+{%- elsif tl contains 'walnut' -%}{%- assign init_behandlung = 'Walnut' -%}
 {%- endif -%}
 
 {%- for opt in product.options_with_values -%}
@@ -56,6 +91,9 @@
 {%- endif -%}
 {%- if init_width != '' -%}
   {%- assign target_url = target_url | append: '&width=' | append: init_width -%}
+{%- endif -%}
+{%- if init_behandlung != '' -%}
+  {%- assign target_url = target_url | append: '&behandlung=' | append: init_behandlung | url_encode -%}
 {%- endif -%}
 
 <a href="{{ target_url }}"
@@ -106,6 +144,7 @@
   var btn = document.getElementById('zw-esstisch-konfig-btn-{{ product.id }}');
   if (!btn) return;
   var INIT_SHAPE = {{ init_shape | json }};
+  var INIT_BEHANDLUNG = {{ init_behandlung | json }};
 
   function firstInt(s) { var m = (s || '').match(/\d+/); return m ? parseInt(m[0], 10) : null; }
   function readSelectedOptions() {
@@ -176,6 +215,7 @@
       if (width)  url += '&width=' + width;
       if (behandlung) url += '&behandlung=' + encodeURIComponent(behandlung);
       else if (color) url += '&color=' + encodeURIComponent(color);
+      else if (INIT_BEHANDLUNG) url += '&behandlung=' + encodeURIComponent(INIT_BEHANDLUNG);
       if (kante) url += '&edge=' + encodeURIComponent(kante);
       else if (edge) url += '&edge=' + encodeURIComponent(edge);
       if (leg) url += '&leg=' + encodeURIComponent(leg);
