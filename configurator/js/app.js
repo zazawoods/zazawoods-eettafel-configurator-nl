@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=c8612fd4';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=e9a705a2';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=c8612fd4';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=e9a705a2';
 
 class TableConfigurator {
   constructor() {
@@ -2745,6 +2745,25 @@ class TableConfigurator {
       }
     }
 
+    // Custom edge-profile tabletops (Schweizer/Baumstamm, and the forced
+    // straight-edge rebuild on Oval/Organisch) live at the MODEL ROOT — they
+    // must be re-skinned too, otherwise a Behandlung change leaves the visible
+    // top with the old texture (user report 2026-07-10).
+    if (this.currentModel) {
+      ['custom_tabletop', 'custom_tabletop_a', 'custom_tabletop_b'].forEach(name => {
+        const m = this.currentModel.getObjectByName(name);
+        if (m && m.isMesh) {
+          if (Array.isArray(m.material)) m.material.forEach(x => x.dispose());
+          else if (m.material) m.material.dispose();
+          if (m.geometry.groups && m.geometry.groups.length >= 3 && this.edgeMaterial) {
+            m.material = [this.topMaterial.clone(), this.topMaterial.clone(), this.edgeMaterial.clone()];
+          } else {
+            m.material = this.topMaterial.clone();
+          }
+        }
+      });
+    }
+
     this.applyActiveLegMaterial();
   }
 
@@ -3359,6 +3378,16 @@ class TableConfigurator {
       const isSet = this.isSetLeg(leg.displayName);
       if (!isPair && !(isSet && hasHalves)) return;
       const tops = [];
+      // Custom edge-profile tops REPLACE the GLB tabletop (its meshes get
+      // hidden) — collect the outline from them first, otherwise the clamp
+      // sees no visible tabletop and silently does nothing (legs poked out
+      // on Oval/Organisch after the straight-edge rebuild).
+      if (this.currentModel) {
+        ['custom_tabletop', 'custom_tabletop_a', 'custom_tabletop_b'].forEach(name => {
+          const m = this.currentModel.getObjectByName(name);
+          if (m && m.visible) tops.push(m);
+        });
+      }
       if (this.tabletopObject && this.tabletopObject.visible !== false) tops.push(this.tabletopObject);
       if (this.tabletopVariantA && this.tabletopVariantA.visible) tops.push(this.tabletopVariantA);
       if (this.tabletopVariantB && this.tabletopVariantB.visible) tops.push(this.tabletopVariantB);
