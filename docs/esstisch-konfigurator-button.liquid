@@ -147,11 +147,38 @@
           edge = v;
         }
       });
+
+      // Selected ADDON cards (Behandlung / Kantenbearbeitung / Tischgestell):
+      // a chosen addon is marked by class "added" on the card's submit button;
+      // the addon title sits in the hidden [name=title] input.
+      var behandlung = null, kante = null, leg = null;
+      document.querySelectorAll('.addons-card').forEach(function (card) {
+        if (!card.querySelector('form [type=submit].added')) return;
+        var tEl = card.querySelector('form [name=title]');
+        var title = tEl ? tEl.value : ((card.querySelector('.addons-product-title') || {}).textContent || '');
+        title = (title || '').trim();
+        if (!title) return;
+        // Which section does this card belong to? Walk up until a container
+        // that has the .addons-title heading.
+        var p = card.parentElement, section = '';
+        while (p && p !== document.body) {
+          var h = p.querySelector('.addons-title');
+          if (h) { section = (h.textContent || '').trim().toLowerCase(); break; }
+          p = p.parentElement;
+        }
+        if (section.indexOf('behandlung') >= 0) behandlung = title;
+        else if (section.indexOf('kante') >= 0) kante = title;
+        else if (section.indexOf('gestell') >= 0) leg = title;
+      });
+
       var url = 'https://zazawoods-esstisch-konfigurator-production.up.railway.app/?shape=' + encodeURIComponent(INIT_SHAPE);
       if (length) url += '&length=' + length;
       if (width)  url += '&width=' + width;
-      if (color)  url += '&color=' + encodeURIComponent(color);
-      if (edge)   url += '&edge=' + encodeURIComponent(edge);
+      if (behandlung) url += '&behandlung=' + encodeURIComponent(behandlung);
+      else if (color) url += '&color=' + encodeURIComponent(color);
+      if (kante) url += '&edge=' + encodeURIComponent(kante);
+      else if (edge) url += '&edge=' + encodeURIComponent(edge);
+      if (leg) url += '&leg=' + encodeURIComponent(leg);
       btn.setAttribute('href', url);
     } catch (e) {}
   }
@@ -171,6 +198,13 @@
   // Bulletproof: re-build the URL synchronously when the user clicks.
   // This catches the case where someone changes Maße and immediately clicks
   // before the 'change' event has had time to fire.
+  // Addon cards mark selection asynchronously (AJAX) — refresh shortly after
+  document.addEventListener('click', function (ev) {
+    if (ev.target && ev.target.closest && ev.target.closest('.addons-card')) {
+      setTimeout(refresh, 400);
+      setTimeout(refresh, 1200);
+    }
+  }, true);
   btn.addEventListener('mousedown', refresh, true);
   btn.addEventListener('touchstart', refresh, { capture: true, passive: true });
   btn.addEventListener('click', refresh, true);

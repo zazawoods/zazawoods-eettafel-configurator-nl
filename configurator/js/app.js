@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=25668f1a';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=5e019721';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=25668f1a';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=5e019721';
 
 class TableConfigurator {
   constructor() {
@@ -306,10 +306,34 @@ class TableConfigurator {
     }
     if (params.has('edge')) {
       const edgeId = params.get('edge');
-      if (EDGE_OPTIONS.find(e => e.id === edgeId || e.name.toLowerCase() === edgeId.toLowerCase())) {
-        const match = EDGE_OPTIONS.find(e => e.id === edgeId || e.name.toLowerCase() === edgeId.toLowerCase());
+      const eq = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
+      let match = EDGE_OPTIONS.find(e => e.id === edgeId || eq(e.name, edgeId));
+      // Also accept the ZW shop addon titles ("Gerade Kanten", "Schweizer
+      // Kanten", "Baumstammkanten") passed by product-page buttons.
+      if (!match) {
+        for (const [id, titles] of Object.entries(EDGE_TITLE_MAP)) {
+          if (titles.some(t => eq(t, edgeId))) { match = EDGE_OPTIONS.find(e => e.id === id); break; }
+        }
+      }
+      if (match) {
         this.state.edge = match.id;
         this.state.userPickedEdge = true; // URL-based config is a completed choice
+      }
+    }
+    // behandlung=<ZW addon title> — passed by product-page buttons when the
+    // customer picked a Behandlung addon (e.g. "Pure", "Unsichtbarer
+    // Skylt-Lack"). Maps to our color id + remembers the exact title.
+    if (params.has('behandlung')) {
+      const bt = params.get('behandlung').trim();
+      const entry = Object.entries(BEHANDLUNG_TEXTURE_MAP)
+        .find(([title]) => title.toLowerCase() === bt.toLowerCase());
+      if (entry) {
+        const matType = MATERIAL_TYPES[this.state.materialType];
+        if (matType.colors.find(c => c.id === entry[1])) {
+          this.state.color = entry[1];
+          this.state.behandlungTitle = entry[0];
+          this.state.userPickedBehandlung = true;
+        }
       }
     }
     if (params.has('leg')) {
