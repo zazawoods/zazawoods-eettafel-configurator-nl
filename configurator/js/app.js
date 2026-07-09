@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=d1034912';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=ac4d9625';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -197,7 +197,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=d1034912';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=ac4d9625';
 
 class TableConfigurator {
   constructor() {
@@ -3230,24 +3230,30 @@ class TableConfigurator {
       const right = new Float64Array(nb).fill(-Infinity);
       const left = new Float64Array(nb).fill(Infinity);
       const seen = new Set();
-      const collect = (root) => root.traverse(m => {
-        if (!m.isMesh || !m.geometry || seen.has(m.uuid)) return;
-        seen.add(m.uuid);
-        m.updateWorldMatrix(true, false);
-        const e = m.matrixWorld.elements;
-        const pos = m.geometry.attributes.position;
-        const stride = Math.max(1, Math.floor(pos.count / 25000));
-        for (let i = 0; i < pos.count; i += stride) {
-          const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
-          const wx = e[0]*x + e[4]*y + e[8]*z + e[12];
-          const wz = e[2]*x + e[6]*y + e[10]*z + e[14];
-          const b = Math.round((wz - z0) / binSize);
-          if (b < 0 || b >= nb) continue;
-          if (wx > right[b]) right[b] = wx;
-          if (wx < left[b]) left[b] = wx;
+      // Visibility-aware walk: hidden variant tabletops (custom_tabletop_b,
+      // mirrored clones, …) must NOT contribute to the outline, otherwise the
+      // clamp overestimates the table and leaves legs poking out.
+      const collect = (node, vis) => {
+        vis = vis && node.visible;
+        if (node.isMesh && vis && node.geometry && !seen.has(node.uuid)) {
+          seen.add(node.uuid);
+          node.updateWorldMatrix(true, false);
+          const e = node.matrixWorld.elements;
+          const pos = node.geometry.attributes.position;
+          const stride = Math.max(1, Math.floor(pos.count / 25000));
+          for (let i = 0; i < pos.count; i += stride) {
+            const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+            const wx = e[0]*x + e[4]*y + e[8]*z + e[12];
+            const wz = e[2]*x + e[6]*y + e[10]*z + e[14];
+            const b = Math.round((wz - z0) / binSize);
+            if (b < 0 || b >= nb) continue;
+            if (wx > right[b]) right[b] = wx;
+            if (wx < left[b]) left[b] = wx;
+          }
         }
-      });
-      tops.forEach(collect);
+        for (const ch of node.children) collect(ch, vis);
+      };
+      tops.forEach(t => collect(t, true));
       // Fill empty bins from nearest valid neighbour so gaps don't read as "no table".
       for (let b = 0; b < nb; b++) {
         if (right[b] === -Infinity) {
@@ -3260,7 +3266,7 @@ class TableConfigurator {
         }
       }
 
-      const margin = 0.01; // 1cm safety inside the edge
+      const margin = 0.015; // 1.5cm safety inside the edge
       const measureNeed = () => {
         let need = 0;
         leg.object.updateWorldMatrix(true, true);
@@ -3289,10 +3295,13 @@ class TableConfigurator {
       };
 
       let totalShift = 0;
-      for (let iter = 0; iter < 4; iter++) {
-        const need = measureNeed();
+      for (let iter = 0; iter < 6; iter++) {
+        let need = measureNeed();
         if (need <= 0.001) break;
-        if (totalShift + need > 0.35) break; // give up — leg fundamentally too wide
+        // Cap the total pull at 45cm but always apply what we can (partial
+        // clamp is better than leaving the full overhang visible).
+        if (totalShift + need > 0.45) need = Math.max(0, 0.45 - totalShift);
+        if (need <= 0.001) break;
         totalShift += need;
         if (isPair) {
           const c0 = leg.object.children[0], c1 = leg.object.children[1];
