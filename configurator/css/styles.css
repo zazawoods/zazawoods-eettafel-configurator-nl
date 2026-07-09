@@ -1462,3 +1462,14 @@ body {
    button doesn't visually touch "Gesamtpreis (inkl. Lieferung)". */
 .sidebar-footer .price-bar { margin-bottom: 14px; }
 .sidebar-footer .cta-desktop { margin-top: 6px; }
+
+
+/* Mobile: page must never pinch-zoom — only the 3D canvas zooms (2026-07-10).
+   pan-x/pan-y still allows normal scrolling of the sidebar/bottom sheet. */
+html, body {
+  touch-action: pan-x pan-y;
+  -webkit-text-size-adjust: 100%;
+}
+#canvas3d {
+  touch-action: none; /* OrbitControls consumes all gestures on the canvas */
+}
