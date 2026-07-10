@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=f78751d9';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=51c3e828';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=f78751d9';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=51c3e828';
 
 class TableConfigurator {
   constructor() {
@@ -3589,23 +3589,10 @@ class TableConfigurator {
 
   // Align tabletop bottom to the top of the active leg
   alignTabletopToLeg() {
-    if (!this.hasSeparateTop || !this.tabletopObject) return;
-
-    // Reset Y and Z position before measuring
-    this.tabletopObject.position.y = 0;
-    this.tabletopObject.position.z = 0;
+    if (!this.currentModel) return;
     this.currentModel.updateMatrixWorld(true);
 
-    // Compute current tabletop bounds in world space
-    const topBox = new THREE.Box3();
-    this.tabletopObject.traverse(ch => {
-      if (ch.isMesh && ch.visible) {
-        topBox.union(new THREE.Box3().setFromObject(ch));
-      }
-    });
-    if (topBox.isEmpty()) return;
-
-    // Get leg top Y
+    // Get leg top Y (shared by wrapper alignment and custom-top alignment)
     const activeLeg = this.legObjects[this.activeLegIndex];
     let legTopY = -Infinity;
     if (activeLeg) {
@@ -3616,24 +3603,68 @@ class TableConfigurator {
       if (!legBox.isEmpty()) legTopY = legBox.max.y;
     }
 
-    const targetBottomY = legTopY > -Infinity ? legTopY : (this.originalTopBox ? this.originalTopBox.minY : topBox.min.y);
-    const gap = topBox.min.y - targetBottomY;
+    // ── A. Original GLB tabletop wrapper ──
+    if (this.hasSeparateTop && this.tabletopObject) {
+      // Reset Y and Z position before measuring
+      this.tabletopObject.position.y = 0;
+      this.tabletopObject.position.z = 0;
+      this.currentModel.updateMatrixWorld(true);
 
-    if (Math.abs(gap) > 0.0005) {
-      const parentScale = new THREE.Vector3(1, 1, 1);
-      if (this.tabletopObject.parent) {
-        this.tabletopObject.parent.getWorldScale(parentScale);
+      const topBox = new THREE.Box3();
+      this.tabletopObject.traverse(ch => {
+        if (ch.isMesh && ch.visible) {
+          topBox.union(new THREE.Box3().setFromObject(ch));
+        }
+      });
+      if (!topBox.isEmpty()) {
+        const targetBottomY = legTopY > -Infinity ? legTopY : (this.originalTopBox ? this.originalTopBox.minY : topBox.min.y);
+        const gap = topBox.min.y - targetBottomY;
+        if (Math.abs(gap) > 0.0005) {
+          const parentScale = new THREE.Vector3(1, 1, 1);
+          if (this.tabletopObject.parent) {
+            this.tabletopObject.parent.getWorldScale(parentScale);
+          }
+          const yOffset = -gap / (parentScale.y || 1);
+          this.tabletopObject.position.y = yOffset;
+          const inactive = (this.tabletopObject === this.tabletopVariantA) ? this.tabletopVariantB : this.tabletopVariantA;
+          if (inactive) {
+            inactive.position.y = yOffset;
+            inactive.position.z = 0;
+          }
+          this.currentModel.updateMatrixWorld(true);
+        }
       }
-      const yOffset = -gap / (parentScale.y || 1);
-      this.tabletopObject.position.y = yOffset;
+    }
 
-      // Apply same Y offset to the inactive variant so both are at the same height
-      const inactive = (this.tabletopObject === this.tabletopVariantA) ? this.tabletopVariantB : this.tabletopVariantA;
-      if (inactive) {
-        inactive.position.y = yOffset;
-        inactive.position.z = 0;
+    // ── B. Rebuilt custom tabletops live at the MODEL ROOT (not inside the
+    // wrapper) — the pre-existing alignment never touched them, so they could
+    // hang a few mm (URL-init with facet: 8mm) above the leg. Snap them flush.
+    if (legTopY > -Infinity) {
+      for (const nm of ['custom_tabletop', 'custom_tabletop_a', 'custom_tabletop_b']) {
+        const m = this.currentModel.getObjectByName(nm);
+        if (!m || !m.visible) continue;
+        const bb = new THREE.Box3().setFromObject(m);
+        if (bb.isEmpty()) continue;
+        const gap = bb.min.y - legTopY;
+        if (Math.abs(gap) > 0.0005 && Math.abs(gap) < 0.03) {
+          m.position.y -= gap;
+        }
       }
+      this.currentModel.updateMatrixWorld(true);
+    }
 
+    // ── C. Ground the whole model: feet must touch the floor exactly (y=0).
+    let minY = Infinity;
+    this.currentModel.traverse(o => {
+      if (!o.isMesh) return;
+      let vis = o.visible, par = o.parent;
+      while (vis && par) { vis = par.visible !== false; par = par.parent; }
+      if (!vis) return;
+      const bb = new THREE.Box3().setFromObject(o);
+      if (!bb.isEmpty()) minY = Math.min(minY, bb.min.y);
+    });
+    if (isFinite(minY) && Math.abs(minY) > 0.0005 && Math.abs(minY) < 0.02) {
+      this.currentModel.position.y -= minY;
       this.currentModel.updateMatrixWorld(true);
     }
   }
@@ -4696,6 +4727,9 @@ class TableConfigurator {
       // Update section icon to match selected edge
       const edgeIcon = document.getElementById('edge-section-icon');
       if (edgeIcon && edgeSwatches[edgeId]) edgeIcon.innerHTML = edgeSwatches[edgeId];
+      // No morph animation on edge change: dimensions are unchanged, and the
+      // scale/position tween made the table visibly "fly up from the floor".
+      this._suppressMorph = true;
       this.applyDimensions(); // rebuild tabletop with new edge profile
       this.updateSummary();
     };

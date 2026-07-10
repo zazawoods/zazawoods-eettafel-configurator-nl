@@ -4,7 +4,7 @@ const BASE_PATH = '..';
 
 // Single cache-bust across the whole app — bumped by the deploy script so all
 // static assets (JS, images, GLBs) invalidate together. Never edit by hand.
-export const BUILD_VERSION = 'f78751d9';
+export const BUILD_VERSION = '51c3e828';
 
 export const TABLE_SHAPES = [
   {
@@ -165,7 +165,7 @@ export const MATERIAL_TYPES = {
 export const EDGE_OPTIONS = [
   { id: 'standaard', name: 'Gerade Kante',     description: 'Klassische gerade Kante' },
   { id: 'facet',     name: 'Schweizer Kante',  description: 'Charakteristische Schweizer Kante', onlyMaterial: ['oak'] },
-  { id: 'boomstam',  name: 'Baumstammkante',   description: 'Natürliche Baumstammkante',         onlyMaterial: ['oak'] }
+  { id: 'boomstam',  name: 'Baumstammkante',   description: 'Natürliche Baumstammkante',         onlyMaterial: ['oak'], onlyShapes: ['rectangle'] }
 ];
 
 export const POWDER_COAT_COLORS = [
