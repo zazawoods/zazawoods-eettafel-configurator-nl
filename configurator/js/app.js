@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=69366ced';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=f78751d9';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=69366ced';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=f78751d9';
 
 class TableConfigurator {
   constructor() {
@@ -689,6 +689,9 @@ class TableConfigurator {
           maxY: topBox.max.y,
           height: topBox.max.y - topBox.min.y
         };
+        // Per-model cache of the top surface height measured during a STABLE
+        // edge rebuild (see _applyEdgeToVariant) — reset on every model load.
+        this._measuredTopY = {};
       }
 
       // Center model based on tabletop (the visual anchor), use full model for floor Y
@@ -1864,12 +1867,22 @@ class TableConfigurator {
       if (!outline || outline.points.length < 3) return;
 
       const thickness = this.getThicknessCm() / 100; // in meters
-      // Use the measured world-space top of the ACTUAL mesh being replaced.
-      // originalTopBox can be taller than the visible top (e.g. Dänisch Oval:
-      // +0.7cm) which floated the rebuilt tabletop above the legs.
-      const topY = (outline.maxY !== undefined && isFinite(outline.maxY))
-        ? outline.maxY
-        : (this.originalTopBox ? this.originalTopBox.maxY : 0);
+      // Top height selection, in order of trust:
+      // 1. outline.maxY (real world-space top of the mesh being replaced) —
+      //    but ONLY if plausible. During applyDimensions the wrapper matrix
+      //    can be mid-rebuild (Dänisch Oval measured ~4cm → tabletop landed
+      //    on the floor), so reject values far from the load-time box.
+      // 2. The last plausible measurement for this mesh (cached).
+      // 3. originalTopBox.maxY (can be up to ~1cm above the visible top).
+      const ref = this.originalTopBox ? this.originalTopBox.maxY : NaN;
+      this._measuredTopY = this._measuredTopY || {};
+      let topY = (outline.maxY !== undefined && isFinite(outline.maxY)) ? outline.maxY : NaN;
+      if (isFinite(topY) && isFinite(ref) && Math.abs(topY - ref) > 0.05) topY = NaN;
+      if (isFinite(topY)) {
+        this._measuredTopY[meshName] = topY;
+      } else {
+        topY = isFinite(this._measuredTopY[meshName]) ? this._measuredTopY[meshName] : ref;
+      }
       const bottomY = topY - thickness;
 
       // Create smooth THREE.Shape from radial outline using CatmullRom spline
