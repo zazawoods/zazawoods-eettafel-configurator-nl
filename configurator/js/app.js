@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=27dcaaee';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=4f9720b0';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=27dcaaee';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=4f9720b0';
 
 class TableConfigurator {
   constructor() {
@@ -2354,31 +2354,22 @@ class TableConfigurator {
     else if (lengthCm <= 350) dist = 70;
     else dist = 75; // 400+
 
-    // Per-shape inward offsets — copied 1:1 from the bogade.nl configurator
-    // (2026-07-10, user request): their leg stance looks like real life and
-    // nothing pokes out. Shape ids translated (boogvorm → bootsform).
-    if (shapeId === 'oval') {
-      if (lengthCm <= 160) dist += 25;
-      else if (lengthCm <= 180) dist += 15;
-      else if (lengthCm <= 200) dist += 10;
-    } else if (shapeId === 'danish-oval' || shapeId === 'halboval') {
-      if (lengthCm <= 180) dist += 15;
-      else if (lengthCm <= 200) dist += 10;
-    } else if (shapeId === 'round') {
+    // Rechteck is the reference stance (user rule 2026-07-10): a Satz leg may
+    // deviate at most ±5cm from its Rechteck position. Curved shapes get at
+    // most +5cm inward; anything that still pokes out at that stance gets
+    // HIDDEN from the picker for that shape+size instead of being squeezed.
+    // Rund keeps its own table — it has a separate leg set.
+    if (shapeId === 'round') {
       if (lengthCm <= 100) dist += 13;
       else if (lengthCm <= 110) dist += 10;
       else if (lengthCm <= 120) dist += 9;
       else if (lengthCm <= 130) dist += 7;
       else if (lengthCm <= 140) dist += 6;
-    } else if (shapeId === 'kiezel') {
-      if (lengthCm < 300) dist += 13;
-    } else if (shapeId === 'organic') {
-      if (lengthCm <= 200) dist += 10;
-    } else if (shapeId === 'halfrond') {
-      if (lengthCm <= 180) dist += 15;
-      else if (lengthCm <= 200) dist += 10;
+    } else if (shapeId === 'oval' || shapeId === 'danish-oval' || shapeId === 'halboval' ||
+               shapeId === 'halfrond' || shapeId === 'organic' || shapeId === 'kiezel') {
+      if (lengthCm <= 200) dist += 5;
     } else if (shapeId === 'bootsform') {
-      if (lengthCm <= 180) dist += 10;
+      if (lengthCm <= 180) dist += 5;
     }
 
     return dist;
@@ -3342,14 +3333,6 @@ class TableConfigurator {
         // Drone-specific: pull further inward (Drone models are longer / spread
         // wider than other set-legs, so they hang off the table without extra
         // inward offset that scales with table length).
-        // Ovale Stäbchenholz pair: mounting plates (~66cm span in Z) poke past
-        // the organic blob outline. Audited 2026-07-09: 15cm out at 200, 8cm
-        // at 220-240. Pull inward on organic only.
-        if (/^Ovale Tischgestelle|^Ovale Tischbeine/i.test(leg.displayName) && shape.id === 'organic') {
-          if (currentLength <= 200) edgeDistCm += 8;   // organic shape offset already adds 10
-          else if (currentLength <= 240) edgeDistCm += 11;
-          else edgeDistCm += 9;
-        }
         if (/^Drone/i.test(leg.displayName)) {
           // Add 15% of half-length as extra inward pull, min 20cm, max 45cm
           const extraCm = Math.max(20, Math.min(45, currentLength * 0.075));
@@ -3491,13 +3474,18 @@ class TableConfigurator {
         return need;
       };
 
+      // User rule: total deviation from the Rechteck stance (shape offset +
+      // clamp pull) must stay within 5cm. Legs that would need more get
+      // hidden via HIDE_LEGS_BY_SHAPE_LENGTH — the clamp only smooths the
+      // last centimetres.
+      const shapeExtraCm = this.getLegEdgeDistance(this.state.length, shape.id) -
+                           this.getLegEdgeDistance(this.state.length, 'rectangle');
+      const maxPullM = Math.max(0, (5 - shapeExtraCm) / 100);
       let totalShift = 0;
       for (let iter = 0; iter < 6; iter++) {
         let need = measureNeed();
         if (need <= 0.001) break;
-        // Cap the total pull at 45cm but always apply what we can (partial
-        // clamp is better than leaving the full overhang visible).
-        if (totalShift + need > 0.45) need = Math.max(0, 0.45 - totalShift);
+        if (totalShift + need > maxPullM) need = Math.max(0, maxPullM - totalShift);
         if (need <= 0.001) break;
         totalShift += need;
         if (isPair) {
@@ -4241,55 +4229,14 @@ class TableConfigurator {
     // they fit under the top but look uncomfortably narrow (anchor case:
     // U Tischgestell (M) on Halboval 180 = 50% narrower). Organic's blob
     // outline forces 36-54% on every frame-type Satz leg at all sizes.
-    const ORGANIC_HIDDEN_SATZ = [
-      // Thorn: the Organic GLB has no Pedro mesh — the button selected the leg
-      // for the cart while the 3D silently kept showing Spider. Hidden until a
-      // model exists (QA 2026-07-10).
-      'Thorn Tischgestelle (Satz)',
-      'Drone Tischbeine (Satz)',
-      'U Tischgestell (Satz)',
-      'U Tischgestell (M) (Satz)',
-      'U Tischgestell (schmal) (Satz)',
-      'X Tischgestell (Satz)',
-      'Trapezium Tischgestell (Satz)',
-      'Stahlwangen Tischgestell (Satz)',
-      'Stahlwangen Tischgestell (S) (Satz)',
-      'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)',
-      'Butterfly Tischbeine aus Eichenholz (Satz) (A)',
-      'Halbrunde Tischbeine aus Eichenholz (Satz) (A)'
-    ];
-    // Gap audit 2026-07-10: with the zero-overhang clamp active, some Satz
-    // legs end up with their two units nearly touching (< 20cm apart) — the
-    // customer sees "one leg". Per user decision those combinations are
-    // hidden from the picker.
+    // Thorn has no 3D model on Organisch (cart would sell an unseen leg).
+    // Other entries are rebuilt from the Rechteck-stance audit (2026-07-10):
+    // legs that poke out at the reference stance (max +5cm) are removed from
+    // the picker for that shape+size. AUDIT_HIDE below is filled by that audit.
     const HIDE_LEGS_BY_SHAPE_LENGTH = {
-      'rectangle': {
-        180: ['Drone Tischbeine (Satz)']
-      },
-      'danish-oval': {
-        180: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)', 'U Tischgestell (schmal) (Satz)', 'X Tischgestell (Satz)', 'Drone Tischbeine (Satz)'],
-        200: ['U Tischgestell (M) (Satz)', 'Drone Tischbeine (Satz)']
-      },
-      'oval': {
-        // With the bogade stance (+15cm at 180) the tapered oval squeezes every
-        // frame-type Satz leg below the 20cm two-legs minimum — gap audit
-        // 2026-07-10: X 4.4, Trapezium 6.7, Stahlwangen 3.2/2.1, Butterfly 3.5,
-        // Halbrunde 2.3, U(schmal) 6.4, A 19.8.
-        180: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)', 'U Tischgestell (schmal) (Satz)', 'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Trapezium Tischgestell (Satz)', 'Stahlwangen Tischgestell (Satz)', 'Stahlwangen Tischgestell (S) (Satz)', 'Butterfly Tischbeine aus Eichenholz (Satz) (A)', 'Halbrunde Tischbeine aus Eichenholz (Satz) (A)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)', 'Drone Tischbeine (Satz)'],
-        200: ['Thorn Tischgestelle (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)', 'Drone Tischbeine (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)'],
-        220: ['Thorn Tischgestelle (Satz)'],
-        240: ['Thorn Tischgestelle (Satz)']
-      },
-      'bootsform': {
-        180: ['Drone Tischbeine (Satz)']
-      },
-      'halfrond': {
-        180: ['Drone Tischbeine (Satz)', 'Thorn Tischgestelle (Satz)'],
-        200: ['Drone Tischbeine (Satz)']
-      },
       'organic': {
-        200: ORGANIC_HIDDEN_SATZ, 220: ORGANIC_HIDDEN_SATZ, 240: ORGANIC_HIDDEN_SATZ,
-        260: ORGANIC_HIDDEN_SATZ, 280: ORGANIC_HIDDEN_SATZ, 300: ORGANIC_HIDDEN_SATZ
+        200: ['Thorn Tischgestelle (Satz)'], 220: ['Thorn Tischgestelle (Satz)'], 240: ['Thorn Tischgestelle (Satz)'],
+        260: ['Thorn Tischgestelle (Satz)'], 280: ['Thorn Tischgestelle (Satz)'], 300: ['Thorn Tischgestelle (Satz)']
       }
     };
     const hideList = HIDE_LEGS_BY_SHAPE_LENGTH[this.state.shape]?.[this.state.length] || [];
