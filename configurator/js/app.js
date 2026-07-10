@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=a1ffcb40';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=d8c4dcba';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=a1ffcb40';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=d8c4dcba';
 
 class TableConfigurator {
   constructor() {
@@ -5343,9 +5343,11 @@ class TableConfigurator {
     const qrContainer = document.getElementById('ar-qr');
     qrContainer.innerHTML = '';
 
+    // QR points DIRECTLY at the configurator (with ar=1) — no dependency on
+    // the Shopify wrapper page, works even if that page/template changes.
     const rawParams = new URL(window.location.href).search;
     const params = rawParams ? rawParams + '&ar=1' : '?ar=1';
-    const currentUrl = 'https://zazawoods.de/pages/esstisch-konfigurator' + params;
+    const currentUrl = 'https://zazawoods-esstisch-konfigurator-production.up.railway.app/' + params;
     const qrImg = document.createElement('img');
     qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(currentUrl)}&margin=8`;
     qrImg.width = 180;
