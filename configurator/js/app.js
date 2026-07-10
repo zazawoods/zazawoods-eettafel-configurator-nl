@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=d5feb41f';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=27dcaaee';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=d5feb41f';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=27dcaaee';
 
 class TableConfigurator {
   constructor() {
@@ -4271,8 +4271,12 @@ class TableConfigurator {
         200: ['U Tischgestell (M) (Satz)', 'Drone Tischbeine (Satz)']
       },
       'oval': {
-        180: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (M) (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)', 'Drone Tischbeine (Satz)', 'U Tischgestell (Satz)'],
-        200: ['Thorn Tischgestelle (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)'],
+        // With the bogade stance (+15cm at 180) the tapered oval squeezes every
+        // frame-type Satz leg below the 20cm two-legs minimum — gap audit
+        // 2026-07-10: X 4.4, Trapezium 6.7, Stahlwangen 3.2/2.1, Butterfly 3.5,
+        // Halbrunde 2.3, U(schmal) 6.4, A 19.8.
+        180: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)', 'U Tischgestell (schmal) (Satz)', 'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Trapezium Tischgestell (Satz)', 'Stahlwangen Tischgestell (Satz)', 'Stahlwangen Tischgestell (S) (Satz)', 'Butterfly Tischbeine aus Eichenholz (Satz) (A)', 'Halbrunde Tischbeine aus Eichenholz (Satz) (A)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)', 'Drone Tischbeine (Satz)'],
+        200: ['Thorn Tischgestelle (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)', 'Drone Tischbeine (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)'],
         220: ['Thorn Tischgestelle (Satz)'],
         240: ['Thorn Tischgestelle (Satz)']
       },
@@ -4280,7 +4284,8 @@ class TableConfigurator {
         180: ['Drone Tischbeine (Satz)']
       },
       'halfrond': {
-        180: ['Drone Tischbeine (Satz)']
+        180: ['Drone Tischbeine (Satz)', 'Thorn Tischgestelle (Satz)'],
+        200: ['Drone Tischbeine (Satz)']
       },
       'organic': {
         200: ORGANIC_HIDDEN_SATZ, 220: ORGANIC_HIDDEN_SATZ, 240: ORGANIC_HIDDEN_SATZ,
