@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=4f9720b0';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=a1ffcb40';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=4f9720b0';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=a1ffcb40';
 
 class TableConfigurator {
   constructor() {
@@ -4229,14 +4229,36 @@ class TableConfigurator {
     // they fit under the top but look uncomfortably narrow (anchor case:
     // U Tischgestell (M) on Halboval 180 = 50% narrower). Organic's blob
     // outline forces 36-54% on every frame-type Satz leg at all sizes.
-    // Thorn has no 3D model on Organisch (cart would sell an unseen leg).
-    // Other entries are rebuilt from the Rechteck-stance audit (2026-07-10):
-    // legs that poke out at the reference stance (max +5cm) are removed from
-    // the picker for that shape+size. AUDIT_HIDE below is filled by that audit.
+    // Rechteck-reference stance audit (2026-07-10): every Satz leg stands at
+    // most 5cm from its Rechteck position; combinations that poke past the
+    // tabletop outline at that stance are removed from the picker. Thorn is
+    // additionally hidden on Organisch because it has no 3D model there.
+    const FRAME_SATZ = [
+      'Drone Tischbeine (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)',
+      'U Tischgestell (schmal) (Satz)', 'X Tischgestell (Satz)', 'Trapezium Tischgestell (Satz)',
+      'Stahlwangen Tischgestell (Satz)', 'Stahlwangen Tischgestell (S) (Satz)',
+      'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)',
+      'Butterfly Tischbeine aus Eichenholz (Satz) (A)',
+      'Halbrunde Tischbeine aus Eichenholz (Satz) (A)'
+    ];
+    const ORGANIC_ALL = FRAME_SATZ.concat(['Thorn Tischgestelle (Satz)']);
     const HIDE_LEGS_BY_SHAPE_LENGTH = {
+      'oval': {
+        180: ['Thorn Tischgestelle (Satz)', 'Drone Tischbeine (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)', 'U Tischgestell (schmal) (Satz)', 'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Trapezium Tischgestell (Satz)', 'Stahlwangen Tischgestell (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)', 'Butterfly Tischbeine aus Eichenholz (Satz) (A)'],
+        200: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (M) (Satz)', 'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)']
+      },
+      'danish-oval': {
+        180: ['Thorn Tischgestelle (Satz)', 'Drone Tischbeine (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)', 'U Tischgestell (schmal) (Satz)', 'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Trapezium Tischgestell (Satz)', 'Stahlwangen Tischgestell (Satz)', 'Stahlwangen Tischgestell (S) (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)', 'Butterfly Tischbeine aus Eichenholz (Satz) (A)', 'Halbrunde Tischbeine aus Eichenholz (Satz) (A)'],
+        200: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)', 'U Tischgestell (schmal) (Satz)', 'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Trapezium Tischgestell (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)'],
+        220: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (M) (Satz)']
+      },
       'organic': {
-        200: ['Thorn Tischgestelle (Satz)'], 220: ['Thorn Tischgestelle (Satz)'], 240: ['Thorn Tischgestelle (Satz)'],
-        260: ['Thorn Tischgestelle (Satz)'], 280: ['Thorn Tischgestelle (Satz)'], 300: ['Thorn Tischgestelle (Satz)']
+        200: ORGANIC_ALL, 220: ORGANIC_ALL, 240: ORGANIC_ALL, 260: ORGANIC_ALL,
+        280: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (M) (Satz)', 'Butterfly Tischbeine aus Eichenholz (Satz) (A)'],
+        300: ['Thorn Tischgestelle (Satz)']
+      },
+      'bootsform': {
+        180: ['Butterfly Tischbeine aus Eichenholz (Satz) (A)']
       }
     };
     const hideList = HIDE_LEGS_BY_SHAPE_LENGTH[this.state.shape]?.[this.state.length] || [];
