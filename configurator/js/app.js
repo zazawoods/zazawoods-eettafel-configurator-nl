@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=a0812b9b';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=3da726b0';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=a0812b9b';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=3da726b0';
 
 class TableConfigurator {
   constructor() {
@@ -399,12 +399,12 @@ class TableConfigurator {
     params.set('color', s.color);
     params.set('length', s.length);
     params.set('width', s.width);
-    params.set('edge', s.edge);
+    if (s.userPickedEdge) params.set('edge', s.edge);
     // Prefer the ZW product title over the internal model name (e.g. "Butterfly
     // Tischbeine aus Eichenholz (Satz) (A)" instead of "Hannah") so URLs shared
     // and reloaded from saved configurations restore the exact addon variant.
     const legTitle = s.zwLegName || leg?.displayName;
-    if (legTitle) params.set('leg', legTitle);
+    if (legTitle && s.userPickedLeg) params.set('leg', legTitle);
     params.set('powder', s.powderCoat);
     if (s.userPickedBehandlung && s.behandlungTitle) params.set('behandlung', s.behandlungTitle);
     if (s.productHandle) params.set('product', s.productHandle);
@@ -1080,9 +1080,10 @@ class TableConfigurator {
         // stayed at whatever it was, no 3D swap happened) — auto-switch to
         // this newly-loaded leg so the click "takes effect" without another
         // click from the user.
-        if (enclosingThis.state.zwLegName === title && enclosingThis.state.userPickedLeg) {
+        if (enclosingThis.state.zwLegName === title && (enclosingThis.state.userPickedLeg || enclosingThis._legAutoApplyPending)) {
           const idx = enclosingThis.legObjects.length - 1;
           try { enclosingThis.switchLeg(idx); } catch(e) { /* swallow */ }
+          enclosingThis._legAutoApplyPending = false;
         }
       };
       const cached = EXTERNAL_LEG_CACHE.get(title);
@@ -4379,8 +4380,10 @@ class TableConfigurator {
         // cause its registerLoaded callback to auto-switch when it finishes.
         this.legObjects.forEach(l => { if (l.object) l.object.visible = false; });
         this.activeLegIndex = -1;
-        // Preserve userPickedLeg so pending external load knows to auto-apply.
-        this.state.userPickedLeg = true;
+        // Pending external load must auto-apply this leg once downloaded, but
+        // that is a mechanical concern — it must NOT count as a user choice
+        // for the add-to-cart gate. Use a separate flag.
+        this._legAutoApplyPending = true;
       }
       const vl = document.getElementById('val-legs');
       if (vl) vl.textContent = this.state.zwLegName;
