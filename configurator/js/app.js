@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=d8c4dcba';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=186e9633';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=d8c4dcba';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=186e9633';
 
 class TableConfigurator {
   constructor() {
@@ -366,6 +366,15 @@ class TableConfigurator {
       this.state.zwLegName = legParam;
       this.state.userPickedLeg = true;
       this._desiredLegTitle = legParam;
+    }
+    // Arriving from a product-page button (or a QR code) means the customer
+    // already made their choices there — the URL carries a complete config.
+    // Count Behandlung/Kante/Tischgestell as picked so "In den Warenkorb"
+    // works immediately without re-selecting what is already shown.
+    if (params.has('product') || params.has('shape')) {
+      this.state.userPickedBehandlung = true;
+      this.state.userPickedEdge = true;
+      this.state.userPickedLeg = true;
     }
     if (params.has('powder')) {
       const pwId = params.get('powder');
@@ -2647,7 +2656,40 @@ class TableConfigurator {
     }
   }
 
-  async applyTopMaterial(materialTypeId, colorId) {
+  applyTopMaterial(materialTypeId, colorId) {
+    // Track the in-flight texture load so AR export can wait for it —
+    // otherwise a quick "AR starten" tap ships a white tabletop.
+    const p = this._applyTopMaterialImpl(materialTypeId, colorId);
+    this._topMaterialPromise = p.catch(() => {});
+    return p;
+  }
+
+  // Wait until every visible mesh material with a map actually has its image
+  // loaded. Mobile networks load Behandlung/leg textures slowly; exporting
+  // before they arrive produces a white table in AR.
+  async _waitForSceneTextures(timeoutMs = 12000) {
+    await (this._topMaterialPromise || Promise.resolve());
+    const t0 = performance.now();
+    const ready = () => {
+      let ok = true;
+      if (this.currentModel) this.currentModel.traverse(o => {
+        if (!ok || !o.isMesh || !o.visible) return;
+        const mats = Array.isArray(o.material) ? o.material : [o.material];
+        for (const m of mats) {
+          if (!m || !m.map) continue;
+          const img = m.map.image;
+          if (!img) { ok = false; return; }
+          if (typeof HTMLImageElement !== 'undefined' && img instanceof HTMLImageElement && !img.complete) { ok = false; return; }
+        }
+      });
+      return ok;
+    };
+    while (!ready() && performance.now() - t0 < timeoutMs) {
+      await new Promise(r => setTimeout(r, 150));
+    }
+  }
+
+  async _applyTopMaterialImpl(materialTypeId, colorId) {
     const matType = MATERIAL_TYPES[materialTypeId];
     if (!matType) return;
     const colorDef = matType.colors.find(c => c.id === colorId);
@@ -5236,6 +5278,8 @@ class TableConfigurator {
     const hangTimer = setTimeout(cleanup, 15000);
 
     try {
+      // Never export a half-loaded scene (white tabletop in AR).
+      await this._waitForSceneTextures();
       if (isIOS) {
         // iOS Quick Look. The old approach (blob URL + <a rel=ar>) silently
         // does nothing inside the shop's cross-origin iframe — the reason AR
