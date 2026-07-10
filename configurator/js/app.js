@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=8c620ea7';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=a0812b9b';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=8c620ea7';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=a0812b9b';
 
 class TableConfigurator {
   constructor() {
@@ -366,15 +366,6 @@ class TableConfigurator {
       this.state.zwLegName = legParam;
       this.state.userPickedLeg = true;
       this._desiredLegTitle = legParam;
-    }
-    // Arriving from a product-page button (or a QR code) means the customer
-    // already made their choices there — the URL carries a complete config.
-    // Count Behandlung/Kante/Tischgestell as picked so "In den Warenkorb"
-    // works immediately without re-selecting what is already shown.
-    if (params.has('product') || params.has('shape')) {
-      this.state.userPickedBehandlung = true;
-      this.state.userPickedEdge = true;
-      this.state.userPickedLeg = true;
     }
     if (params.has('powder')) {
       const pwId = params.get('powder');
@@ -3942,11 +3933,16 @@ class TableConfigurator {
 
   bindAddToCart() {
     const cartHandler = () => {
-      // Block redirect if user has not actively picked all 3 required components
+      // Block redirect unless ALL required components are actively chosen
+      // (via URL from the product page or a click in the configurator) AND
+      // resolve to a real variant — a cart line without e.g. Behandlung must
+      // never happen.
+      const vv = this._selectedVariants || {};
+      const okId = (x) => x !== undefined && x !== null && x !== '' && String(x) !== 'undefined' && String(x) !== 'null';
       const missing = [];
-      if (!this.state.userPickedBehandlung) missing.push('Behandlung');
-      if (!this.state.userPickedEdge)       missing.push('Kantenbearbeitung');
-      if (!this.state.userPickedLeg)        missing.push('Tischgestell');
+      if (!this.state.userPickedBehandlung || !okId(vv.behandlung)) missing.push('Behandlung');
+      if (!this.state.userPickedEdge       || !okId(vv.edge))       missing.push('Kantenbearbeitung');
+      if (!this.state.userPickedLeg        || !okId(vv.leg))        missing.push('Tischgestell');
       if (missing.length > 0) {
         this.showToast('Bitte wähle: ' + missing.join(', '));
         // Visually expand the first missing section so the user sees it
