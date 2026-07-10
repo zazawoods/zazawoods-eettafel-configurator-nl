@@ -180,9 +180,15 @@ app.get('/api/icons', async (req, res) => {
 
 // Serve static files from /configurator (HTML/CSS/JS: no-cache, must revalidate every request)
 app.use(express.static(path.join(__dirname, 'configurator'), {
-  maxAge: 0,
   etag: true,
-  setHeaders: (res) => res.setHeader('Cache-Control', 'no-cache, must-revalidate')
+  setHeaders: (res, filePath) => {
+    if (/\.(?:html?|css|js|mjs|json)$/i.test(filePath)) {
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+    } else {
+      // textures/swatches/images: content-addressed by folder, safe to cache long
+      res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+    }
+  }
 }));
 
 // Serve root-level assets:

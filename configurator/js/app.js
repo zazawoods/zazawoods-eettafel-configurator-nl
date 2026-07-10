@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=51c3e828';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=9b4b286a';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=51c3e828';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=9b4b286a';
 
 class TableConfigurator {
   constructor() {
@@ -2913,6 +2913,19 @@ class TableConfigurator {
     });
   }
 
+  // Prefetch all oak Behandlung textures in the background (staggered) so
+  // tapping any swatch swaps instantly instead of downloading ~200KB first.
+  _prefetchOakTextures() {
+    const cols = (MATERIAL_TYPES.oak && MATERIAL_TYPES.oak.colors) || [];
+    let i = 0;
+    const next = () => {
+      if (i >= cols.length) return;
+      const c = cols[i++];
+      this.loadTexture(c.file).catch(() => {}).finally(() => setTimeout(next, 300));
+    };
+    next();
+  }
+
   loadTexture(url) {
     if (this.textureCache[url]) {
       return Promise.resolve(this.textureCache[url]);
@@ -4599,7 +4612,7 @@ class TableConfigurator {
     container.innerHTML = behandlungs.map(b => {
       const oakId = BEHANDLUNG_TEXTURE_MAP[b.title] || 'natural';
       const oakColor = matType.colors.find(c => c.id === oakId) || matType.colors[0];
-      const fileUrl = oakColor.file;
+      const fileUrl = oakColor.swatchImg || oakColor.file;
       const isActive = this.state.behandlungTitle === b.title;
       return `
         <button class="color-swatch ${isActive ? 'active' : ''}"
@@ -4703,13 +4716,25 @@ class TableConfigurator {
       'sharknose': `<img src="Swatches/Randafwerking/Facetrand.png" alt="Sharknose"/>`
     };
 
-    container.innerHTML = filteredEdges.map(edge => `
+    // Price tag per edge from the shop's Kantenbearbeitung addons (same UX as legs)
+    const kanteAddons = zwProduct?.addons?.Kantenbearbeitung || [];
+    const edgePriceCents = (edgeId) => {
+      const titles = EDGE_TITLE_MAP[edgeId] || [];
+      const a = kanteAddons.find(x => titles.includes(x.title));
+      return a ? (a.price || 0) : 0;
+    };
+    container.innerHTML = filteredEdges.map(edge => {
+      const priceCents = edgePriceCents(edge.id);
+      const priceTag = priceCents > 0 ? `<div class="leg-price">+€${(priceCents/100).toFixed(0)}</div>` : '';
+      return `
       <button class="edge-option ${edge.id === this.state.edge ? 'active' : ''}"
               data-edge="${edge.id}">
         <div class="edge-swatch">${edgeSwatches[edge.id] || ''}</div>
         <span class="edge-option-name">${edge.name}</span>
+        ${priceTag}
       </button>
-    `).join('');
+    `;
+    }).join('');
 
     container.onclick = (e) => {
       const btn = e.target.closest('.edge-option');
@@ -5718,6 +5743,12 @@ class TableConfigurator {
     document.getElementById('loader').classList.add('hidden');
     document.getElementById('mini-loader').classList.add('hidden');
     this._initialLoadDone = true;
+    // Warm the texture cache once the first model is on screen.
+    if (!this._prefetchStarted) {
+      this._prefetchStarted = true;
+      const idle = window.requestIdleCallback || ((f) => setTimeout(f, 2500));
+      idle(() => this._prefetchOakTextures());
+    }
   }
 
   // ─── Resize & Animate ────────────────────────

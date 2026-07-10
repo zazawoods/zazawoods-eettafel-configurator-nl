@@ -4,7 +4,7 @@ const BASE_PATH = '..';
 
 // Single cache-bust across the whole app — bumped by the deploy script so all
 // static assets (JS, images, GLBs) invalidate together. Never edit by hand.
-export const BUILD_VERSION = '51c3e828';
+export const BUILD_VERSION = '9b4b286a';
 
 export const TABLE_SHAPES = [
   {
@@ -114,19 +114,19 @@ export const MATERIAL_TYPES = {
     roughness: 0.72,
     metalness: 0.0,
     colors: [
-      { id: 'natural',     name: 'Natural',     file: `${BASE_PATH}/Textures/Oak wood colors/1_OIL_PLUS_2C_OAK_NATURAL.jpg`,     swatch: '#c8a96e' },
-      { id: 'cocoa',       name: 'Cocoa',       file: `${BASE_PATH}/Textures/Oak wood colors/2_OIL_PLUS_2C_OAK_COCOA.jpg`,       swatch: '#6b4c3b' },
-      { id: 'deep-black',  name: 'Deep Black',  file: `${BASE_PATH}/Textures/Oak wood colors/Deep Black.jpg`,                   swatch: '#1a1a1a' },
-      { id: 'mist',        name: 'Mist',        file: `${BASE_PATH}/Textures/Oak wood colors/3_OIL_PLUS_2C_OAK_MIST_5.jpg`,      swatch: '#b5a899' },
-      { id: 'vanilla',     name: 'Vanilla',     file: `${BASE_PATH}/Textures/Oak wood colors/4_OIL_PLUS_2C_OAK_VANILLA.jpg`,     swatch: '#d4c5a9' },
-      { id: 'pure',        name: 'Pure',        file: `${BASE_PATH}/Textures/Oak wood colors/5_OIL_PLUS_2C_OAK_PURE - Copy.jpg`, swatch: '#dcc99d' },
-      { id: 'macchiato',   name: 'Macchiato',   file: `${BASE_PATH}/Textures/Oak wood colors/7_OIL_PLUS_2C_OAK_MACCHIATO.jpg`,   swatch: '#8b6f52' },
-      { id: 'charcoal',    name: 'Charcoal',    file: `${BASE_PATH}/Textures/Oak wood colors/10_OIL_PLUS_2C_OAK_CHARCOAL.jpg`,   swatch: '#3a3632' },
-      { id: 'shell-grey',  name: 'Shell Grey',  file: `${BASE_PATH}/Textures/Oak wood colors/8_OIL_PLUS_2C_OAK_SHELL_GREY.jpg`,  swatch: '#9e9589' },
-      { id: 'walnut',      name: 'Walnut',      file: `${BASE_PATH}/Textures/Oak wood colors/9_OIL_PLUS_2C_OAK_WALNUT.jpg`,      swatch: '#5c4033' },
-      { id: 'chocolate',   name: 'Chocolate',   file: `${BASE_PATH}/Textures/Oak wood colors/Chocolate.jpg`,                    swatch: '#6b5544' },
-      { id: 'white5',      name: 'White 5%',    file: `${BASE_PATH}/Textures/Oak wood colors/White 5.jpg`,                      swatch: '#c8b48a' },
-      { id: 'yakisugi',    name: 'Yakisugi',    file: `${BASE_PATH}/Textures/Oak wood colors/Yakisugi.jpg`,                     swatch: '#1e1e1e', roughness: 0.92, bumpScale: 0.015 }
+      { id: 'natural',     name: 'Natural',     file: `${BASE_PATH}/configurator/textures/oak/1-oil-plus-2c-oak-natural.jpg`, swatchImg: `${BASE_PATH}/configurator/textures/oak-swatch/1-oil-plus-2c-oak-natural.jpg`,     swatch: '#c8a96e' },
+      { id: 'cocoa',       name: 'Cocoa',       file: `${BASE_PATH}/configurator/textures/oak/2-oil-plus-2c-oak-cocoa.jpg`, swatchImg: `${BASE_PATH}/configurator/textures/oak-swatch/2-oil-plus-2c-oak-cocoa.jpg`,       swatch: '#6b4c3b' },
+      { id: 'deep-black',  name: 'Deep Black',  file: `${BASE_PATH}/configurator/textures/oak/deep-black.jpg`, swatchImg: `${BASE_PATH}/configurator/textures/oak-swatch/deep-black.jpg`,                   swatch: '#1a1a1a' },
+      { id: 'mist',        name: 'Mist',        file: `${BASE_PATH}/configurator/textures/oak/3-oil-plus-2c-oak-mist-5.jpg`, swatchImg: `${BASE_PATH}/configurator/textures/oak-swatch/3-oil-plus-2c-oak-mist-5.jpg`,      swatch: '#b5a899' },
+      { id: 'vanilla',     name: 'Vanilla',     file: `${BASE_PATH}/configurator/textures/oak/4-oil-plus-2c-oak-vanilla.jpg`, swatchImg: `${BASE_PATH}/configurator/textures/oak-swatch/4-oil-plus-2c-oak-vanilla.jpg`,     swatch: '#d4c5a9' },
+      { id: 'pure',        name: 'Pure',        file: `${BASE_PATH}/configurator/textures/oak/5-oil-plus-2c-oak-pure-copy.jpg`, swatchImg: `${BASE_PATH}/configurator/textures/oak-swatch/5-oil-plus-2c-oak-pure-copy.jpg`, swatch: '#dcc99d' },
+      { id: 'macchiato',   name: 'Macchiato',   file: `${BASE_PATH}/configurator/textures/oak/7-oil-plus-2c-oak-macchiato.jpg`, swatchImg: `${BASE_PATH}/configurator/textures/oak-swatch/7-oil-plus-2c-oak-macchiato.jpg`,   swatch: '#8b6f52' },
+      { id: 'charcoal',    name: 'Charcoal',    file: `${BASE_PATH}/configurator/textures/oak/10-oil-plus-2c-oak-charcoal.jpg`, swatchImg: `${BASE_PATH}/configurator/textures/oak-swatch/10-oil-plus-2c-oak-charcoal.jpg`,   swatch: '#3a3632' },
+      { id: 'shell-grey',  name: 'Shell Grey',  file: `${BASE_PATH}/configurator/textures/oak/8-oil-plus-2c-oak-shell-grey.jpg`, swatchImg: `${BASE_PATH}/configurator/textures/oak-swatch/8-oil-plus-2c-oak-shell-grey.jpg`,  swatch: '#9e9589' },
+      { id: 'walnut',      name: 'Walnut',      file: `${BASE_PATH}/configurator/textures/oak/9-oil-plus-2c-oak-walnut.jpg`, swatchImg: `${BASE_PATH}/configurator/textures/oak-swatch/9-oil-plus-2c-oak-walnut.jpg`,      swatch: '#5c4033' },
+      { id: 'chocolate',   name: 'Chocolate',   file: `${BASE_PATH}/configurator/textures/oak/chocolate.jpg`, swatchImg: `${BASE_PATH}/configurator/textures/oak-swatch/chocolate.jpg`,                    swatch: '#6b5544' },
+      { id: 'white5',      name: 'White 5%',    file: `${BASE_PATH}/configurator/textures/oak/white-5.jpg`, swatchImg: `${BASE_PATH}/configurator/textures/oak-swatch/white-5.jpg`,                      swatch: '#c8b48a' },
+      { id: 'yakisugi',    name: 'Yakisugi',    file: `${BASE_PATH}/configurator/textures/oak/yakisugi.jpg`, swatchImg: `${BASE_PATH}/configurator/textures/oak-swatch/yakisugi.jpg`,                     swatch: '#1e1e1e', roughness: 0.92, bumpScale: 0.015 }
     ]
   },
   ceramic: {
