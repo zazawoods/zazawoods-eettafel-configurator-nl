@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=4630e60a';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=8cd7a7ca';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=4630e60a';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=8cd7a7ca';
 
 class TableConfigurator {
   constructor() {
@@ -5940,7 +5940,8 @@ class TableConfigurator {
     const setPrice = (el, value, empty) => {
       if (!el) return;
       if (value > 0) {
-        el.textContent = formatPrice(value);
+        // Same format as the picnic configurator: "€ 1.299"
+        el.textContent = '\u20ac ' + new Intl.NumberFormat('de-DE', { maximumFractionDigits: 0 }).format(Math.round(value));
         el.classList.toggle('price-loading', isStale);
       } else {
         el.textContent = empty;
