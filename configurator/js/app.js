@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=5f6367f1';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=d6126022';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=5f6367f1';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=d6126022';
 
 class TableConfigurator {
   constructor() {
@@ -4005,10 +4005,14 @@ class TableConfigurator {
       // never happen.
       const vv = this._selectedVariants || {};
       const okId = (x) => x !== undefined && x !== null && x !== '' && String(x) !== 'undefined' && String(x) !== 'null';
+      // A component counts as chosen when it resolves to a REAL cart item:
+      // auto-preselected defaults (Gerade Kante, Spider S, Behandlung from the
+      // product page) are valid choices — one click to cart. Only block what
+      // genuinely cannot be added (e.g. no Behandlung known at all).
       const missing = [];
-      if (!this._behandlungIncluded && (!this.state.userPickedBehandlung || !okId(vv.behandlung))) missing.push('Behandlung');
-      if (!this.state.userPickedEdge       || !okId(vv.edge))       missing.push('Kantenbearbeitung');
-      if (!this.state.userPickedLeg        || !okId(vv.leg))        missing.push('Tischgestell');
+      if (!this._behandlungIncluded && (!this.state.behandlungTitle || !okId(vv.behandlung))) missing.push('Behandlung');
+      if (!okId(vv.edge)) missing.push('Kantenbearbeitung');
+      if (!okId(vv.leg))  missing.push('Tischgestell');
       if (missing.length > 0) {
         this.showToast('Bitte wähle: ' + missing.join(', '));
         // Visually expand the first missing section so the user sees it
