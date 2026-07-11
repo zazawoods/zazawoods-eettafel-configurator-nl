@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=72d4f40b';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=174d24d8';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=72d4f40b';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=174d24d8';
 
 class TableConfigurator {
   constructor() {
@@ -5687,6 +5687,39 @@ class TableConfigurator {
 
       xrRenderer.render(arScene, arCamera);
     });
+  }
+
+  // Ground + center a cloned model for AR export: AR viewers place the model
+  // origin on the detected floor, so any residual Y offset makes the table
+  // float in the air (or sink). Applies to every shape/size automatically.
+  _groundExportClone(modelClone) {
+    modelClone.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(modelClone);
+    if (!isFinite(box.min.y)) return;
+    const center = box.getCenter(new THREE.Vector3());
+    modelClone.position.x -= center.x;
+    modelClone.position.z -= center.z;
+    modelClone.position.y -= box.min.y;
+    modelClone.updateMatrixWorld(true);
+  }
+
+  async exportSceneToUSDZ() {
+    if (!this.currentModel) throw new Error('No model loaded');
+
+    // Clone visible parts only so hidden variants/legs don't get baked in.
+    const exportScene = new THREE.Scene();
+    const modelClone = this.currentModel.clone(true);
+    const toRemove = [];
+    modelClone.traverse(child => { if (!child.visible) toRemove.push(child); });
+    toRemove.forEach(obj => obj.parent?.remove(obj));
+    this._groundExportClone(modelClone);
+    exportScene.add(modelClone);
+
+    const exporter = new USDZExporter();
+    // r0.162 USDZExporter: `parse(scene, options)` returns a Promise<Uint8Array>.
+    // maxTextureSize keeps the file small enough for a fast Quick Look open.
+    const arrayBuffer = await exporter.parse(exportScene, { maxTextureSize: 1024 });
+    return new Blob([arrayBuffer], { type: 'model/vnd.usdz+zip' });
   }
 
   async exportSceneToGLB() {
