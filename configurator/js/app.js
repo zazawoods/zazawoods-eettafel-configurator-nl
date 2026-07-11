@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=34a63973';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=af471bc3';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=34a63973';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=af471bc3';
 
 class TableConfigurator {
   constructor() {
@@ -351,7 +351,10 @@ class TableConfigurator {
         const matType = MATERIAL_TYPES[this.state.materialType];
         if (matType.colors.find(c => c.id === entry[1])) {
           this.state.color = entry[1];
-          this.state.behandlungTitle = entry[0];
+          // Normalize legacy titles: the shop's old "Black" addon is now sold
+          // as "Yakisugi" (€220) — old product buttons still send Black.
+          const TITLE_ALIASES = { 'Black': 'Yakisugi' };
+          this.state.behandlungTitle = TITLE_ALIASES[entry[0]] || entry[0];
           this.state.userPickedBehandlung = true;
         }
       }
@@ -4003,7 +4006,7 @@ class TableConfigurator {
       const vv = this._selectedVariants || {};
       const okId = (x) => x !== undefined && x !== null && x !== '' && String(x) !== 'undefined' && String(x) !== 'null';
       const missing = [];
-      if (!this.state.userPickedBehandlung || !okId(vv.behandlung)) missing.push('Behandlung');
+      if (!this._behandlungIncluded && (!this.state.userPickedBehandlung || !okId(vv.behandlung))) missing.push('Behandlung');
       if (!this.state.userPickedEdge       || !okId(vv.edge))       missing.push('Kantenbearbeitung');
       if (!this.state.userPickedLeg        || !okId(vv.leg))        missing.push('Tischgestell');
       if (missing.length > 0) {
@@ -4621,7 +4624,7 @@ class TableConfigurator {
                 data-oak-id="${oakColor.id}"
                 title="${b.title}">
           <div class="color-swatch-img" style="width:36px;height:36px;border-radius:50%;background:#e6dcc7 url('${fileUrl}') center/cover no-repeat;box-shadow:inset 0 0 0 1px rgba(0,0,0,0.06);flex-shrink:0;"></div>
-          <span class="color-swatch-name">${b.title}</span>
+          <span class="color-swatch-name">${b.title}${(b.price > 0) ? `<span class="leg-price" style="display:block;">+€${(b.price/100).toFixed(0)}</span>` : ''}</span>
         </button>
       `;
     }).join('');
@@ -5689,9 +5692,21 @@ class TableConfigurator {
       // seeded behandlungTitle but user hasn't clicked a swatch), reverse-lookup
       // the ZW Behandlung addon by title so the cart line-item is included.
       let behandlungVariant = this._selectedVariants?.behandlung;
-      if (!behandlungVariant && this.state.behandlungTitle) {
-        const bAddon = product.addons.Behandlung.find(a => a.title === this.state.behandlungTitle);
-        if (bAddon) behandlungVariant = bAddon.variantId;
+      let behandlungAddon = null;
+      if (this.state.behandlungTitle) {
+        behandlungAddon = product.addons.Behandlung.find(a => a.title === this.state.behandlungTitle) || null;
+      }
+      if (!behandlungVariant && behandlungAddon) behandlungVariant = behandlungAddon.variantId;
+      // Colored base products (e.g. the Yakisugi table) already include their
+      // Behandlung in the base price — never add the addon on top of them.
+      const handleProd = ZW_PRODUCTS_BY_HANDLE && this.state.productHandle
+        ? ZW_PRODUCTS_BY_HANDLE[this.state.productHandle] : null;
+      this._behandlungIncluded = !!(handleProd && handleProd.includedBehandlung &&
+        handleProd.includedBehandlung === this.state.behandlungTitle);
+      if (this._behandlungIncluded) {
+        behandlungVariant = null;
+      } else if (behandlungAddon && behandlungAddon.price) {
+        total += behandlungAddon.price;
       }
       this._selectedVariants = {
         base: baseVariant?.id,
