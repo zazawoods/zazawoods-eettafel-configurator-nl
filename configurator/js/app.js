@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=174d24d8';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=85fdec94';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=174d24d8';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=85fdec94';
 
 class TableConfigurator {
   constructor() {
@@ -5689,6 +5689,46 @@ class TableConfigurator {
     });
   }
 
+  // AR viewers (Quick Look / Scene Viewer) light the model with a neutral
+  // environment and NO tone mapping — our viewer runs ACESFilmic at exposure
+  // 1.2 plus warm studio lights, so raw textures look grey/dim in AR.
+  // Compensate by baking a brightness boost into the exported textures.
+  _prepareExportMaterials(root) {
+    const matCache = new Map();
+    root.traverse(o => {
+      if (!o.isMesh || !o.material) return;
+      const mats = Array.isArray(o.material) ? o.material : [o.material];
+      const out = mats.map(m => {
+        if (!m) return m;
+        if (matCache.has(m)) return matCache.get(m);
+        const c = m.clone();
+        if (c.map && c.map.image && typeof document !== 'undefined') {
+          try {
+            const img = c.map.image;
+            const w = Math.min(img.width || 1024, 1024);
+            const h = Math.min(img.height || 1024, 1024);
+            const cv = document.createElement('canvas');
+            cv.width = w; cv.height = h;
+            const ctx = cv.getContext('2d');
+            ctx.filter = 'brightness(1.25) saturate(1.05)';
+            ctx.drawImage(img, 0, 0, w, h);
+            const tex = new THREE.Texture(cv);
+            tex.colorSpace = THREE.SRGBColorSpace;
+            tex.wrapS = c.map.wrapS; tex.wrapT = c.map.wrapT;
+            tex.repeat.copy(c.map.repeat); tex.offset.copy(c.map.offset);
+            tex.rotation = c.map.rotation; tex.center.copy(c.map.center);
+            tex.flipY = c.map.flipY;
+            tex.needsUpdate = true;
+            c.map = tex;
+          } catch (e) { /* canvas blocked — keep original texture */ }
+        }
+        matCache.set(m, c);
+        return c;
+      });
+      o.material = Array.isArray(o.material) ? out : out[0];
+    });
+  }
+
   // Ground + center a cloned model for AR export: AR viewers place the model
   // origin on the detected floor, so any residual Y offset makes the table
   // float in the air (or sink). Applies to every shape/size automatically.
@@ -5713,6 +5753,7 @@ class TableConfigurator {
     modelClone.traverse(child => { if (!child.visible) toRemove.push(child); });
     toRemove.forEach(obj => obj.parent?.remove(obj));
     this._groundExportClone(modelClone);
+    this._prepareExportMaterials(modelClone);
     exportScene.add(modelClone);
 
     const exporter = new USDZExporter();
@@ -5738,6 +5779,7 @@ class TableConfigurator {
     });
     toRemove.forEach(obj => obj.parent?.remove(obj));
     this._groundExportClone(modelClone);
+    this._prepareExportMaterials(modelClone);
 
     exportScene.add(modelClone);
 
