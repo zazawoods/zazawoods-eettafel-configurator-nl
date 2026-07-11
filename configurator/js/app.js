@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=88b59b0d';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=8c87d45a';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=88b59b0d';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=8c87d45a';
 
 class TableConfigurator {
   constructor() {
@@ -4361,9 +4361,14 @@ class TableConfigurator {
         220: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (M) (Satz)']
       },
       'organic': {
-        200: ORGANIC_ALL, 220: ORGANIC_ALL, 240: ORGANIC_ALL, 260: ORGANIC_ALL,
-        280: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (M) (Satz)', 'Butterfly Tischbeine aus Eichenholz (Satz) (A)'],
-        300: ['Thorn Tischgestelle (Satz)']
+        // A/X have no internal mesh on Organisch — the external pair pokes past
+        // the asymmetric rim at every size (audit 2026-07-11) → hidden everywhere.
+        200: ORGANIC_ALL.concat(['A Tischgestell (Satz)']),
+        220: ORGANIC_ALL.concat(['A Tischgestell (Satz)']),
+        240: ORGANIC_ALL.concat(['A Tischgestell (Satz)']),
+        260: ORGANIC_ALL.concat(['A Tischgestell (Satz)']),
+        280: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (M) (Satz)', 'Butterfly Tischbeine aus Eichenholz (Satz) (A)', 'A Tischgestell (Satz)', 'X Tischgestell (Satz)'],
+        300: ['Thorn Tischgestelle (Satz)', 'A Tischgestell (Satz)', 'X Tischgestell (Satz)']
       },
       'bootsform': {
         180: ['Butterfly Tischbeine aus Eichenholz (Satz) (A)']
