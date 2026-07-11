@@ -1,0 +1,8 @@
+{%- comment -%}
+  Zaza Woods: hide the top marquee strip (Kostenlose Lieferung / Individuelle
+  Maßanfertigung / Monatsraten) ONLY on the two configurator pages.
+  Paste into layout/theme.liquid directly BEFORE </head>.
+{%- endcomment -%}
+{%- if page.handle == 'konfigurator' or page.handle == 'esstisch-konfigurator' -%}
+<style>.shopify-section-group-header-group[id*="__marquee"]{display:none !important}</style>
+{%- endif -%}
