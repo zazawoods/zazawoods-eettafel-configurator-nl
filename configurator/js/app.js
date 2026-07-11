@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=c0000ca7';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=72d4f40b';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=c0000ca7';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=72d4f40b';
 
 class TableConfigurator {
   constructor() {
@@ -421,6 +421,10 @@ class TableConfigurator {
     if (window.parent !== window) {
       window.parent.postMessage({ type: 'configurator-state', params: params.toString() }, 'https://zazawoods.de');
     }
+
+    // Phones: pre-build the AR model for the new configuration in the
+    // background so the AR button opens on the first tap.
+    this._scheduleARPrep();
   }
 
   // ─── Scene Setup ──────────────────────────────
@@ -5112,16 +5116,23 @@ class TableConfigurator {
     document.getElementById('share-popup').classList.add('hidden');
   }
 
-  showToast(msg) {
+  showToast(msg, duration = 2500) {
     const toast = document.getElementById('toast');
     toast.textContent = msg;
     toast.classList.remove('hidden');
     requestAnimationFrame(() => toast.classList.add('show'));
     clearTimeout(this._toastTimer);
-    this._toastTimer = setTimeout(() => {
-      toast.classList.remove('show');
-      setTimeout(() => toast.classList.add('hidden'), 300);
-    }, 2500);
+    if (duration > 0) {
+      this._toastTimer = setTimeout(() => this.hideToast(), duration);
+    }
+  }
+
+  hideToast() {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    clearTimeout(this._toastTimer);
+    toast.classList.remove('show');
+    setTimeout(() => toast.classList.add('hidden'), 300);
   }
 
   takeScreenshot() {
@@ -5366,118 +5377,160 @@ class TableConfigurator {
     popup.classList.remove('hidden');
   }
 
-  async handleAR() {
+  // ─── AR (ported from the ZW picnic configurator) ─────────────
+  // Cache uploaded model URLs per configuration so launching is instant.
+  _arKey() {
+    const st = this.state;
+    return [st.shape, st.color, st.length, st.width, st.edge, st.zwLegName, st.powderCoat, st.topThickness, st.variant].join('_');
+  }
+
+  _arEnv() {
     const ua = navigator.userAgent;
-    // Apple Silicon iPads report as "Macintosh" — detect via platform + touch.
-    const isIPad = /iPad/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
-    const isIPhone = /iPhone|iPod/i.test(ua);
-    const isIOS = isIPhone || isIPad;
+    const isIOS = /iPhone|iPod|iPad/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
     const isAndroid = /Android/i.test(ua);
-    const btn = document.getElementById('btn-ar');
-    if (!btn) return;
+    const isChromeAndroid = isAndroid && /Chrome/.test(ua) && !/SamsungBrowser|EdgA|FxiOS|OPR|Edge\//.test(ua);
+    return { isIOS, isAndroid, isChromeAndroid, isMobile: isIOS || isAndroid };
+  }
 
-    // Desktop: QR popup so the user can scan the config on their phone.
-    if (!isIOS && !isAndroid) {
-      this.showARPopup();
-      return;
+  _sceneViewerUrl(glbUrl) {
+    const enc = encodeURIComponent(glbUrl);
+    const httpsFallback =
+      'https://arvr.google.com/scene-viewer/1.0?file=' + enc +
+      '&mode=ar_preferred&resizable=false&title=Zaza%20Woods';
+    if (this._arEnv().isChromeAndroid) {
+      return 'intent://arvr.google.com/scene-viewer/1.0?file=' + enc +
+        '&mode=ar_preferred&resizable=false&title=Zaza%20Woods' +
+        '#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;' +
+        'S.browser_fallback_url=' + encodeURIComponent(httpsFallback) + ';end;';
     }
+    // Samsung Internet, Firefox, Edge, etc.
+    return httpsFallback;
+  }
 
-    btn.classList.add('loading');
-    const cleanup = () => btn.classList.remove('loading');
-    const hangTimer = setTimeout(cleanup, 15000);
+  // Programmatic anchor click — more reliable than location.href on Samsung
+  // Internet (blank page instead of Scene Viewer).
+  _openAndroidAR(glbUrl) {
+    const a = document.createElement('a');
+    a.href = this._sceneViewerUrl(glbUrl);
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { try { document.body.removeChild(a); } catch (e) {} }, 1000);
+  }
 
-    try {
-      // Never export a half-loaded scene (white tabletop in AR).
-      await this._waitForSceneTextures();
-      if (isIOS) {
-        // iOS Quick Look. The old approach (blob URL + <a rel=ar>) silently
-        // does nothing inside the shop's cross-origin iframe — the reason AR
-        // "didn't work" on iPhones. Hosting the USDZ on our server and opening
-        // it as a plain URL works everywhere (Safari launches Quick Look for
-        // the model/vnd.usdz+zip content type).
-        const usdzBlob = await this.exportSceneToUSDZ();
-        if (!usdzBlob || usdzBlob.size < 1000) throw new Error('Empty USDZ');
-        const up = await fetch('/api/upload-usdz', { method: 'POST', body: usdzBlob });
-        const j = await up.json();
-        if (!j || !j.url) throw new Error('USDZ upload failed');
-        const w = window.open(j.url, '_blank');
-        if (!w) {
-          // Pop-up blocked — fall back to the rel=ar anchor pattern.
-          const link = document.createElement('a');
-          link.rel = 'ar';
-          link.href = j.url;
-          link.style.cssText = 'position:fixed;top:-9999px;left:-9999px;';
-          const img = document.createElement('img');
-          img.alt = '';
-          img.style.cssText = 'width:1px;height:1px;';
-          link.appendChild(img);
-          document.body.appendChild(link);
-          link.click();
-          setTimeout(() => { try { link.remove(); } catch (e) {} }, 30000);
+  // iOS Quick Look: requires <a rel="ar"> with an <img> child — location.href
+  // shows raw file bytes instead of AR.
+  _openIosAR(usdzUrl) {
+    const a = document.createElement('a');
+    a.setAttribute('rel', 'ar');
+    a.href = usdzUrl;
+    const img = document.createElement('img');
+    img.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+    img.alt = '';
+    img.style.cssText = 'position:absolute;width:1px;height:1px;opacity:0;pointer-events:none';
+    a.appendChild(img);
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { try { document.body.removeChild(a); } catch (e) {} }, 1000);
+  }
+
+  async _uploadARModel(blob, kind) {
+    const ep = kind === 'usdz' ? '/api/upload-usdz' : '/api/upload-glb';
+    const r = await fetch(ep, { method: 'POST', body: blob });
+    if (!r.ok) throw new Error('upload failed (' + kind + ')');
+    const j = await r.json();
+    if (!j || !j.url) throw new Error('upload returned no url');
+    return j.url;
+  }
+
+  // Export + upload current config. Single-flight per (key, coverage); results
+  // cached so the AR button opens instantly once prepared.
+  _prepareAR(both) {
+    if (!this.currentModel) { window.__zwArErr = 'no model'; return Promise.resolve(null); }
+    this._arCache = this._arCache || {};
+    this._arPending = this._arPending || new Map();
+    const env = this._arEnv();
+    const key = this._arKey();
+    const have = this._arCache[key];
+    const needGlb = both || env.isAndroid || !env.isMobile;
+    const needUsdz = both || env.isIOS || !env.isMobile;
+    if (have && (!needGlb || have.glb) && (!needUsdz || have.usdz)) return Promise.resolve(have);
+    const pendKey = key + '|' + (needGlb ? 'g' : '') + (needUsdz ? 'u' : '');
+    if (this._arPending.has(pendKey)) return this._arPending.get(pendKey);
+    const work = (async () => {
+      try {
+        await this._waitForSceneTextures();
+        const out = Object.assign({}, this._arCache[key]);
+        if (needGlb && !out.glb) {
+          const glb = await this.exportSceneToGLB();
+          if (!glb || glb.size < 1000) throw new Error('empty GLB');
+          out.glb = await this._uploadARModel(glb, 'glb');
         }
-      } else {
-        // Android: Google Scene Viewer with a server-hosted GLB.
-        const glbBlob = await this.exportSceneToGLB();
-        if (!glbBlob || glbBlob.size < 1000) throw new Error('Empty GLB');
-        const up = await fetch('/api/upload-glb', { method: 'POST', body: glbBlob });
-        const j = await up.json();
-        if (!j || !j.url) throw new Error('GLB upload failed');
-        const viewer = 'https://arvr.google.com/scene-viewer/1.0?file=' + encodeURIComponent(j.url) +
-          '&mode=ar_preferred&title=' + encodeURIComponent('Zaza Woods Esstisch');
-        const intent = 'intent://arvr.google.com/scene-viewer/1.0?file=' + encodeURIComponent(j.url) +
-          '&mode=ar_preferred#Intent;scheme=https;package=com.google.android.googlequicksearchbox;' +
-          'action=android.intent.action.VIEW;S.browser_fallback_url=' + encodeURIComponent(viewer) + ';end;';
-        if (window.top === window) {
-          // Standalone page: intent:// navigation opens Scene Viewer directly.
-          window.location.href = intent;
-        } else {
-          // Inside the shop iframe: intent needs a top-level navigation —
-          // window.open gets routed to Scene Viewer by Chrome as well.
-          const w = window.open(intent, '_blank');
-          if (!w) window.open(viewer, '_blank');
+        if (needUsdz && !out.usdz) {
+          const usdz = await this.exportSceneToUSDZ();
+          if (!usdz || usdz.size < 1000) throw new Error('empty USDZ');
+          out.usdz = await this._uploadARModel(usdz, 'usdz');
         }
+        this._arCache[key] = out;
+      } catch (e) {
+        window.__zwArErr = (e && (e.stack || e.message)) || String(e);
+        console.error('[AR] prepare failed:', e);
+      } finally {
+        this._arPending.delete(pendKey);
       }
-      clearTimeout(hangTimer);
-      cleanup();
-    } catch (err) {
-      console.error('AR error:', err);
-      clearTimeout(hangTimer);
-      cleanup();
-      this.showToast('AR ist momentan nicht verfügbar. Bitte erneut versuchen.');
+      return this._arCache[key] || null;
+    })();
+    this._arPending.set(pendKey, work);
+    return work;
+  }
+
+  // Phone: one tap → native AR. Single-flight; sticky toast while preparing.
+  async _launchMobileAR() {
+    if (this._arLaunchInFlight) return this._arLaunchInFlight;
+    this._arLaunchInFlight = (async () => {
+      const env = this._arEnv();
+      this._arCache = this._arCache || {};
+      let c = this._arCache[this._arKey()];
+      const ready = env.isIOS ? (c && c.usdz) : (c && c.glb);
+      if (!ready) {
+        this.showToast('AR wird geladen …', 0); // sticky until prepared
+        c = await this._prepareAR(false);
+      }
+      if (!c) {
+        this.hideToast();
+        const err = window.__zwArErr || 'unbekannt';
+        this.showToast('AR fehlgeschlagen: ' + String(err).slice(0, 90), 5000);
+        return;
+      }
+      this.hideToast();
+      if (env.isIOS && c.usdz)  this._openIosAR(c.usdz);
+      else if (c.glb)           this._openAndroidAR(c.glb);
+      else                      this.showToast('AR auf diesem Ger\u00e4t nicht verf\u00fcgbar');
+    })();
+    try { await this._arLaunchInFlight; } finally { this._arLaunchInFlight = null; }
+  }
+
+  // Schedule background AR preparation on phones (on load + config changes)
+  // so the AR button opens on the FIRST tap.
+  _scheduleARPrep() {
+    if (!this._arEnv().isMobile) return;
+    clearTimeout(this._arPrepTimer);
+    this._arPrepTimer = setTimeout(() => this._prepareAR(false), 900);
+  }
+
+  async handleAR() {
+    const env = this._arEnv();
+    const btn = document.getElementById('btn-ar');
+    if (btn) btn.classList.add('loading');
+    try {
+      if (env.isMobile) {
+        await this._launchMobileAR();
+      } else {
+        this.showARPopup();
+      }
+    } finally {
+      if (btn) btn.classList.remove('loading');
     }
-  }
-
-  // Ground + center a cloned model for AR export: AR viewers place the model
-  // origin on the detected floor, so any residual Y offset makes the table
-  // float in the air (or sink). Applies to every shape/size automatically.
-  _groundExportClone(modelClone) {
-    modelClone.updateMatrixWorld(true);
-    const box = new THREE.Box3().setFromObject(modelClone);
-    if (!isFinite(box.min.y)) return;
-    const center = box.getCenter(new THREE.Vector3());
-    modelClone.position.x -= center.x;
-    modelClone.position.z -= center.z;
-    modelClone.position.y -= box.min.y;
-    modelClone.updateMatrixWorld(true);
-  }
-
-  async exportSceneToUSDZ() {
-    if (!this.currentModel) throw new Error('No model loaded');
-
-    // Clone visible parts only so hidden variants/legs don't get baked in.
-    const exportScene = new THREE.Scene();
-    const modelClone = this.currentModel.clone(true);
-    const toRemove = [];
-    modelClone.traverse(child => { if (!child.visible) toRemove.push(child); });
-    toRemove.forEach(obj => obj.parent?.remove(obj));
-    this._groundExportClone(modelClone);
-    exportScene.add(modelClone);
-
-    const exporter = new USDZExporter();
-    // r0.162 USDZExporter: `parse(scene, options)` returns a Promise<Uint8Array>.
-    // maxTextureSize keeps the file small enough for a fast Quick Look open.
-    const arrayBuffer = await exporter.parse(exportScene, { maxTextureSize: 1024 });
-    return new Blob([arrayBuffer], { type: 'model/vnd.usdz+zip' });
   }
 
   // Called after the initial model load when the page was opened via a
@@ -5507,22 +5560,27 @@ class TableConfigurator {
   showARPopup() {
     const popup = document.getElementById('ar-popup');
     popup.classList.remove('hidden');
-
     const qrContainer = document.getElementById('ar-qr');
-    qrContainer.innerHTML = '';
-
-    // QR points DIRECTLY at the configurator (with ar=1) — no dependency on
-    // the Shopify wrapper page, works even if that page/template changes.
-    const rawParams = new URL(window.location.href).search;
-    const params = rawParams ? rawParams + '&ar=1' : '?ar=1';
-    const currentUrl = 'https://zazawoods-esstisch-konfigurator-production.up.railway.app/' + params;
-    const qrImg = document.createElement('img');
-    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(currentUrl)}&margin=8`;
-    qrImg.width = 180;
-    qrImg.height = 180;
-    qrImg.style.borderRadius = '8px';
-    qrImg.alt = 'QR Code';
-    qrContainer.appendChild(qrImg);
+    qrContainer.innerHTML = '<div style="font-size:12px;color:#999;padding:60px 0;text-align:center;">QR wird erstellt \u2026</div>';
+    // Upload both formats, QR points at /ar.html which auto-opens native AR
+    // on the phone (same flow as the ZW picnic configurator).
+    (async () => {
+      const c = await this._prepareAR(true);
+      if (!c || !c.usdz || !c.glb) throw new Error('no models');
+      const arUrl = 'https://zazawoods-esstisch-konfigurator-production.up.railway.app/ar.html' +
+        '?u=' + encodeURIComponent(c.usdz) + '&g=' + encodeURIComponent(c.glb);
+      const qrImg = document.createElement('img');
+      qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(arUrl)}&margin=8`;
+      qrImg.width = 180;
+      qrImg.height = 180;
+      qrImg.style.borderRadius = '8px';
+      qrImg.alt = 'QR Code';
+      qrContainer.innerHTML = '';
+      qrContainer.appendChild(qrImg);
+    })().catch((e) => {
+      console.error('[AR] QR failed:', e);
+      qrContainer.innerHTML = '<div style="font-size:12px;color:#999;padding:60px 0;text-align:center;">QR konnte nicht erstellt werden.</div>';
+    });
   }
 
   async startWebXR() {
@@ -5810,6 +5868,7 @@ class TableConfigurator {
       const idle = window.requestIdleCallback || ((f) => setTimeout(f, 2500));
       idle(() => this._prefetchOakTextures());
       setTimeout(() => this._prefetchShapeGLBs(), 6000);
+      setTimeout(() => this._scheduleARPrep(), 3000);
     }
   }
 
