@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=85fdec94';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=4630e60a';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=85fdec94';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=4630e60a';
 
 class TableConfigurator {
   constructor() {
@@ -321,6 +321,21 @@ class TableConfigurator {
             const wids = shp.widths || [shp.defaultWidth];
             this.state.width = wids.reduce((a, b) => Math.abs(b - this.state.width) < Math.abs(a - this.state.width) ? b : a);
           }
+        }
+      }
+    }
+    // Product-page arrivals with 180cm: open at 220cm instead — at 180 many
+    // Satz legs are hidden, at 220 the customer sees the full range. They can
+    // switch back to 180 themselves (the size stays available).
+    if (params.has('product') && parseInt(params.get('length')) === 180) {
+      const shp220 = TABLE_SHAPES.find(sh => sh.id === this.state.shape);
+      if (shp220) {
+        if (Array.isArray(shp220.fixedDimensions) && shp220.fixedDimensions.length) {
+          const dim = shp220.fixedDimensions.find(d => d[0] === 220);
+          if (dim) { this.state.length = dim[0]; this.state.width = dim[1]; }
+        } else if ((shp220.lengths || []).includes(220)) {
+          this.state.length = 220;
+          if (shp220.lockAspect) this.state.width = 220;
         }
       }
     }
@@ -5701,10 +5716,21 @@ class TableConfigurator {
       const out = mats.map(m => {
         if (!m) return m;
         if (matCache.has(m)) return matCache.get(m);
-        const c = m.clone();
-        if (c.map && c.map.image && typeof document !== 'undefined') {
+        // Rebuild as a MINIMAL PBR material: only map/color/roughness/metalness.
+        // Extras like bumpMap exported the EXT_materials_bump extension which
+        // Google Scene Viewer chokes on — the tabletop simply didn't render
+        // on Android. Quick Look ignores most extras anyway.
+        const c = new THREE.MeshStandardMaterial({
+          color: m.color ? m.color.clone() : undefined,
+          roughness: (m.roughness !== undefined) ? m.roughness : 0.8,
+          metalness: (m.metalness !== undefined) ? m.metalness : 0.0,
+          side: (m.side !== undefined) ? m.side : undefined,
+          transparent: false,
+          opacity: 1
+        });
+        if (m.map && m.map.image && typeof document !== 'undefined') {
           try {
-            const img = c.map.image;
+            const img = m.map.image;
             const w = Math.min(img.width || 1024, 1024);
             const h = Math.min(img.height || 1024, 1024);
             const cv = document.createElement('canvas');
@@ -5714,13 +5740,15 @@ class TableConfigurator {
             ctx.drawImage(img, 0, 0, w, h);
             const tex = new THREE.Texture(cv);
             tex.colorSpace = THREE.SRGBColorSpace;
-            tex.wrapS = c.map.wrapS; tex.wrapT = c.map.wrapT;
-            tex.repeat.copy(c.map.repeat); tex.offset.copy(c.map.offset);
-            tex.rotation = c.map.rotation; tex.center.copy(c.map.center);
-            tex.flipY = c.map.flipY;
+            tex.wrapS = m.map.wrapS; tex.wrapT = m.map.wrapT;
+            tex.repeat.copy(m.map.repeat); tex.offset.copy(m.map.offset);
+            tex.rotation = m.map.rotation; tex.center.copy(m.map.center);
+            tex.flipY = m.map.flipY;
             tex.needsUpdate = true;
             c.map = tex;
-          } catch (e) { /* canvas blocked — keep original texture */ }
+          } catch (e) { c.map = m.map; /* canvas blocked — reuse original */ }
+        } else if (m.map) {
+          c.map = m.map;
         }
         matCache.set(m, c);
         return c;
