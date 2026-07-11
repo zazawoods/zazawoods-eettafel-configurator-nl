@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=5016ecf8';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=5f6367f1';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=5016ecf8';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=5f6367f1';
 
 class TableConfigurator {
   constructor() {
@@ -5669,6 +5669,22 @@ class TableConfigurator {
   }
 
   updatePrice() {
+    // Rechteck + Yakisugi IS the shop's own Yakisugi table (Milano + burned
+    // finish) — sell that exact product with its own variants/prices instead
+    // of Milano + €220 addon. Switching to another Behandlung switches back.
+    const YAKISUGI_HANDLE = 'gekohlter-esstisch-yakisugi';
+    const MILANO_HANDLE = 'rechteckiger-esstisch-milano-aus-massiver-eichenholz-mit-baumstammkanten';
+    if (this.state.shape === 'rectangle') {
+      if (this.state.behandlungTitle === 'Yakisugi') {
+        if (this.state.productHandle !== YAKISUGI_HANDLE) {
+          this._handleBeforeYakisugi = this.state.productHandle || null;
+          this.state.productHandle = YAKISUGI_HANDLE;
+        }
+      } else if (this.state.productHandle === YAKISUGI_HANDLE) {
+        this.state.productHandle = (this._handleBeforeYakisugi !== undefined
+          ? this._handleBeforeYakisugi : MILANO_HANDLE) || null;
+      }
+    }
     const product = ZW_PRODUCTS_DATA && ZW_PRODUCTS_DATA[this.state.shape];
     let total = 0;
     let priceIsFresh = false;
