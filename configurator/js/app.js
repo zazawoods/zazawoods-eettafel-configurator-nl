@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=d6126022';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=88b59b0d';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=d6126022';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=88b59b0d';
 
 class TableConfigurator {
   constructor() {
@@ -1004,7 +1004,7 @@ class TableConfigurator {
         // (one at each end of the table), for everyone else just one centered.
         const group = new THREE.Group();
         group.name = '__ext_group__' + title;
-        const isPair = /^U Tischgestell|^Trapezium Tischgestell|^Stahlwangen Tischgestell|^Drone Tischbeine|^Ovale Tischgestelle aus Eiche-Stäbchenholz/i.test(title);
+        const isPair = /^U Tischgestell|^Trapezium Tischgestell|^Stahlwangen Tischgestell|^Drone Tischbeine|^A Tischgestell|^X Tischgestell|^Ovale Tischgestelle aus Eiche-Stäbchenholz/i.test(title);
         const isDrone = /^Drone Tischbeine/i.test(title);
         // Butterfly / Halbrunde Eichenholz: both are single-mesh Satz legs
         // extracted from rectangle.glb with the 2 pieces already baked along X.
