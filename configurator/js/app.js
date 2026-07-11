@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=8c87d45a';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=c0000ca7';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=8c87d45a';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=c0000ca7';
 
 class TableConfigurator {
   constructor() {
@@ -2914,6 +2914,27 @@ class TableConfigurator {
         child.material = metalMaterial.clone();
       }
     });
+  }
+
+  // Warm the browser HTTP cache for the other shapes' GLB files so the FIRST
+  // switch to any shape starts parsing immediately instead of downloading
+  // 1-33MB. Downloads sequentially, network-only (no parsing → no RAM cost),
+  // respects Save-Data; on phones the huge Bootsform file is skipped.
+  async _prefetchShapeGLBs() {
+    try {
+      const conn = navigator.connection || {};
+      if (conn.saveData) return;
+      if (conn.effectiveType && /2g|3g/.test(conn.effectiveType)) return;
+      const isMobile = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
+      const order = ['round', 'organic', 'oval', 'danish-oval', 'halfrond', 'rectangle']
+        .concat(isMobile ? [] : ['bootsform']);
+      for (const id of order) {
+        if (this.modelCache && this.modelCache[id]) continue;
+        const shape = TABLE_SHAPES.find(sh => sh.id === id);
+        if (!shape) continue;
+        try { await fetch(shape.glbFile + '?v=' + BUILD_VERSION, { priority: 'low', credentials: 'same-origin' }); } catch (e) { /* network hiccup — skip */ }
+      }
+    } catch (e) { /* prefetch is best-effort */ }
   }
 
   // Prefetch all oak Behandlung textures in the background (staggered) so
@@ -5788,6 +5809,7 @@ class TableConfigurator {
       this._prefetchStarted = true;
       const idle = window.requestIdleCallback || ((f) => setTimeout(f, 2500));
       idle(() => this._prefetchOakTextures());
+      setTimeout(() => this._prefetchShapeGLBs(), 6000);
     }
   }
 
