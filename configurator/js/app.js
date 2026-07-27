@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=47548b93';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=aa0097e8';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=47548b93';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=aa0097e8';
 
 class TableConfigurator {
   constructor() {
@@ -372,6 +372,19 @@ class TableConfigurator {
           this.state.behandlungTitle = TITLE_ALIASES[entry[0]] || entry[0];
           this.state.userPickedBehandlung = true;
         }
+      }
+    }
+    // Product-page arrival WITHOUT a chosen Behandlung: default to the shop's
+    // standard finish "Unsichtbarer Skylt-Lack" and count it as selected, so
+    // "In den Warenkorb" works immediately (the customer can still change it).
+    if (params.has('product') && !this.state.behandlungTitle) {
+      const defTitle = 'Unsichtbarer Skylt-Lack';
+      const defColor = BEHANDLUNG_TEXTURE_MAP[defTitle];
+      const matTypeDef = MATERIAL_TYPES[this.state.materialType];
+      if (defColor && matTypeDef.colors.find(c => c.id === defColor)) {
+        this.state.color = defColor;
+        this.state.behandlungTitle = defTitle;
+        this.state.userPickedBehandlung = true;
       }
     }
     if (params.has('leg')) {
