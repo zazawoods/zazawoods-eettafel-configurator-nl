@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=8cd7a7ca';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=47548b93';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -217,7 +217,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=8cd7a7ca';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=47548b93';
 
 class TableConfigurator {
   constructor() {
@@ -4085,7 +4085,19 @@ class TableConfigurator {
         return;
       }
       const cartUrl = 'https://zazawoods.de/cart/' + items.join(',');
-      window.location.href = cartUrl;
+      // Embedded in the shop page the checkout CANNOT be framed (Shopify
+      // forbids it → the customer saw a connection error). Always break out
+      // of the iframe: navigate the TOP window (allowed on a user click);
+      // if the browser refuses, open the cart in a new tab instead.
+      try {
+        if (window.top && window.top !== window) {
+          window.top.location.href = cartUrl;
+        } else {
+          window.location.href = cartUrl;
+        }
+      } catch (e) {
+        window.open(cartUrl, '_blank');
+      }
     };
     const btn = document.getElementById('btn-add-to-cart');
     if (btn) btn.addEventListener('click', cartHandler);
