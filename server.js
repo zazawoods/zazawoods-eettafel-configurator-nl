@@ -18,8 +18,15 @@ app.use((req, res, next) => {
   next();
 });
 
-// Gzip/deflate compression for all responses
-app.use(compression());
+// Gzip/deflate compression for all responses. GLBs are Draco-compressed already
+// (incompressible) — skip them so we don't burn CPU per request; everything
+// else (HTML/CSS/JS/JSON/wasm) is compressed as usual.
+app.use(compression({
+  filter: (req, res) => {
+    if (/\.(?:glb|usdz|png|jpe?g|webp|zip)(?:\?|$)/i.test(req.path)) return false;
+    return compression.filter(req, res);
+  }
+}));
 const PORT = process.env.PORT || 3000;
 const TEMP_DIR = '/tmp/ar-models';
 
@@ -178,30 +185,39 @@ app.get('/api/icons', async (req, res) => {
   } catch { return res.status(200).json({ icons: [] }); }
 });
 
-// Serve static files from /configurator (HTML/CSS/JS: no-cache, must revalidate every request)
-app.use(express.static(path.join(__dirname, 'configurator'), {
+// Serve static files from /configurator (HTML/CSS/JS: no-cache, must revalidate every request).
+// Mounted at BOTH "/" and "/configurator": index.html has <base href="/configurator/">, so the
+// app requests /configurator/css/..., /configurator/js/..., while /ar.html & friends live at root.
+const configuratorStatic = express.static(path.join(__dirname, 'configurator'), {
   etag: true,
   setHeaders: (res, filePath) => {
     if (/\.(?:html?|css|js|mjs|json)$/i.test(filePath)) {
       res.setHeader('Cache-Control', 'no-cache, must-revalidate');
     } else {
-      // textures/swatches/images: content-addressed by folder, safe to cache long
+      // textures/swatches/images/wasm: URLs carry ?v=BUILD_VERSION, safe to cache long
       res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
     }
   }
-}));
+});
+app.use(configuratorStatic);
+app.use('/configurator', configuratorStatic);
 
-// Serve root-level assets:
-//   HTML / CSS / JS  → no-cache (must revalidate so deploys propagate immediately)
-//   GLB / textures / swatches / fonts → 7 day cache
-app.use(express.static(__dirname, {
+// Serve the 3D models (the only root-level folder the app references:
+// config.js → `../glb files tables and legs/...`). Deliberately NOT the whole
+// repo root any more — that exposed server.js, package.json, CSVs, HANDOFF docs
+// and source zips publicly. GLB URLs carry ?v=BUILD_VERSION → cache 1 year.
+app.use('/glb%20files%20tables%20and%20legs', express.static(path.join(__dirname, 'glb files tables and legs'), {
   etag: true,
-  setHeaders: (res, filePath) => {
-    if (/\.(?:html?|css|js|mjs|json)$/i.test(filePath)) {
-      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
-    } else {
-      res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
-    }
+  index: false,
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+  }
+}));
+app.use('/glb files tables and legs', express.static(path.join(__dirname, 'glb files tables and legs'), {
+  etag: true,
+  index: false,
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
   }
 }));
 

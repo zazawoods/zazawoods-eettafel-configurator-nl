@@ -40,9 +40,10 @@
       }
     })();
   </script>
-  <link rel="stylesheet" href="css/styles.css?v=aa0097e8">
-  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+  <link rel="stylesheet" href="css/styles.css?v=d271ce29">
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script type="importmap">
   {
@@ -52,6 +53,19 @@
     }
   }
   </script>
+  <!-- Warm the module graph in parallel with app.js instead of discovering it one hop later
+       (importmap must stay above these — a modulepreload before the map would disable it). -->
+  <link rel="modulepreload" href="js/config.js?v=d271ce29">
+  <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js" crossorigin>
+  <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/controls/OrbitControls.js" crossorigin>
+  <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/loaders/GLTFLoader.js" crossorigin>
+  <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/loaders/DRACOLoader.js" crossorigin>
+  <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/exporters/GLTFExporter.js" crossorigin>
+  <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/exporters/USDZExporter.js" crossorigin>
+  <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/utils/BufferGeometryUtils.js" crossorigin>
+  <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/utils/TextureUtils.js" crossorigin>
+  <link rel="prefetch" href="js/draco/draco_wasm_wrapper.js" as="script">
+  <link rel="prefetch" href="js/draco/draco_decoder.wasm" as="fetch" crossorigin>
 </head>
 <body>
 
@@ -319,6 +333,6 @@
     Konfigurieren
   </button>
 
-  <script type="module" src="js/app.js?v=aa0097e8"></script>
+  <script type="module" src="js/app.js?v=d271ce29"></script>
 </body>
 </html>

@@ -4,7 +4,7 @@ const BASE_PATH = '..';
 
 // Single cache-bust across the whole app — bumped by the deploy script so all
 // static assets (JS, images, GLBs) invalidate together. Never edit by hand.
-export const BUILD_VERSION = 'aa0097e8';
+export const BUILD_VERSION = 'd271ce29';
 
 export const TABLE_SHAPES = [
   {
@@ -141,10 +141,10 @@ export const MATERIAL_TYPES = {
       { id: 'crema-marfil',       name: 'Crema Marfil (Satin)',       file: `${BASE_PATH}/configurator/textures/ceramic/crema-marfil-satin.jpg`,        swatch: '#e8d5b8', finish: 'satin', thicknesses: [1.2] },
       { id: 'elegant-black',      name: 'Elegant Black (Satin)',      file: `${BASE_PATH}/configurator/textures/ceramic/elegant-black-satin.jpg`,       swatch: '#2a2a2a', finish: 'satin', thicknesses: [1.2] },
       { id: 'emperador',          name: 'Emperador (Lux)',            file: `${BASE_PATH}/configurator/textures/ceramic/emperador-lux.jpg`,             swatch: '#5c3d2e', finish: 'lux', thicknesses: [1.2] },
-      { id: 'fior-di-bosco',      name: 'Fior di Bosco (Satin)',      file: `${BASE_PATH}/configurator/textures/ceramic/fior-di-bosco-satin.png`,       swatch: '#6a6a68', finish: 'satin', landscape: true, thicknesses: [1.2] },
+      { id: 'fior-di-bosco',      name: 'Fior di Bosco (Satin)',      file: `${BASE_PATH}/configurator/textures/ceramic/fior-di-bosco-satin.jpg`,       swatch: '#6a6a68', finish: 'satin', landscape: true, thicknesses: [1.2] },
       { id: 'golden-white-lux',   name: 'Golden White (Lux)',         file: `${BASE_PATH}/configurator/textures/ceramic/golden-white-lux.jpg`,          swatch: '#f0e8d8', finish: 'lux', thicknesses: [1.2] },
       { id: 'golden-white-satin', name: 'Golden White (Satin)',       file: `${BASE_PATH}/configurator/textures/ceramic/golden-white-satin.jpg`,        swatch: '#ede5d5', finish: 'satin', thicknesses: [1.2] },
-      { id: 'jade',               name: 'Jade (Lux)',                 file: `${BASE_PATH}/configurator/textures/ceramic/jade-lux.png`,                  swatch: '#8a9a7a', finish: 'lux', landscape: true, thicknesses: [1.2] },
+      { id: 'jade',               name: 'Jade (Lux)',                 file: `${BASE_PATH}/configurator/textures/ceramic/jade-lux.jpg`,                  swatch: '#8a9a7a', finish: 'lux', landscape: true, thicknesses: [1.2] },
       { id: 'onice-avorio',       name: 'Onice Avorio (Lux)',         file: `${BASE_PATH}/configurator/textures/ceramic/onice-avorio-lux.jpg`,          swatch: '#f5edd5', finish: 'lux', thicknesses: [1.2] },
       { id: 'onice-beige',        name: 'Onice Beige (Lux)',          file: `${BASE_PATH}/configurator/textures/ceramic/onice-beige-lux.jpg`,           swatch: '#d4c4a0', finish: 'lux', thicknesses: [1.2] },
       { id: 'onice-giada',        name: 'Onice Giada (Lux)',          file: `${BASE_PATH}/configurator/textures/ceramic/onice-giada-lux.jpg`,           swatch: '#4a7a5a', finish: 'lux', thicknesses: [1.2] },

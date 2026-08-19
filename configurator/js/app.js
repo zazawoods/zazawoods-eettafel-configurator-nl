@@ -2,9 +2,10 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=aa0097e8';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=d271ce29';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -58,7 +59,7 @@ let ZW_PRODUCTS_BY_HANDLE = null;
 async function loadZWProducts() {
   if (ZW_PRODUCTS_DATA) return ZW_PRODUCTS_DATA;
   try {
-    const r = await fetch('/configurator/js/zw-products.json?v=' + Date.now(), { cache: 'no-store' });
+    const r = await fetch('js/zw-products.json?v=' + BUILD_VERSION);
     if (r.ok) {
       ZW_PRODUCTS_DATA = await r.json();
       console.log('[ZW] product data loaded', Object.keys(ZW_PRODUCTS_DATA));
@@ -69,7 +70,7 @@ async function loadZWProducts() {
     console.warn('[ZW] could not load zw-products.json', e);
   }
   try {
-    const r2 = await fetch('/configurator/js/zw-products-by-handle.json?v=' + Date.now(), { cache: 'no-store' });
+    const r2 = await fetch('js/zw-products-by-handle.json?v=' + BUILD_VERSION);
     if (r2.ok) {
       ZW_PRODUCTS_BY_HANDLE = await r2.json();
       console.log('[ZW] per-handle product data loaded', Object.keys(ZW_PRODUCTS_BY_HANDLE).length);
@@ -217,7 +218,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=aa0097e8';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=d271ce29';
 
 class TableConfigurator {
   constructor() {
@@ -228,7 +229,15 @@ class TableConfigurator {
     this.controls = null;
     this.currentModel = null;
     this.groundPlane = null;
+    // GLBs are Draco-compressed (KHR_draco_mesh_compression, ~15-20x smaller than
+    // raw float32 buffers). Decoder is self-hosted (same origin, cacheable) and
+    // runs in web workers, so parsing no longer blocks the main thread either.
+    this.dracoLoader = new DRACOLoader();
+    this.dracoLoader.setDecoderPath('js/draco/');
+    this.dracoLoader.setDecoderConfig({ type: 'wasm' });
+    this.dracoLoader.preload();
     this.loader = new GLTFLoader();
+    this.loader.setDRACOLoader(this.dracoLoader);
     this.textureLoader = new THREE.TextureLoader();
     this.textureCache = {};
     this.modelCache = {};
@@ -888,11 +897,19 @@ class TableConfigurator {
   async preloadAllModels() {
     // Load one at a time so we never compete with a user-triggered loadModel
     // for bandwidth or the GLTFLoader's DRACO worker.
+    // Phones: skip the parse-into-RAM warm-up (7 decoded shapes = a lot of
+    // geometry for a mobile tab; the network prefetch in _prefetchShapeGLBs
+    // still makes the first switch fast). Also respect Save-Data / slow links.
+    const conn = navigator.connection || {};
+    if (conn.saveData) return;
+    if (conn.effectiveType && /2g|3g/.test(conn.effectiveType)) return;
+    if (/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)) return;
     const toLoad = TABLE_SHAPES.filter(s => !this.modelCache[s.id]);
     for (const shape of toLoad) {
       try {
-        // Yield to any pending user click first
-        await new Promise(r => setTimeout(r, 0));
+        // Yield to any pending user click first (and to idle time when available)
+        await new Promise(r => (window.requestIdleCallback ? requestIdleCallback(() => r(), { timeout: 1500 }) : setTimeout(r, 0)));
+        if (this.modelCache[shape.id]) continue;
         const gltf = await this.loadGLTF(shape.glbFile + '?v=' + BUILD_VERSION, { silent: true });
         this.modelCache[shape.id] = gltf;
       } catch (e) {
@@ -4549,7 +4566,7 @@ class TableConfigurator {
       const isWoodTitle = t => /Eichenholz|Stäbchenholz|Holzsäule|aus\s+Eiche/i.test(t);
       const swatchSuffix = isWoodTitle(item.title) ? '.png' : '_bw.png';
       const swatchFile = encodeURIComponent(`${item.title}${swatchSuffix}`);
-      const swatch = `<img src="Swatches/Onderstel/${swatchFile}?v=${BUILD_VERSION}" alt="${item.title}" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','&lt;svg viewBox=&quot;0 0 60 50&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.5&quot; stroke-linecap=&quot;round&quot;&gt;&lt;line x1=&quot;5&quot; y1=&quot;6&quot; x2=&quot;55&quot; y2=&quot;6&quot;/&gt;&lt;line x1=&quot;15&quot; y1=&quot;6&quot; x2=&quot;15&quot; y2=&quot;46&quot;/&gt;&lt;line x1=&quot;45&quot; y1=&quot;6&quot; x2=&quot;45&quot; y2=&quot;46&quot;/&gt;&lt;/svg&gt;')"/>`;
+      const swatch = `<img src="Swatches/Onderstel/${swatchFile}?v=${BUILD_VERSION}" alt="${item.title}" decoding="async" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','&lt;svg viewBox=&quot;0 0 60 50&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.5&quot; stroke-linecap=&quot;round&quot;&gt;&lt;line x1=&quot;5&quot; y1=&quot;6&quot; x2=&quot;55&quot; y2=&quot;6&quot;/&gt;&lt;line x1=&quot;15&quot; y1=&quot;6&quot; x2=&quot;15&quot; y2=&quot;46&quot;/&gt;&lt;line x1=&quot;45&quot; y1=&quot;6&quot; x2=&quot;45&quot; y2=&quot;46&quot;/&gt;&lt;/svg&gt;')"/>`;
       const priceTag = item.price > 0 ? `<div class="leg-price">+€${(item.price/100).toFixed(0)}</div>` : '';
       return `
         <button class="leg-option ${hasModel ? 'has-model' : 'no-model'} ${active ? 'active' : ''}" data-zw-index="${idx}" data-leg-index="${legIdx}">
@@ -4574,7 +4591,14 @@ class TableConfigurator {
       html += '<div class="leg-category-label">Holz</div>';
       html += `<div class="leg-category-grid">${woodLegs.map(o => renderBtn(o.item, o.idx)).join('')}</div>`;
     }
-    grid.innerHTML = html || '<p style="font-size:12px;color:#999;padding:8px 0;">Keine Untergestelle verfügbar</p>';
+    html = html || '<p style="font-size:12px;color:#999;padding:8px 0;">Keine Untergestelle verfügbar</p>';
+    // applyDimensions() re-renders this grid on every slider move; if nothing in
+    // the markup changed, skip the innerHTML swap (avoids re-creating 26 <img>
+    // nodes + re-decoding their images + a layout pass per interaction).
+    if (grid._lastLegGridHtml !== html) {
+      grid.innerHTML = html;
+      grid._lastLegGridHtml = html;
+    }
 
     grid.onclick = (e) => {
       const btn = e.target.closest('.leg-option');
