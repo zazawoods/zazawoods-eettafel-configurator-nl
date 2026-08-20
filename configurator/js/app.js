@@ -416,8 +416,16 @@ class TableConfigurator {
     }
     // ar=1 (QR-code scans): auto-offer AR right after the model loads.
     if (params.has('ar')) this._autoAR = true;
-    // product=<shopify handle>: sell this exact product (own variants/prices)
-    if (params.has('product')) this.state.productHandle = params.get('product');
+    // product=<shopify handle>: sell this exact product (own variants/prices).
+    // The handle is only valid for the SHAPE the customer arrived on — remember
+    // that shape so switching the tabletop form drops the override (fix
+    // 2026-08-19: price + cart stayed on the original product after a shape
+    // switch, so an oval config could put a rectangle table in the cart).
+    if (params.has('product')) {
+      this.state.productHandle = params.get('product');
+      this._seededProductHandle = this.state.productHandle;
+      this._productHandleShape = this.state.shape;
+    }
     if (params.has('variant')) {
       const v = params.get('variant').toLowerCase();
       if (v === 'a' || v === 'b') this.state.variant = v;
@@ -4164,6 +4172,16 @@ class TableConfigurator {
 
       this.state.shape = shapeId;
       this.state.variant = 'a'; // reset variant on shape change
+      // A ?product= override only applies to the shape the customer arrived on.
+      // On any other shape, price + cart must use that shape's own product —
+      // otherwise the displayed price never changes and the cart would contain
+      // the ORIGINAL table (client-reported bug 2026-08-19). Returning to the
+      // seeded shape restores the override.
+      if (this._productHandleShape !== undefined) {
+        this.state.productHandle = (shapeId === this._productHandleShape)
+          ? (this._seededProductHandle || null) : null;
+        this._handleBeforeYakisugi = undefined; // reset Yakisugi save/restore pair
+      }
       const shape = TABLE_SHAPES.find(s => s.id === shapeId);
 
       // Keep the user's size across shape switches (2026-07-09 request):
@@ -5914,16 +5932,17 @@ class TableConfigurator {
     // of Milano + €220 addon. Switching to another Behandlung switches back.
     const YAKISUGI_HANDLE = 'gekohlter-esstisch-yakisugi';
     const MILANO_HANDLE = 'rechteckiger-esstisch-milano-aus-massiver-eichenholz-mit-baumstammkanten';
-    if (this.state.shape === 'rectangle') {
-      if (this.state.behandlungTitle === 'Yakisugi') {
-        if (this.state.productHandle !== YAKISUGI_HANDLE) {
-          this._handleBeforeYakisugi = this.state.productHandle || null;
-          this.state.productHandle = YAKISUGI_HANDLE;
-        }
-      } else if (this.state.productHandle === YAKISUGI_HANDLE) {
-        this.state.productHandle = (this._handleBeforeYakisugi !== undefined
-          ? this._handleBeforeYakisugi : MILANO_HANDLE) || null;
+    if (this.state.shape === 'rectangle' && this.state.behandlungTitle === 'Yakisugi') {
+      if (this.state.productHandle !== YAKISUGI_HANDLE) {
+        this._handleBeforeYakisugi = this.state.productHandle || null;
+        this.state.productHandle = YAKISUGI_HANDLE;
       }
+    } else if (this.state.productHandle === YAKISUGI_HANDLE) {
+      // Leaving Yakisugi OR leaving Rechteck: never keep the Yakisugi product
+      // override on another shape (its variants would price the wrong table).
+      this.state.productHandle = this.state.shape === 'rectangle'
+        ? ((this._handleBeforeYakisugi !== undefined ? this._handleBeforeYakisugi : MILANO_HANDLE) || null)
+        : null;
     }
     const product = ZW_PRODUCTS_DATA && ZW_PRODUCTS_DATA[this.state.shape];
     let total = 0;
