@@ -183,8 +183,12 @@ const EXTERNAL_LEG_CACHE = new Map();
 
 // Catalog-only legs from /collections/tischgestelle that aren't sold as addons on any Esstisch.
 const CATALOG_ONLY_LEGS = [
-  // Only legs that have a 3D model AND aren't sold as an addon on any Esstisch page.
-  { title: 'Drone Tischbeine (Satz)',             variantId: '51011118039306', price: 34500 },
+  // Legs that have a 3D model but aren't addons in zw-products.json.
+  // Drone: dedicated addon product "Drone Tischgestelle (Satz)" (185€ surcharge,
+  // created 2026-08-22 after a customer flagged the 345€ full standalone price
+  // being charged as an "Aufpreis"). The 3D/UI title stays "Drone Tischbeine
+  // (Satz)" — only the cart variant + price come from the addon product.
+  { title: 'Drone Tischbeine (Satz)',             variantId: '53548722028810', price: 18500 },
   { title: 'Stahlwangen Tischgestell (Satz)',     variantId: '44218834026762', price: 56000 },
   { title: 'Stahlwangen Tischgestell (S) (Satz)', variantId: '44218853032202', price: 56000 }
 ];
