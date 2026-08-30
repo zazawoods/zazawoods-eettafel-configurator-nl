@@ -5,7 +5,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=a349568e';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=27fe604e';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -236,7 +236,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=a349568e';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=27fe604e';
 
 class TableConfigurator {
   constructor() {
@@ -4470,18 +4470,22 @@ class TableConfigurator {
     const ORGANIC_ALL = FRAME_SATZ.concat(['Thorn Tischgestelle (Satz)']);
     const HIDE_LEGS_BY_SHAPE_LENGTH = {
       'oval': {
-        180: ['Thorn Tischgestelle (Satz)', 'Drone Tischbeine (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)', 'U Tischgestell (schmal) (Satz)', 'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Trapezium Tischgestell (Satz)', 'Stahlwangen Tischgestell (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)', 'Butterfly Tischbeine aus Eichenholz (Satz) (A)'],
-        200: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (M) (Satz)', 'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)']
+        180: ['Thorn Tischgestelle (Satz)', 'Drone Tischbeine (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)', 'U Tischgestell (schmal) (Satz)', 'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Trapezium Tischgestell (Satz)', 'Stahlwangen Tischgestell (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)', 'Butterfly Tischbeine aus Eichenholz (Satz) (A)', 'Butterfly Tischgestell (Satz)'],
+        200: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (M) (Satz)', 'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)', 'Butterfly Tischgestell (Satz)']
       },
       'danish-oval': {
-        180: ['Thorn Tischgestelle (Satz)', 'Drone Tischbeine (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)', 'U Tischgestell (schmal) (Satz)', 'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Trapezium Tischgestell (Satz)', 'Stahlwangen Tischgestell (Satz)', 'Stahlwangen Tischgestell (S) (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)', 'Butterfly Tischbeine aus Eichenholz (Satz) (A)', 'Halbrunde Tischbeine aus Eichenholz (Satz) (A)'],
-        200: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)', 'U Tischgestell (schmal) (Satz)', 'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Trapezium Tischgestell (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)'],
-        220: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (M) (Satz)']
+        180: ['Thorn Tischgestelle (Satz)', 'Drone Tischbeine (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)', 'U Tischgestell (schmal) (Satz)', 'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Trapezium Tischgestell (Satz)', 'Stahlwangen Tischgestell (Satz)', 'Stahlwangen Tischgestell (S) (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)', 'Butterfly Tischbeine aus Eichenholz (Satz) (A)', 'Halbrunde Tischbeine aus Eichenholz (Satz) (A)', 'Butterfly Tischgestell (Satz)'],
+        200: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)', 'U Tischgestell (schmal) (Satz)', 'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Trapezium Tischgestell (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)', 'Butterfly Tischgestell (Satz)'],
+        220: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (M) (Satz)', 'Butterfly Tischgestell (Satz)']
       },
       'organic': {
         // A/X have no internal mesh on Organisch — the external pair pokes past
         // the asymmetric rim at every size (audit 2026-07-11) → hidden everywhere.
-        200: ORGANIC_ALL.concat(['A Tischgestell (Satz)']),
+        // Prod overhang audit 2026-08-30 (headless click-through of every leg
+        // at every size, vertices vs tabletop hull): at 200cm the new metal
+        // legs poke past the asymmetric rim (Doppel V 5.0cm, Felix 2.4cm,
+        // Butterfly Satz 2.4cm) -> hidden at 200 only; clean from 220 up.
+        200: ORGANIC_ALL.concat(['A Tischgestell (Satz)', 'Doppel V-Tischgestell', 'Felix Tischgestell', 'Butterfly Tischgestell (Satz)']),
         220: ORGANIC_ALL.concat(['A Tischgestell (Satz)']),
         240: ORGANIC_ALL.concat(['A Tischgestell (Satz)']),
         260: ORGANIC_ALL.concat(['A Tischgestell (Satz)']),
@@ -5986,6 +5990,19 @@ class TableConfigurator {
       if (!legAddon && this.state.zwLegName) {
         const catLeg = CATALOG_ONLY_LEGS.find(c => c.title === this.state.zwLegName);
         if (catLeg) { legAddon = { variantId: catLeg.variantId, price: catLeg.price }; total += catLeg.price; }
+      }
+      // Union fallback (audit 2026-08-30): the grid is the UNION of all shapes'
+      // Tischgestell addons, but some shape products (e.g. Oval) don't carry
+      // every addon themselves. Without a variant the cart button blocks with
+      // "Bitte wähle: Tischgestell" even though the customer picked a leg.
+      // Resolve title → variant/price from any other shape's product instead
+      // (Shopify cart permalinks accept variants from any product).
+      if (!legAddon && this.state.zwLegName && ZW_PRODUCTS_DATA) {
+        for (const otherShape of Object.keys(ZW_PRODUCTS_DATA)) {
+          const a = ZW_PRODUCTS_DATA[otherShape]?.addons?.Tischgestell?.find(
+            x => x.title === this.state.zwLegName);
+          if (a) { legAddon = a; total += a.price; break; }
+        }
       }
       // Preserve any already-picked Behandlung variant. If none yet (URL-init
       // seeded behandlungTitle but user hasn't clicked a swatch), reverse-lookup
