@@ -5,7 +5,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=d271ce29';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=a349568e';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -145,6 +145,13 @@ const ZW_LEG_MODEL_MAP = {
   'Doppel V-Tischbein':                                 { name: 'Vedo',            isWood: false },
   'Felix Tischbein':                                    { name: 'Stative',         isWood: false },
   'Vario Tischbein':                                    { name: 'Thore',           isWood: false },
+  'Butterfly Tischgestell (Satz)':                      { name: 'Butterfly',       isWood: false },
+  // Addon-product titles (created 2026-08-30) — same 3D models as the
+  // standalone 'Tischbein' titles above.
+  'Aeris Tischgestell':                                 { name: 'Lara',            isWood: false },
+  'Vario Tischgestell':                                 { name: 'Thore',           isWood: false },
+  'Doppel V-Tischgestell':                              { name: 'Vedo',            isWood: false },
+  'Felix Tischgestell':                                 { name: 'Stative',         isWood: false },
   'Drone Tischbeine (Satz)':                            { name: 'Drone Tischbeine (Satz)',                    isWood: false },
   'U Tischgestell (schmal) (Satz)':                     { name: 'U Tischgestell (schmal) (Satz)',             isWood: false },
   'Stahlwangen Tischgestell (Satz)':                    { name: 'Stahlwangen Tischgestell (Satz)',            isWood: false },
@@ -190,7 +197,14 @@ const CATALOG_ONLY_LEGS = [
   // (Satz)" — only the cart variant + price come from the addon product.
   { title: 'Drone Tischbeine (Satz)',             variantId: '53548722028810', price: 18500 },
   { title: 'Stahlwangen Tischgestell (Satz)',     variantId: '44218834026762', price: 56000 },
-  { title: 'Stahlwangen Tischgestell (S) (Satz)', variantId: '44218853032202', price: 56000 }
+  { title: 'Stahlwangen Tischgestell (S) (Satz)', variantId: '44218853032202', price: 56000 },
+  // 5 addon products created 2026-08-30 (duplicated from Thorn, surcharge prices
+  // confirmed by owner). Metal counterparts of catalog legs missing from the grid.
+  { title: 'Aeris Tischgestell',            variantId: '53598108975370', price: 19500 },
+  { title: 'Butterfly Tischgestell (Satz)', variantId: '53598132175114', price: 17500 },
+  { title: 'Vario Tischgestell',            variantId: '53598115856650', price: 24500 },
+  { title: 'Doppel V-Tischgestell',         variantId: '53598118412554', price: 22500 },
+  { title: 'Felix Tischgestell',            variantId: '53598124540170', price: 22000 }
 ];
 
 
@@ -222,7 +236,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=d271ce29';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=a349568e';
 
 class TableConfigurator {
   constructor() {
@@ -4474,9 +4488,15 @@ class TableConfigurator {
         280: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (M) (Satz)', 'Butterfly Tischbeine aus Eichenholz (Satz) (A)', 'A Tischgestell (Satz)', 'X Tischgestell (Satz)'],
         300: ['Thorn Tischgestelle (Satz)', 'A Tischgestell (Satz)', 'X Tischgestell (Satz)']
       },
-      'bootsform': {
-        180: ['Butterfly Tischbeine aus Eichenholz (Satz) (A)']
-      }
+      'bootsform': (() => {
+        // Vario/Doppel V/Felix (Thore/Vedo/Stative) have no mesh inside
+        // Bootsform.glb (audit 2026-08-30) — hide their cards on every size.
+        const NO_MESH_ON_BOOTSFORM = ['Vario Tischgestell', 'Doppel V-Tischgestell', 'Felix Tischgestell'];
+        const m = {};
+        [180, 200, 220, 240, 260, 280, 300, 350, 400].forEach(l => { m[l] = NO_MESH_ON_BOOTSFORM.slice(); });
+        m[180].push('Butterfly Tischbeine aus Eichenholz (Satz) (A)');
+        return m;
+      })()
     };
     const hideList = HIDE_LEGS_BY_SHAPE_LENGTH[this.state.shape]?.[this.state.length] || [];
     if (hideList.length > 0) {
