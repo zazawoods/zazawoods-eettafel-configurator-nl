@@ -50,8 +50,12 @@ Danach `BUILD_VERSION` bumpen.
 
 - **GitHub:** `zazawoods/zazawoods-eettafel-configurator-nl`, Branch `main`.
 - **Railway:** Projekt `zazawoods-configurator-nl` (Service gleichen Namens),
-  Auto-Deploy bei Push auf `main`. Prod-URL: siehe `HANDOFF` (Railway-Domain),
-  eingebettet über `docs/eettafel-configurator-embed.liquid` im NL-Theme.
+  Auto-Deploy bei Push auf `main`. Service-Variable `PORT=3000` ist Pflicht
+  (ohne sie antwortet Railway mit 502).
+- **Prod-URL:** https://zazawoods-eettafel-configurator-nl-production.up.railway.app
+  — eingebettet über `docs/eettafel-configurator-embed.liquid` im NL-Theme
+  (Seite `/pages/eettafel-configurator`). Domain nach dem Theme-Einbau NICHT
+  mehr ändern.
 - `BUILD_VERSION` steht in **7 Stellen** (eine mehr als DE — der Import von
   `locale.js` in `app.js`): `js/config.js:7`, `index.html` (styles.css?v=,
   modulepreload config.js?v=, app.js?v=), `app.js` (import config.js?v=,
