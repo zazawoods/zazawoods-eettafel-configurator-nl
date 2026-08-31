@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="nl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -25,22 +25,22 @@
       }, { passive: false });
     })();
   </script>
-  <title>Esstisch-Konfigurator — Zaza Woods</title>
+  <title>Eettafel-configurator — Zaza Woods</title>
   <base href="/configurator/">
   <script>
     // Only allow loading from zazawoods.de/.nl or direct access for development
     (function() {
-      const allowed = ['zazawoods.de', 'www.zazawoods.de', 'zazawoods.nl', 'www.zazawoods.nl', 'localhost', '127.0.0.1', 'zazawoods-esstisch-konfigurator-production.up.railway.app'];
+      const allowed = ['zazawoods.de', 'www.zazawoods.de', 'zazawoods.nl', 'www.zazawoods.nl', 'localhost', '127.0.0.1', 'up.railway.app'];
       const host = window.location.hostname;
       const parentHost = window !== window.top ? document.referrer && new URL(document.referrer).hostname : host;
       const isDirect = window === window.top;
       const isAllowed = allowed.some(d => host === d || host.endsWith('.' + d) || parentHost === d || parentHost.endsWith('.' + d));
       if (!isDirect && !isAllowed) {
-        document.documentElement.innerHTML = '<body style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;"><p>Nicht erlaubt.</p></body>';
+        document.documentElement.innerHTML = '<body style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;"><p>Niet toegestaan.</p></body>';
       }
     })();
   </script>
-  <link rel="stylesheet" href="css/styles.css?v=2da8f153">
+  <link rel="stylesheet" href="css/styles.css?v=7f3e9c01">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -58,7 +58,7 @@
   </script>
   <!-- Warm the module graph in parallel with app.js instead of discovering it one hop later
        (importmap must stay above these — a modulepreload before the map would disable it). -->
-  <link rel="modulepreload" href="js/config.js?v=2da8f153">
+  <link rel="modulepreload" href="js/config.js?v=7f3e9c01">
   <!-- Mobile perf (2026-08-30): start downloading the initial shape's GLB in
        parallel with the three.js/app module graph instead of after it.
        app.js consumes window.__glbPrefetch in loadGLTF(). -->
@@ -95,7 +95,7 @@
   <div id="loader" class="loader">
     <div class="loader-inner">
       <div class="spinner"></div>
-      <p id="loader-text">Wir bauen Ihren Tisch auf… 0%</p>
+      <p id="loader-text">We bouwen uw tafel op… 0%</p>
     </div>
   </div>
   <div class="configurator">
@@ -105,13 +105,13 @@
       <canvas id="canvas3d"></canvas>
       <div id="mini-loader" class="mini-loader hidden">
         <div class="mini-spinner"></div>
-        <span id="mini-loader-text">Tisch wird geladen…</span>
+        <span id="mini-loader-text">Tafel wordt geladen…</span>
       </div>
       <div class="viewer-controls-right">
-        <button id="btn-reset-camera" class="viewer-btn" title="Kamera zurücksetzen">
+        <button id="btn-reset-camera" class="viewer-btn" title="Camera terugzetten">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
         </button>
-        <button id="btn-ar" class="viewer-btn" title="In Ihrem Raum ansehen">
+        <button id="btn-ar" class="viewer-btn" title="In uw ruimte bekijken">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 2L2 7l10 5 10-5-10-5z"/>
             <path d="M2 17l10 5 10-5"/>
@@ -121,10 +121,10 @@
       </div>
 
       <div class="viewer-controls">
-        <button id="btn-save" class="viewer-btn" title="Konfiguration speichern">
+        <button id="btn-save" class="viewer-btn" title="Configuratie opslaan">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         </button>
-        <button id="btn-share" class="viewer-btn" title="Konfiguration teilen">
+        <button id="btn-share" class="viewer-btn" title="Configuratie delen">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
         </button>
       </div>
@@ -146,11 +146,11 @@
             <path d="M2 12l10 5 10-5"/>
           </svg>
         </div>
-        <h3>In Ihrem Raum ansehen</h3>
-        <p>Scannen Sie den QR-Code mit Ihrem Telefon, um den Tisch per AR in Ihren Raum zu stellen.</p>
-        <p style="font-size:11px;color:#aaa;margin:-12px 0 16px;">Nur für iPhone verfügbar</p>
+        <h3>In uw ruimte bekijken</h3>
+        <p>Scan de QR-code met uw telefoon om de tafel via AR in uw ruimte te plaatsen.</p>
+        <p style="font-size:11px;color:#aaa;margin:-12px 0 16px;">Alleen beschikbaar voor iPhone</p>
         <div id="ar-qr" class="ar-qr"></div>
-        <p class="ar-popup-hint">Oder öffnen Sie den Konfigurator auf Ihrem Telefon und tippen Sie auf den AR-Button.</p>
+        <p class="ar-popup-hint">Of open de configurator op uw telefoon en tik op de AR-knop.</p>
       </div>
     </div>
 
@@ -161,7 +161,7 @@
     <div id="share-popup" class="ar-popup hidden">
       <div class="ar-popup-inner" style="max-width:360px;">
         <button id="share-popup-close" class="ar-popup-close">&times;</button>
-        <h3>Konfiguration teilen</h3>
+        <h3>Configuratie delen</h3>
         <div class="share-options">
           <button class="share-opt" data-channel="whatsapp">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -169,11 +169,11 @@
           </button>
           <button class="share-opt" data-channel="email">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            <span>E-Mail</span>
+            <span>E-mail</span>
           </button>
           <button class="share-opt" data-channel="copy">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            <span>Link kopieren</span>
+            <span>Link kopiëren</span>
           </button>
         </div>
       </div>
@@ -183,9 +183,9 @@
     <div id="saved-popup" class="ar-popup hidden">
       <div class="ar-popup-inner" style="max-width:440px;">
         <button id="saved-popup-close" class="ar-popup-close">&times;</button>
-        <h3>Gespeicherte Konfigurationen</h3>
+        <h3>Opgeslagen configuraties</h3>
         <div id="saved-list" style="max-height:360px;overflow-y:auto;margin-top:16px;"></div>
-        <p id="saved-empty" style="font-size:13px;color:#999;">Noch keine gespeicherten Konfigurationen.</p>
+        <p id="saved-empty" style="font-size:13px;color:#999;">Nog geen opgeslagen configuraties.</p>
       </div>
     </div>
 
@@ -201,8 +201,8 @@
               <svg viewBox="0 0 80 50" width="28" height="18"><rect x="10" y="10" width="60" height="30" rx="15" fill="none" stroke="currentColor" stroke-width="2"/></svg>
             </div>
             <div class="section-label">
-              <span class="section-title">Form</span>
-              <span class="section-value" id="val-shape">Rechteck</span>
+              <span class="section-title">Vorm</span>
+              <span class="section-value" id="val-shape">Rechthoek</span>
             </div>
             <svg class="section-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -223,8 +223,8 @@
               <svg viewBox="0 0 28 18" width="28" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5 Q 7 3 14 5 T 26 5"/><path d="M2 9 Q 7 7 14 9 T 26 9"/><path d="M2 13 Q 7 11 14 13 T 26 13"/></svg>
             </div>
             <div class="section-label">
-              <span class="section-title">Behandlung</span>
-              <span class="section-value" id="val-material">Eiche &middot; Natural</span>
+              <span class="section-title">Behandeling</span>
+              <span class="section-value" id="val-material">Eiken &middot; Natural</span>
             </div>
             <svg class="section-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -232,11 +232,11 @@
             <div class="material-type-toggle" id="material-type-toggle" style="display:none">
               <button class="mat-type-swatch active" data-type="oak">
                 <div class="mat-swatch-img" id="oak-swatch-img"></div>
-                <span>Eiche</span>
+                <span>Eiken</span>
               </button>
               <button class="mat-type-swatch" data-type="ceramic">
                 <div class="mat-swatch-img" id="ceramic-swatch-img"></div>
-                <span>Keramik</span>
+                <span>Keramiek</span>
               </button>
             </div>
             <div class="color-swatches" id="color-swatches">
@@ -252,7 +252,7 @@
               <svg width="28" height="18" viewBox="0 0 28 18" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="2" y1="9" x2="26" y2="9"/><line x1="2" y1="5" x2="2" y2="13"/><line x1="26" y1="5" x2="26" y2="13"/></svg>
             </div>
             <div class="section-label">
-              <span class="section-title">Abmessungen</span>
+              <span class="section-title">Afmetingen</span>
               <span class="section-value" id="val-dimensions">200 × 100 × 76 cm</span>
             </div>
             <svg class="section-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
@@ -265,8 +265,8 @@
               <!-- Populated by JS: ceramic thickness buttons -->
             </div>
             <div class="dimension-info">
-              <span>Höhe: <strong>76 cm</strong></span>
-              <span>Plattenstärke: <strong id="thickness-value">4 cm</strong></span>
+              <span>Hoogte: <strong>76 cm</strong></span>
+              <span>Bladdikte: <strong id="thickness-value">4 cm</strong></span>
             </div>
           </div>
         </div>
@@ -278,8 +278,8 @@
               <svg viewBox="0 0 40 28" width="28" height="18"><rect x="4" y="4" width="32" height="20" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
             </div>
             <div class="section-label">
-              <span class="section-title">Kantenbearbeitung</span>
-              <span class="section-value" id="val-edge">Gerade Kante</span>
+              <span class="section-title">Randafwerking</span>
+              <span class="section-value" id="val-edge">Rechte kant</span>
             </div>
             <svg class="section-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -294,11 +294,11 @@
         <div class="section" data-section="legs">
           <button class="section-header">
             <div class="section-icon" id="leg-section-icon">
-              <img src="Swatches/tischgestell-section-icon.png" alt="Tischgestell"/>
+              <img src="Swatches/tischgestell-section-icon.png" alt="Onderstel"/>
             </div>
             <div class="section-label">
-              <span class="section-title">Tischgestell</span>
-              <span class="section-value" id="val-legs">Wird geladen…</span>
+              <span class="section-title">Onderstel</span>
+              <span class="section-value" id="val-legs">Wordt geladen…</span>
             </div>
             <svg class="section-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -307,7 +307,7 @@
               <!-- Populated dynamically from GLB -->
             </div>
             <div class="leg-powder-section" id="leg-powder-section" style="display:none">
-              <p class="subsection-label">Pulverbeschichtung (Metallgestell)</p>
+              <p class="subsection-label">Poedercoating (metalen onderstel)</p>
               <div class="color-swatches" id="powder-swatches">
                 <!-- Populated by JS -->
               </div>
@@ -320,19 +320,19 @@
       <!-- Summary footer -->
       <div class="sidebar-footer">
         <div class="summary">
-          <span class="summary-label">Übersicht</span>
-          <div class="summary-line" id="summary-text">Ihre Konfiguration ist bereit.</div>
+          <span class="summary-label">Overzicht</span>
+          <div class="summary-line" id="summary-text">Uw configuratie is klaar.</div>
         </div>
         <div class="price-divider"></div>
         <div class="price-bar">
-          <span class="price-label">Gesamtbetrag: <small style="display:block;font-weight:500;color:var(--color-accent);font-size:10.5px;margin-top:1px;">(inkl. kostenlose Lieferung)</small></span>
-          <span id="total-price" class="price-loading">Preis wird berechnet…</span>
+          <span class="price-label">Totaalbedrag: <small style="display:block;font-weight:500;color:var(--color-accent);font-size:10.5px;margin-top:1px;">(incl. gratis bezorging)</small></span>
+          <span id="total-price" class="price-loading">Prijs wordt berekend…</span>
         </div>
-        <div class="free-shipping" style="display:none">Kostenlose Lieferung &amp; Montage</div>
+        <div class="free-shipping" style="display:none">Gratis bezorging &amp; montage</div>
         <div class="mobile-price-row">
           <div class="mobile-price-info">
             <span id="total-price-mobile" class="price-loading">€ ...</span>
-            <span class="mobile-shipping" style="display:none">Kostenlose Lieferung<br>&amp; Montage</span>
+            <span class="mobile-shipping" style="display:none">Gratis bezorging<br>&amp; montage</span>
           </div>
           <button class="cta-button cta-mobile" id="btn-add-to-cart-mobile">
             Bestellen
@@ -340,7 +340,7 @@
           </button>
         </div>
         <button class="cta-button cta-desktop" id="btn-add-to-cart">
-          In den Warenkorb
+          In winkelwagen
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
         </button>
       </div>
@@ -355,6 +355,6 @@
     Konfigurieren
   </button>
 
-  <script type="module" src="js/app.js?v=2da8f153"></script>
+  <script type="module" src="js/app.js?v=7f3e9c01"></script>
 </body>
 </html>
