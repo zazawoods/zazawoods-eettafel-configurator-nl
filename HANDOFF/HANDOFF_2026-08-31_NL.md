@@ -49,10 +49,8 @@ dessen HANDOFF-Dateien erklären die Historie (Beine, Audits, Mobile-Perf).
      `eettafel-configurator`, Template `page.eettafel-configurator`, sichtbar)
      → **https://zazawoods.nl/pages/eettafel-configurator** lädt das Railway-
      iframe, URL-Parameter (`?shape=oval&length=240`) werden durchgereicht.
-   - NICHT eingebaut (Entscheidung Inhaber, weil es Produkt-Template/`theme.liquid`
-     verändert): Button-Snippet auf den Tafel-Produktseiten
-     (`docs/eettafel-configurator-button.liquid`) und Marquee-Ausblenden
-     (`docs/hide-marquee-on-configurator.liquid`).
+   - Button-Snippet und Marquee-Ausblenden: zunächst nicht eingebaut, seit
+     Punkt 10 (Freigabe Inhaber) über den Theme-Editor drin.
    - Praxis-Tipps Theme-Code-Editor (VS-Code-Web im Shopify-Admin): Datei
      anlegen per Rechtsklick auf Ordner → „New File…" (Pfad wie
      `templates/x.json` geht auch vom Root aus). Der Monaco-Editor sitzt in
@@ -117,6 +115,34 @@ dessen HANDOFF-Dateien erklären die Historie (Beine, Audits, Mobile-Perf).
      Shop-Preis + Addon-Preise): alle 7 Formen, alle Karten, alle Größen PASS,
      Konsole leer — lokal und auf Railway.
 
+10. **Theme: Button + Marquee (Freigabe Inhaber, 2026-08-31)** — beides ohne
+    Code-Dateien im Theme, nur über den Theme-Editor (= JSON-Templates):
+    - **„Configurator openen"-Button** auf den Tafel-Produktseiten: Block
+      „Custom Liquid" in der Sektion „Product information" des Templates
+      „Default product" (`templates/product.json`), direkt unter „Buy buttons".
+      Inhalt = `docs/eettafel-configurator-button.liquid`. Da die NL-Tafeln kein
+      eigenes Produkt-Template haben (Suffix `tafels` existiert im Theme nicht),
+      entscheidet eine **Handle-Liste** im Snippet (= Schlüssel von
+      `zw-products-by-handle.json`, 11 Tafeln) — auf allen anderen Produkten
+      rendert der Block nichts. Der Link trägt Form + Handle + gewählte Maße
+      (auch „Breedte" beim Halfrond) + Behandeling/Randafwerking/Onderstel-Karte.
+      Neue Tafel → Handle in der Liste ergänzen (Theme-Editor → Block → Code).
+    - **Marquee + Footer ausblenden** auf `/pages/eettafel-configurator`: Sektion
+      „Custom Liquid" (Padding 0/0) im Template `page.eettafel-configurator.json`,
+      Inhalt = `docs/hide-marquee-on-configurator.liquid`. Countdown-Balken
+      bleibt.
+    - Theme-Editor-Stolperfallen: das Liquid-Textfeld sitzt in einem cross-origin
+      iframe → Inhalt per Zwischenablage (⌘A/⌘V) einfügen; Block-Reihenfolge
+      per Drag&Drop in der linken Liste; läuft die Admin-Session ab, kommt
+      „Request unsuccessful: 401" bzw. „There was a problem with your request"
+      → in einem zweiten Tab admin.shopify.com öffnen (Konto Nisar Derbaj), dann
+      erneut Save — der Puffer bleibt erhalten, eine Reihenfolge-Änderung aber
+      nicht (Reihenfolge prüfen, ggf. wiederholen).
+    - Live geprüft: zazawoods.nl/products/halfronde-… zeigt den Button mit
+      `?shape=halfrond&product=…&length=180&width=90`; Tafelpoten-Produkte ohne
+      Button; `/pages/eettafel-configurator?shape=halfrond&length=350` → 7 Formen,
+      Halfrond 350×100 = € 3.125, Marquee/Footer weg.
+
 ## Offen / Fragen an den Inhaber
 
 - ~~Fehlende NL-Addon-Produkte~~ → erledigt (Punkt 9).
@@ -131,7 +157,6 @@ dessen HANDOFF-Dateien erklären die Historie (Beine, Audits, Mobile-Perf).
   weiterhin Entwürfe und unangetastet.
 - **danish-oval**: Sergio als Hauptprodukt gewählt (älter); Andreas ist
   preisgleich. Bei Bedarf `shopifyHandle` in `config.js` tauschen.
-- **Button auf den Tafel-Produktseiten** + Marquee-Ausblenden (siehe Punkt 7)
-  — Snippets liegen in `docs/`, Einbau erst nach Freigabe.
+- ~~Button auf den Tafel-Produktseiten + Marquee-Ausblenden~~ → erledigt (Punkt 10).
 - Die Seite `/pages/eettafel-configurator` ist öffentlich, aber nirgends
   verlinkt (Menü/Produktseiten) — Verlinkung ist Sache des Inhabers.
