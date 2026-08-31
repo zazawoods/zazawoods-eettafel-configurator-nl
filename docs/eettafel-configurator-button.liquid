@@ -1,0 +1,257 @@
+{%- assign suffix = template.suffix | downcase -%}
+{%- assign tname  = template.name   | downcase -%}
+{%- assign show = false -%}
+{%- if suffix == 'eettafel-configurator' or tname == 'eettafel-configurator' or suffix == 'esstisch-konfigurator' or tname == 'esstisch-konfigurator' -%}
+  {%- assign show = true -%}
+{%- endif -%}
+
+{%- if show -%}
+
+{%- assign init_shape  = 'rectangle' -%}
+{%- assign init_length = '' -%}
+{%- assign init_width  = '' -%}
+
+{%- assign h = product.handle | downcase -%}
+{%- if h == 'rechthoekige-eettafel-massief-eikenhout' -%}
+  {%- assign init_shape = 'rectangle' -%}
+{%- elsif h == 'ovale-eettafel-danilo-uit-massief-eikenhout-met-een-verjongde-rand' -%}
+  {%- assign init_shape = 'oval' -%}
+{%- elsif h == 'massief-eiken-tafel-ovaal' -%}
+  {%- assign init_shape = 'danish-oval' -%}
+{%- elsif h == 'massief-eiken-tafel-deens-ovaal-andreas-met-verjongde-rand' -%}
+  {%- assign init_shape = 'danish-oval' -%}
+{%- elsif h == 'bootsform-esstisch-sergio-aus-massivem-eichenholz-1' -%}
+  {%- assign init_shape = 'bootsform' -%}
+{%- elsif h == 'runder-esstisch-romano-aus-massiver-eichenholz' -%}
+  {%- assign init_shape = 'round' -%}
+{%- else -%}
+  {%- comment -%}
+    Fallback for products not in the explicit map (colour/edge variants of the
+    same table lines): infer the shape from the handle so e.g. an oval variant
+    never opens the configurator as a rectangle. NL shop has no organic /
+    half-round table products (yet) — those shapes are not in the NL build.
+  {%- endcomment -%}
+  {%- if h contains 'deens-ovaal' or h contains 'deens-ovale' or h contains 'danisch-oval' -%}
+    {%- assign init_shape = 'danish-oval' -%}
+  {%- elsif h contains 'bootsform' or h contains 'stadionvorm' -%}
+    {%- assign init_shape = 'bootsform' -%}
+  {%- elsif h contains 'ovaal' or h contains 'ovale' or h contains 'oval' -%}
+    {%- assign init_shape = 'oval' -%}
+  {%- elsif h contains 'ronde' or h contains 'rond-' or h contains 'runder' -%}
+    {%- assign init_shape = 'round' -%}
+  {%- endif -%}
+{%- endif -%}
+
+{%- comment -%}
+  Colour-variant products carry the Behandlung in the product title
+  (e.g. Esstisch "Deep Black"). Pre-select it in the configurator.
+{%- endcomment -%}
+{%- assign init_behandlung = '' -%}
+{%- assign tl = product.title | downcase -%}
+{%- if tl contains 'deep black' -%}{%- assign init_behandlung = 'Deep Black' -%}
+{%- elsif tl contains 'white 5' -%}{%- assign init_behandlung = 'White 5%' -%}
+{%- elsif tl contains 'chocolate' -%}{%- assign init_behandlung = 'Chocolate' -%}
+{%- elsif tl contains 'cortado' -%}{%- assign init_behandlung = 'Cortado' -%}
+{%- elsif tl contains 'shell grey' -%}{%- assign init_behandlung = 'Shell Grey' -%}
+{%- elsif tl contains 'yakisugi' -%}{%- assign init_behandlung = 'Black' -%}
+{%- elsif tl contains 'macchiato' -%}{%- assign init_behandlung = 'Macchiato' -%}
+{%- elsif tl contains 'walnut' -%}{%- assign init_behandlung = 'Walnut' -%}
+{%- endif -%}
+
+{%- for opt in product.options_with_values -%}
+  {%- assign oname = opt.name | downcase | strip -%}
+  {%- assign val   = opt.selected_value | default: '' | downcase | strip -%}
+  {%- if val == '' -%}{%- continue -%}{%- endif -%}
+  {%- if oname contains 'maat' or oname contains 'afmeting' or oname contains 'lengte' or oname contains 'diameter'
+        or oname contains 'maß' or oname contains 'länge' or oname contains 'lange'
+        or oname contains 'durchmesser' or oname contains 'size' or oname contains 'length' -%}
+    {%- assign digits = val | replace: 'cm', ' ' | replace: 'x', ' ' | replace: '×', ' ' -%}
+    {%- assign parts = digits | split: ' ' -%}
+    {%- for p in parts -%}
+      {%- assign n = p | strip | times: 1 -%}
+      {%- comment -%} numbers < 40 are the plate thickness (4cm) — skip {%- endcomment -%}
+      {%- if n >= 40 and init_length == '' -%}
+        {%- assign init_length = n -%}
+      {%- elsif n >= 40 and init_length != '' and init_width == '' -%}
+        {%- assign init_width = n -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- assign target_url = 'https://zazawoods.nl/pages/eettafel-configurator?shape=' | append: init_shape | append: '&product=' | append: product.handle -%}
+{%- if init_length != '' -%}
+  {%- assign target_url = target_url | append: '&length=' | append: init_length -%}
+{%- endif -%}
+{%- if init_width != '' -%}
+  {%- assign target_url = target_url | append: '&width=' | append: init_width -%}
+{%- endif -%}
+{%- if init_behandlung != '' -%}
+  {%- assign target_url = target_url | append: '&behandlung=' | append: init_behandlung | url_encode -%}
+{%- endif -%}
+
+<a href="{{ target_url }}"
+   class="zw-konfig-btn"
+   id="zw-esstisch-konfig-btn-{{ product.id }}"
+   data-zw-esstisch-konfig="1"
+   target="_blank"
+   rel="noopener"
+   aria-label="Configurator openen">
+  <span class="zw-konfig-btn__ic" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="7" height="7" rx="1"/>
+      <rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/>
+      <rect x="14" y="14" width="7" height="7" rx="1"/>
+    </svg>
+  </span>
+  <span class="zw-konfig-btn__t">Configurator openen</span>
+</a>
+
+<style>
+  .zw-konfig-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 10px; width: 100%;
+    height: 47px; min-height: 47px;
+    padding: 0 30px; margin: 16px 0;
+    background: #577476; color: #fff;
+    font-family: 'Switzer', -apple-system, "Segoe UI", Arial, sans-serif;
+    font-size: 15px; font-weight: 400; line-height: 1; letter-spacing: 0;
+    text-transform: none; text-decoration: none;
+    border: 0; border-radius: 5px; box-shadow: none;
+    cursor: pointer; transition: background .15s, transform .08s;
+    box-sizing: border-box;
+  }
+  .zw-konfig-btn:hover  { background: #486264; }
+  .zw-konfig-btn:active { transform: scale(.99); }
+  .zw-konfig-btn:focus-visible { outline: 2px solid #577476; outline-offset: 2px; }
+  .zw-konfig-btn__ic { display: inline-flex; width: 18px; height: 18px; flex: none; }
+  .zw-konfig-btn__ic svg { width: 100%; height: 100%; }
+  .zw-konfig-btn__t { white-space: nowrap; }
+  @media (max-width: 749px) {
+    .zw-konfig-btn { height: 44px; min-height: 44px; font-size: 14.5px; margin: 12px 0; }
+  }
+</style>
+
+<script>
+(function () {
+  var btn = document.getElementById('zw-esstisch-konfig-btn-{{ product.id }}');
+  if (!btn) return;
+  var INIT_SHAPE = {{ init_shape | json }};
+  var INIT_BEHANDLUNG = {{ init_behandlung | json }};
+
+  function firstInt(s) { var m = (s || '').match(/\d+/); return m ? parseInt(m[0], 10) : null; }
+  function readSelectedOptions() {
+    var picked = {};
+    document.querySelectorAll('variant-selects, variant-radios').forEach(function (p) {
+      p.querySelectorAll('select').forEach(function (s) {
+        var m = (s.name || '').match(/options\[(.+)\]/);
+        if (m) picked[m[1]] = s.value;
+      });
+      p.querySelectorAll('input[type="radio"]:checked').forEach(function (r) {
+        var m = (r.name || '').match(/options\[(.+)\]/);
+        if (m) picked[m[1]] = r.value;
+      });
+    });
+    document.querySelectorAll('input[name^="options["], select[name^="options["]').forEach(function (el) {
+      var m = (el.name || '').match(/options\[(.+)\]/);
+      if (!m) return;
+      if (picked[m[1]]) return;
+      if (el.tagName === 'SELECT') picked[m[1]] = el.value;
+      else if (el.type === 'radio' && el.checked) picked[m[1]] = el.value;
+      else if (el.type !== 'radio' && el.type !== 'checkbox') picked[m[1]] = el.value;
+    });
+    return picked;
+  }
+  function refresh() {
+    try {
+      var picked = readSelectedOptions();
+      var length = null, width = null, color = null, edge = null;
+      Object.keys(picked).forEach(function (k) {
+        var v = picked[k] || '';
+        if (/maat|afmeting|lengte|diameter|maß|länge|lange|durchmesser|size|length/i.test(k)) {
+          // e.g. "240cm x 100cm x 4cm" — numbers < 40 are the plate thickness
+          var nums = (v.match(/\d+/g) || []).map(Number).filter(function (n) { return n >= 40; });
+          if (nums[0]) length = nums[0];
+          if (nums[1]) width = nums[1];
+        } else if (/behandeling|kleur|behandlung|farbe|colou?r/i.test(k)) {
+          color = v;
+        } else if (/rand|kant|kante|edge/i.test(k)) {
+          edge = v;
+        }
+      });
+
+      // Selected ADDON cards (Behandeling / Randafwerking / Onderstel):
+      // a chosen addon is marked by class "added" on the card's submit button;
+      // the addon title sits in the hidden [name=title] input.
+      var behandlung = null, kante = null, leg = null;
+      document.querySelectorAll('.addons-card').forEach(function (card) {
+        if (!card.querySelector('form [type=submit].added')) return;
+        var tEl = card.querySelector('form [name=title]');
+        var title = tEl ? tEl.value : ((card.querySelector('.addons-product-title') || {}).textContent || '');
+        title = (title || '').trim();
+        if (!title) return;
+        // Which section does this card belong to? Walk up until a container
+        // that has the .addons-title heading.
+        var p = card.parentElement, section = '';
+        while (p && p !== document.body) {
+          var h = p.querySelector('.addons-title');
+          if (h) { section = (h.textContent || '').trim().toLowerCase(); break; }
+          p = p.parentElement;
+        }
+        if (section.indexOf('behandeling') >= 0 || section.indexOf('behandlung') >= 0) behandlung = title;
+        else if (section.indexOf('rand') >= 0 || section.indexOf('kant') >= 0) kante = title;
+        else if (section.indexOf('onderstel') >= 0 || section.indexOf('gestell') >= 0) leg = title;
+      });
+
+      var url = 'https://zazawoods.nl/pages/eettafel-configurator?shape=' + encodeURIComponent(INIT_SHAPE);
+      url += '&product=' + encodeURIComponent({{ product.handle | json }});
+      if (length) url += '&length=' + length;
+      if (width)  url += '&width=' + width;
+      if (behandlung) url += '&behandlung=' + encodeURIComponent(behandlung);
+      else if (color) url += '&color=' + encodeURIComponent(color);
+      else if (INIT_BEHANDLUNG) url += '&behandlung=' + encodeURIComponent(INIT_BEHANDLUNG);
+      if (kante) url += '&edge=' + encodeURIComponent(kante);
+      else if (edge) url += '&edge=' + encodeURIComponent(edge);
+      if (leg) url += '&leg=' + encodeURIComponent(leg);
+      btn.setAttribute('href', url);
+    } catch (e) {}
+  }
+  document.addEventListener('change', function (ev) {
+    var t = ev.target; if (!t) return;
+    var name = t.name || '';
+    var isOpt = name === 'id' || name.indexOf('options[') === 0;
+    var inPicker = t.closest && t.closest('variant-selects, variant-radios');
+    if (isOpt || inPicker) setTimeout(refresh, 30);
+  }, true);
+  ['variant:change','variantChange','product:variantChange','on:variant:change'].forEach(function (ev) {
+    document.addEventListener(ev, function () { setTimeout(refresh, 30); }, true);
+  });
+  setTimeout(refresh, 200);
+  setTimeout(refresh, 1200);
+
+  // Bulletproof: re-build the URL synchronously when the user clicks.
+  // This catches the case where someone changes Maße and immediately clicks
+  // before the 'change' event has had time to fire.
+  // Addon cards mark selection asynchronously (AJAX) — refresh shortly after
+  document.addEventListener('click', function (ev) {
+    if (ev.target && ev.target.closest && ev.target.closest('.addons-card')) {
+      setTimeout(refresh, 400);
+      setTimeout(refresh, 1200);
+    }
+  }, true);
+  btn.addEventListener('mousedown', refresh, true);
+  btn.addEventListener('touchstart', refresh, { capture: true, passive: true });
+  btn.addEventListener('click', refresh, true);
+
+  // Observe DOM mutations (some themes swap variant pickers entirely)
+  if ('MutationObserver' in window) {
+    var mo = new MutationObserver(function () { refresh(); });
+    document.querySelectorAll('variant-selects, variant-radios, [data-product-form]').forEach(function (el) {
+      mo.observe(el, { subtree: true, attributes: true, attributeFilter: ['value','selected','checked'] });
+    });
+  }
+})();
+</script>
+
+{%- endif -%}
