@@ -38,6 +38,30 @@ dessen HANDOFF-Dateien erklären die Historie (Beine, Audits, Mobile-Perf).
    Domain **https://zazawoods-eettafel-configurator-nl-production.up.railway.app**.
    Build `8a4c2d17` live.
 
+7. **Theme-Einbau im NL-Shop (Store `zaza-woods`, Theme „codixel-update",
+   ID 186248593748)** — erledigt, ohne Änderung an bestehenden Theme-Dateien:
+   - `sections/eettafel-configurator-embed.liquid` = Inhalt von
+     `docs/eettafel-configurator-embed.liquid` (Schema-Labels niederländisch).
+   - `templates/page.eettafel-configurator.json` = nur diese Sektion
+     (`{"sections":{"main":{"type":"eettafel-configurator-embed","settings":{}}},"order":["main"]}`).
+   - Seite „Eettafel configurator" (ID 712847130964, Handle
+     `eettafel-configurator`, Template `page.eettafel-configurator`, sichtbar)
+     → **https://zazawoods.nl/pages/eettafel-configurator** lädt das Railway-
+     iframe, URL-Parameter (`?shape=oval&length=240`) werden durchgereicht.
+   - NICHT eingebaut (Entscheidung Inhaber, weil es Produkt-Template/`theme.liquid`
+     verändert): Button-Snippet auf den Tafel-Produktseiten
+     (`docs/eettafel-configurator-button.liquid`) und Marquee-Ausblenden
+     (`docs/hide-marquee-on-configurator.liquid`).
+   - Praxis-Tipps Theme-Code-Editor (VS-Code-Web im Shopify-Admin): Datei
+     anlegen per Rechtsklick auf Ordner → „New File…" (Pfad wie
+     `templates/x.json` geht auch vom Root aus). Der Monaco-Editor sitzt in
+     einem cross-origin-iframe → Inhalt nicht per JS injizieren, sondern mit
+     ⌘A/⌘V aus der Zwischenablage einfügen (Tippen würde Auto-Close/Indent
+     auslösen). Speichern schlägt mit „FileSaveError … 401" fehl, wenn die
+     Admin-Session gerade abgelaufen ist → Editor-URL neu laden (Konto
+     Nisar Derbaj wählen), der ungespeicherte Puffer bleibt erhalten, dann
+     erneut speichern.
+
 ## Offen / Fragen an den Inhaber
 
 - **Fehlende NL-Addon-Produkte** (im DE-Shop vorhanden, hier nicht): Drone
@@ -48,5 +72,7 @@ dessen HANDOFF-Dateien erklären die Historie (Beine, Audits, Mobile-Perf).
 - **Organische / halbrunde Tafel** gibt es im NL-Shop nicht → Formen fehlen.
 - **danish-oval**: Sergio als Hauptprodukt gewählt (älter); Andreas ist
   preisgleich. Bei Bedarf `shopifyHandle` in `config.js` tauschen.
-- **Theme-Einbau im NL-Shop** (Seite anlegen, Sektion + Button-Snippet aus
-  `docs/` einbauen, `cfg_base` auf die Railway-Domain setzen) — siehe README.
+- **Button auf den Tafel-Produktseiten** + Marquee-Ausblenden (siehe Punkt 7)
+  — Snippets liegen in `docs/`, Einbau erst nach Freigabe.
+- Die Seite `/pages/eettafel-configurator` ist öffentlich, aber nirgends
+  verlinkt (Menü/Produktseiten) — Verlinkung ist Sache des Inhabers.
