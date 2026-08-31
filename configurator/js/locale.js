@@ -50,7 +50,7 @@ export const TITLE_TO_CANONICAL = {
   'Ronde houten zuilen van eikenhout (set) (A)':        'Runde Holzsäule aus Eichenholz (Satz) (A)',
   // Not yet sold as addon in the NL shop — mapped so they work as soon as the
   // NL products exist (titles are the ones the NL shop would use).
-  'Konische houten zuil van stokhout, eiken':           'Konische Holzsäule aus Stäbchenholz, Eiche',
+  'Konische houten zuil van eikenhout':                 'Konische Holzsäule aus Eichenholz',
   'Drone tafelpoten (set)':                             'Drone Tischbeine (Satz)',
   'Aeris Tafelonderstel':                               'Aeris Tischgestell',
   'Butterfly Tafelonderstel (set)':                     'Butterfly Tischgestell (Satz)',

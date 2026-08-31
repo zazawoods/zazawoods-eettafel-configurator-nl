@@ -5,9 +5,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=d5a07f31';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=f1c2d8e4';
 // NL locale layer: canonical (German) titles internally, Dutch labels via L()/T().
-import { L, T, SHOP_URL, LOCALE, canonicalizeProducts, canonicalTitle } from './locale.js?v=d5a07f31';
+import { L, T, SHOP_URL, LOCALE, canonicalizeProducts, canonicalTitle } from './locale.js?v=f1c2d8e4';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -194,7 +194,7 @@ const EXTERNAL_LEG_FILES = {
   'Ovale Holzsäule aus Stäbchenholz, Eiche':          'Ovale Holzsaeule Staebchenholz.glb',
   // Konische Holzsäule — the mesh that hid inside Bootsform.glb as 'Fluted';
   // now a leg of its own on all shapes (owner request 2026-08-30).
-  'Konische Holzsäule aus Stäbchenholz, Eiche':       'Konische Holzsaeule.glb',
+  'Konische Holzsäule aus Eichenholz':       'Konische Holzsaeule.glb',
 };
 
 // Persistent cache of loaded external leg gltf.scene clones — reused across shape switches.
@@ -207,7 +207,7 @@ const EXTERNAL_LEG_CACHE = new Map();
 // the equivalent addon products, add them here with the NL variant IDs and
 // surcharge prices (title = canonical German title, see locale.js LABELS for
 // the Dutch card label), e.g.:
-//   { title: 'Konische Holzsäule aus Stäbchenholz, Eiche', variantId: '…', price: 52000 },
+//   { title: 'Konische Holzsäule aus Eichenholz', variantId: '…', price: 52000 },
 const CATALOG_ONLY_LEGS = [
 ];
 
@@ -240,7 +240,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=d5a07f31';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=f1c2d8e4';
 
 class TableConfigurator {
   constructor() {
@@ -490,9 +490,47 @@ class TableConfigurator {
       window.parent.postMessage({ type: 'configurator-state', params: params.toString() }, SHOP_URL);
     }
 
-    // Phones: pre-build the AR model for the new configuration in the
-    // background so the AR button opens on the first tap.
-    this._scheduleARPrep();
+    // NOTE (2026-08-31): no background AR export here any more. Every config
+    // change used to run GLTFExporter + upload on phones, which pushes GPU/JS
+    // memory and was the prime suspect for "WebGL context lost" (blank canvas
+    // with Chrome's broken-canvas icon) on Android. The AR button prepares the
+    // model on tap (with its loader); only one warm-up runs after first load.
+  }
+
+  // Free the GPU buffers of a model that left the scene. The geometry data
+  // itself stays in JS (modelCache / clones share it) and three.js re-uploads
+  // it on the next render, so switching back is cheap — but while another
+  // shape is shown, only ONE shape's ~25 MB of vertex buffers live on the GPU
+  // instead of every shape ever visited (phones lost the WebGL context).
+  _releaseModelGPU(obj) {
+    try {
+      obj.traverse(c => { if (c.isMesh && c.geometry && typeof c.geometry.dispose === 'function') c.geometry.dispose(); });
+    } catch (e) { console.warn('[ZW] releaseModelGPU', e); }
+  }
+
+  // WebGL context loss (GPU process killed / out of memory on phones):
+  // three.js re-initialises on 'webglcontextrestored'; if the browser never
+  // restores it, reload once — updateURL() keeps the whole configuration in
+  // the URL, so the customer lands on the same table.
+  _installContextLossGuard(canvas) {
+    canvas.addEventListener('webglcontextlost', (e) => {
+      e.preventDefault();
+      console.warn('[ZW] WebGL context lost');
+      document.getElementById('mini-loader')?.classList.remove('hidden');
+      clearTimeout(this._ctxLostTimer);
+      this._ctxLostTimer = setTimeout(() => {
+        let last = 0;
+        try { last = parseInt(sessionStorage.getItem('zw_ctx_reload') || '0', 10); } catch (e) {}
+        if (Date.now() - last < 90000) { console.warn('[ZW] context not restored, reload suppressed (loop guard)'); return; }
+        try { sessionStorage.setItem('zw_ctx_reload', String(Date.now())); } catch (e) {}
+        location.reload();
+      }, 4000);
+    }, false);
+    canvas.addEventListener('webglcontextrestored', () => {
+      console.warn('[ZW] WebGL context restored');
+      clearTimeout(this._ctxLostTimer);
+      document.getElementById('mini-loader')?.classList.add('hidden');
+    }, false);
   }
 
   // ─── Scene Setup ──────────────────────────────
@@ -543,6 +581,7 @@ class TableConfigurator {
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.2;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+    this._installContextLossGuard(canvas);
   }
 
   setupLighting() {
@@ -559,8 +598,11 @@ class TableConfigurator {
     const keyLight = new THREE.DirectionalLight(0xfffaf0, 1.1);
     keyLight.position.set(3, 8, 4);
     keyLight.castShadow = true;
-    keyLight.shadow.mapSize.width = 2048;
-    keyLight.shadow.mapSize.height = 2048;
+    // 2048² on desktop; phones get 1024² (¼ of the GPU memory, no visible
+    // difference at 400 px viewer width) — part of the context-loss fix.
+    const shadowRes = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? 1024 : 2048;
+    keyLight.shadow.mapSize.width = shadowRes;
+    keyLight.shadow.mapSize.height = shadowRes;
     keyLight.shadow.camera.near = 0.5;
     keyLight.shadow.camera.far = 25;
     keyLight.shadow.camera.left = -5;
@@ -734,6 +776,7 @@ class TableConfigurator {
       // Now remove the old model (new one is about to be added)
       if (previousModel) {
         this.scene.remove(previousModel);
+        this._releaseModelGPU(previousModel);
         this.currentModel = null;
       }
 
@@ -2458,7 +2501,7 @@ class TableConfigurator {
       'Oval-Säule', 'Pluto', 'Kolom Kiezel', 'Kolom Organic', 'Rund-Säule',
       'Diablo', 'Wellen-Säule', 'Positivo',
       'Konische Spider', 'Hannah', 'Lara',
-      'Ovale Holzsäule aus Stäbchenholz, Eiche', 'Konische Holzsäule aus Stäbchenholz, Eiche',
+      'Ovale Holzsäule aus Stäbchenholz, Eiche', 'Konische Holzsäule aus Eichenholz',
       'Vera', 'V-Form', 'Matrix', 'Stative',
       'Vedo', 'Thore', 'Criss Cross', 'Tapse Spin'
     ];
@@ -6143,7 +6186,7 @@ class TableConfigurator {
       const idle = window.requestIdleCallback || ((f) => setTimeout(f, 2500));
       idle(() => this._prefetchOakTextures());
       setTimeout(() => this._prefetchShapeGLBs(), 6000);
-      setTimeout(() => this._scheduleARPrep(), 3000);
+      setTimeout(() => this._scheduleARPrep(), 8000);
     }
   }
 
