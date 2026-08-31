@@ -2,7 +2,7 @@
 """Regenerate configurator/js/zw-products.json (+ zw-products-by-handle.json) for the NL shop.
 
 1. Downloads the whole catalog from https://zazawoods.nl/products.json (2 pages x 250).
-2. Scrapes the addon widget (Onderstel / Randafwerking / Behandeling) from the 5 table
+2. Scrapes the addon widget (Onderstel / Randafwerking / Behandeling) from the 7 table
    product pages (SHAPES below) and resolves each addon's variant id, price and handle.
 3. Writes the two JSON files the configurator loads. Titles stay DUTCH — app.js maps them
    to canonical German titles at runtime via js/locale.js (TITLE_TO_CANONICAL).
@@ -33,7 +33,9 @@ SHAPES = {
     'oval':        'ovale-eettafel-danilo-uit-massief-eikenhout-met-een-verjongde-rand',
     'danish-oval': 'massief-eiken-tafel-ovaal',
     'round':       'runder-esstisch-romano-aus-massiver-eichenholz',
+    'organic':     'organische-eettafel-pure-van-massief-eikenhout',
     'bootsform':   'bootsform-esstisch-sergio-aus-massivem-eichenholz-1',
+    'halfrond':    'halfronde-eettafel-van-massief-eikenhout',
 }
 
 def fetch(handle):
@@ -85,6 +87,8 @@ HANDLES = [
     'massief-eiken-tafel-deens-ovaal-andreas-met-verjongde-rand',
     'runder-esstisch-romano-aus-massiver-eichenholz',
     'bootsform-esstisch-sergio-aus-massivem-eichenholz-1',
+    'organische-eettafel-pure-van-massief-eikenhout',
+    'halfronde-eettafel-van-massief-eikenhout',
     'rechhoekige-tafel-eikenhout-verjongde-rand',
     'rechteckiger-esstisch-luciano-aus-2-teilen',
     'gekohlter-esstisch-yakisugi',
