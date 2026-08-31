@@ -17,9 +17,9 @@ den unten aufgeführten Punkten.
 | Shop | zazawoods.de | zazawoods.nl (`SHOP_URL` in `js/locale.js`) |
 | Sprache UI | Deutsch (hart im Code) | Niederländisch über `js/locale.js` (`T()` für UI-Strings, `L()` für Produkttitel) + übersetztes `index.html`/`config.js` |
 | Produktdaten | `js/zw-products.json` aus dem DE-Shop | `js/zw-products.json` aus dem NL-Shop (Titel niederländisch, siehe „Datenmodell") |
-| Formen | 7 (inkl. Organisch, Halbrund) | **5**: Rechthoek, Ovaal, Deens ovaal, Rond, Stadionvorm — der NL-Shop hat (noch) keine organische / halbrunde Tafel. Die GLBs liegen trotzdem im Repo; Form wieder aktivieren = Eintrag in `TABLE_SHAPES` + Produkt in `zw-products.json`. |
+| Formen | 7 (inkl. Organisch, Halbrund) | **7**: Rechthoek, Ovaal, Deens ovaal, Rond, Organisch, Stadionvorm, Halfrond — Organisch/Halfrond seit 2026-08-31 als eigene NL-Produkte (`organische-eettafel-pure-van-massief-eikenhout`, `halfronde-eettafel-van-massief-eikenhout`, aus DE übersetzt). |
 | Größen | DE-Varianten | NL-Varianten: Ovaal hat zusätzlich 160×90, Deens ovaal 240×110, Stadionvorm nur 7 Größen (alle 100 breit) |
-| Addon-Beine ohne Shop-Produkt (`CATALOG_ONLY_LEGS`) | 9 Einträge | **leer** — Drone, Stahlwangen, Aeris/Butterfly/Vario/Doppel V/Felix (Metall), Konische Holzsäule gibt es im NL-Shop noch nicht als Addon |
+| Addon-Beine ohne Shop-Produkt (`CATALOG_ONLY_LEGS`) | 9 Einträge | **leer** — seit 2026-08-31 sind alle Beine (Drone, Stahlwangen, Aeris/Butterfly/Vario/Doppel V/Felix Metall, Konische Holzsäule, U smal) echte NL-Addon-Produkte im Metafeld „addons list“ der Tafeln |
 | Preise Holzbeine | 540 € (Aeris, Ovale Säule) | 440 € für alle Holzbeine (so im NL-Shop) |
 | Yakisugi | eigenes Addon 220 € + Produktwechsel | NL-Finish „Black" (0 €), kein Produktwechsel (`LOCALE === 'nl'` schaltet den Alias ab) |
 
@@ -43,7 +43,8 @@ Titel, der in `ZW_LEG_MODEL_MAP`/`EXTERNAL_LEG_FILES` ein Modell hat) und
 `zw-products.json` neu erzeugen. Ohne Eintrag erscheint die Karte rot („kein Modell").
 
 **`zw-products.json` neu erzeugen:** Skript `tools/scrape_nl_products.py`
-(liest `zazawoods.nl/products.json` + die Addon-Widgets der 5 Tafel-Produktseiten).
+(liest `zazawoods.nl/products.json` + die Addon-Widgets der 7 Tafel-Produktseiten;
+Addons kommen im NL-Theme aus dem Produkt-Metafeld „addons list“, nicht aus einer Collection).
 Danach `BUILD_VERSION` bumpen.
 
 ## Deployment (Produktion)
@@ -78,5 +79,9 @@ Konsole leer; Überstand-Audit Vertices-gegen-Platten-Hülle (Session-Skripte
 - Store: zazawoods.nl (Shopify-Admin über accounts.shopify.com → Konto
   **Nisar Derbaj, info@zazawoods.nl**, nie info@tablekings.de).
 - Addon-Produkte im NL-Shop: Typ `Onderstel` / `Randafwerking` / `Behandeling`,
-  werden über das Addon-Widget der Tafel-Produktseite ausgespielt (Collections
-  wie im DE-Shop). Neue Addon-Beine: Duplikat eines bestehenden Onderstel-Addons.
+  werden über das Addon-Widget der Tafel-Produktseite ausgespielt — gesteuert
+  über das **Produkt-Metafeld „addons list“** (Product-List) jeder Tafel, NICHT
+  über eine Collection wie im DE-Shop. Neues Addon-Bein = Produkt anlegen (CSV
+  oder Duplikat) UND bei jeder Tafel ins Metafeld aufnehmen (Milano, Danilo,
+  Sergio, Valerio, Organisch, Halfrond; Romano nur runde Beine), dann
+  `scrape_nl_products.py`.
