@@ -48,10 +48,13 @@ export const TITLE_TO_CANONICAL = {
   'Matrix Tafelonderstel (S) (Rond)':                   'Spider Gestell - Schmal (Rund)',
   'Ronde houten zuil van stokhout, eiken':              'Runde Holzsäule aus Stäbchenholz, Eiche',
   'Ronde houten zuilen van eikenhout (set) (A)':        'Runde Holzsäule aus Eichenholz (Satz) (A)',
-  // Not yet sold as addon in the NL shop — mapped so they work as soon as the
-  // NL products exist (titles are the ones the NL shop would use).
+  // Addon products created in the NL shop on 2026-08-31 (DE prices, type
+  // "Onderstel", tag "addon"; handles of the four metal legs end in "-addon"
+  // because standalone "…Tafelpoot" products already own the plain handles).
   'Konische houten zuil van eikenhout':                 'Konische Holzsäule aus Eichenholz',
-  'Drone tafelpoten (set)':                             'Drone Tischbeine (Satz)',
+  'Drone Tafelonderstel (set)':                         'Drone Tischbeine (Satz)',
+  'Stalen wangen tafelonderstel (set)':                 'Stahlwangen Tischgestell (Satz)',
+  'Stalen wangen tafelonderstel (S) (set)':             'Stahlwangen Tischgestell (S) (Satz)',
   'Aeris Tafelonderstel':                               'Aeris Tischgestell',
   'Butterfly Tafelonderstel (set)':                     'Butterfly Tischgestell (Satz)',
   'Vario Tafelonderstel':                               'Vario Tischgestell',
@@ -71,8 +74,6 @@ export const LABELS = Object.fromEntries(
   Object.entries(TITLE_TO_CANONICAL).map(([nl, de]) => [de, nl])
 );
 Object.assign(LABELS, {
-  'Stahlwangen Tischgestell (Satz)':      'Stalen wangen tafelonderstel (set)',
-  'Stahlwangen Tischgestell (S) (Satz)':  'Stalen wangen tafelonderstel (S) (set)',
   'Gerade Kante':                         'Rechte kant',
   'Schweizer Kante':                      'Schuine kant',
   'Baumstammkante':                       'Boomstamkant',
@@ -138,6 +139,8 @@ export const UI = {
   'Gespeichert':                          'Opgeslagen',
   'Laden':                                'Laden',
   'Löschen':                              'Verwijderen',
+  'Länge (cm)':                           'Lengte (cm)',
+  'Plattenstärke':                        'Bladdikte',
 };
 export function T(s) { return UI[s] || s; }
 

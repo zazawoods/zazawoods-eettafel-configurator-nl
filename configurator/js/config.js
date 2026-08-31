@@ -5,7 +5,7 @@ const BASE_PATH = '..';
 
 // Single cache-bust across the whole app — bumped by the deploy script so all
 // static assets (JS, images, GLBs) invalidate together. Never edit by hand.
-export const BUILD_VERSION = 'f1c2d8e4';
+export const BUILD_VERSION = 'a7d3e5f1';
 
 export const TABLE_SHAPES = [
   {
@@ -66,6 +66,22 @@ export const TABLE_SHAPES = [
     lengths: [100, 110, 120, 130, 140, 150, 160, 170, 180]
   },
   {
+    id: 'organic',
+    name: 'Organisch',
+    // NL: "Organische eettafel „Pure“ van massief eikenhout" (15732884177236),
+    // created 2026-08-31 as a translated copy of the DE product (same 6 sizes).
+    shopifyHandle: 'organische-eettafel-pure-van-massief-eikenhout',
+    glbFile: `${BASE_PATH}/glb files tables and legs/Organic.glb`,
+    icon: `<img src="Swatches/Vorm/Organisch_bw.png?v=${BUILD_VERSION}" alt="Organisch"/>`,
+    meshPrefix: ['Organic'],
+    defaultLength: 240,
+    defaultWidth: 120,
+    fixedDimensions: [
+      [200, 100], [220, 110], [240, 120],
+      [260, 130], [280, 140], [300, 140]
+    ]
+  },
+  {
     id: 'bootsform',
     name: 'Stadionvorm',
     shopifyHandle: 'bootsform-esstisch-sergio-aus-massivem-eichenholz-1',
@@ -79,6 +95,20 @@ export const TABLE_SHAPES = [
       [180, 100], [200, 100], [220, 100], [240, 100],
       [260, 100], [280, 100], [300, 100]
     ]
+  },
+  {
+    id: 'halfrond',
+    name: 'Halfrond',
+    // NL: "Halfronde eettafel van massief eikenhout" (15732884767060), created
+    // 2026-08-31 as a translated copy of the DE product (9 lengths × 3 widths).
+    shopifyHandle: 'halfronde-eettafel-van-massief-eikenhout',
+    glbFile: `${BASE_PATH}/glb files tables and legs/Halfrond.glb`,
+    icon: `<img src="Swatches/Vorm/Halbrund_bw.png?v=${BUILD_VERSION}" alt="Halfrond"/>`,
+    meshPrefix: ['Halfrond'],
+    defaultLength: 240,
+    defaultWidth: 100,
+    lengths: [180, 200, 220, 240, 260, 280, 300, 350, 400],
+    widths: [90, 100, 110]
   }
 ];
 

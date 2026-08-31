@@ -5,9 +5,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=f1c2d8e4';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=a7d3e5f1';
 // NL locale layer: canonical (German) titles internally, Dutch labels via L()/T().
-import { L, T, SHOP_URL, LOCALE, canonicalizeProducts, canonicalTitle } from './locale.js?v=f1c2d8e4';
+import { L, T, SHOP_URL, LOCALE, canonicalizeProducts, canonicalTitle } from './locale.js?v=a7d3e5f1';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -240,7 +240,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=f1c2d8e4';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=a7d3e5f1';
 
 class TableConfigurator {
   constructor() {
@@ -4590,7 +4590,10 @@ class TableConfigurator {
         // at every size, vertices vs tabletop hull): at 200cm the new metal
         // legs poke past the asymmetric rim (Doppel V 5.0cm, Felix 2.4cm,
         // Butterfly Satz 2.4cm) -> hidden at 200 only; clean from 220 up.
-        200: ORGANIC_ALL.concat(['A Tischgestell (Satz)', 'Doppel V-Tischgestell', 'Felix Tischgestell', 'Butterfly Tischgestell (Satz)']),
+        // DE audit 2026-08-31 (corrected hull sampling): the standalone Ovale
+        // Holzsäule (external GLB, wide oval foot) pokes 3.8cm past the rim at
+        // 200 as well -> hidden at 200 only.
+        200: ORGANIC_ALL.concat(['A Tischgestell (Satz)', 'Doppel V-Tischgestell', 'Felix Tischgestell', 'Butterfly Tischgestell (Satz)', 'Ovale Holzsäule aus Stäbchenholz, Eiche']),
         220: ORGANIC_ALL.concat(['A Tischgestell (Satz)']),
         240: ORGANIC_ALL.concat(['A Tischgestell (Satz)']),
         260: ORGANIC_ALL.concat(['A Tischgestell (Satz)']),
@@ -5087,7 +5090,7 @@ class TableConfigurator {
       }
       container.innerHTML = `
         <div class="dim-section">
-          <div class="dim-section-label">Länge (cm)</div>
+          <div class="dim-section-label">${T('Länge (cm)')}</div>
           <div class="dim-btn-row" id="dim-fixed-grid">
             ${uniqueByLength.map(([l, w]) => `
               <button class="dim-btn ${l === this.state.length ? 'active' : ''}"
@@ -5156,7 +5159,7 @@ class TableConfigurator {
       // shape.defaultWidth internally (the default width sold on Shopify).
       container.innerHTML = `
         <div class="dim-section">
-          <div class="dim-section-label">Länge (cm)</div>
+          <div class="dim-section-label">${T('Länge (cm)')}</div>
           <div class="dim-btn-row" id="dim-length-row">
             ${filteredLengths.map(v => `
               <button class="dim-btn ${v === this.state.length ? 'active' : ''}"
@@ -5202,7 +5205,7 @@ class TableConfigurator {
 
       container.innerHTML = `
         <div class="dim-section">
-          <div class="dim-section-label">Plattenstärke</div>
+          <div class="dim-section-label">${T('Plattenstärke')}</div>
           <div class="dim-btn-row" id="thickness-row">
             ${matType.thicknessOptions.map(t => {
               const isAvailable = availableThicknesses.includes(t);

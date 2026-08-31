@@ -47,13 +47,13 @@
    {
     "id": 42946711978198,
     "title": "350cm x 100cm x 4cm",
-    "price": 251900,
+    "price": 271900,
     "available": true
    },
    {
     "id": 52770635907412,
     "title": "400cm x 100cm x 4cm",
-    "price": 296900,
+    "price": 316900,
     "available": true
    }
   ]
@@ -112,13 +112,13 @@
    {
     "id": 52770634498388,
     "title": "350cm x 120cm x 4cm",
-    "price": 264900,
+    "price": 284900,
     "available": true
    },
    {
     "id": 52770634531156,
     "title": "400cm x 120cm x 4cm",
-    "price": 329900,
+    "price": 349900,
     "available": true
    }
   ]
@@ -171,13 +171,13 @@
    {
     "id": 52770632008020,
     "title": "350cm x 120cm x 4cm",
-    "price": 264900,
+    "price": 284900,
     "available": true
    },
    {
     "id": 52770632040788,
     "title": "400cm x 120cm x 4cm",
-    "price": 329900,
+    "price": 349900,
     "available": true
    }
   ]
@@ -230,13 +230,13 @@
    {
     "id": 52770633285972,
     "title": "350cm x 120cm x 4cm",
-    "price": 264900,
+    "price": 284900,
     "available": true
    },
    {
     "id": 52770633318740,
     "title": "400cm x 120cm x 4cm",
-    "price": 329900,
+    "price": 349900,
     "available": true
    }
   ]
@@ -347,6 +347,214 @@
    }
   ]
  },
+ "organische-eettafel-pure-van-massief-eikenhout": {
+  "title": "Organische eettafel „Pure“ van massief eikenhout",
+  "variants": [
+   {
+    "id": 56984466719060,
+    "title": "200cm x 100cm x 4cm",
+    "price": 149900,
+    "available": true
+   },
+   {
+    "id": 56984478122324,
+    "title": "220cm x 110cm x 4cm",
+    "price": 159900,
+    "available": true
+   },
+   {
+    "id": 56984478155092,
+    "title": "240cm x 120cm x 4cm",
+    "price": 179900,
+    "available": true
+   },
+   {
+    "id": 56984478187860,
+    "title": "260cm x 130cm x 4cm",
+    "price": 189900,
+    "available": true
+   },
+   {
+    "id": 56984478220628,
+    "title": "280cm x 140cm x 4cm",
+    "price": 194900,
+    "available": true
+   },
+   {
+    "id": 56984478253396,
+    "title": "300cm x 140cm x 4cm",
+    "price": 204900,
+    "available": true
+   }
+  ]
+ },
+ "halfronde-eettafel-van-massief-eikenhout": {
+  "title": "Halfronde eettafel van massief eikenhout",
+  "variants": [
+   {
+    "id": 56984478417236,
+    "title": "180 cm / 90",
+    "price": 163500,
+    "available": true
+   },
+   {
+    "id": 56984478450004,
+    "title": "180 cm / 100",
+    "price": 165500,
+    "available": true
+   },
+   {
+    "id": 56984478482772,
+    "title": "180 cm / 110",
+    "price": 169000,
+    "available": true
+   },
+   {
+    "id": 56984478515540,
+    "title": "200 cm / 90",
+    "price": 169000,
+    "available": true
+   },
+   {
+    "id": 56984478548308,
+    "title": "200 cm / 100",
+    "price": 170500,
+    "available": true
+   },
+   {
+    "id": 56984478581076,
+    "title": "200 cm / 110",
+    "price": 172000,
+    "available": true
+   },
+   {
+    "id": 56984478613844,
+    "title": "220 cm / 90",
+    "price": 176000,
+    "available": true
+   },
+   {
+    "id": 56984478646612,
+    "title": "220 cm / 100",
+    "price": 178000,
+    "available": true
+   },
+   {
+    "id": 56984478679380,
+    "title": "220 cm / 110",
+    "price": 180000,
+    "available": true
+   },
+   {
+    "id": 56984478712148,
+    "title": "240 cm / 90",
+    "price": 180500,
+    "available": true
+   },
+   {
+    "id": 56984478744916,
+    "title": "240 cm / 100",
+    "price": 182000,
+    "available": true
+   },
+   {
+    "id": 56984478777684,
+    "title": "240 cm / 110",
+    "price": 184000,
+    "available": true
+   },
+   {
+    "id": 56984478810452,
+    "title": "260 cm / 90",
+    "price": 186000,
+    "available": true
+   },
+   {
+    "id": 56984478843220,
+    "title": "260 cm / 100",
+    "price": 189000,
+    "available": true
+   },
+   {
+    "id": 56984478875988,
+    "title": "260 cm / 110",
+    "price": 192500,
+    "available": true
+   },
+   {
+    "id": 56984478908756,
+    "title": "280 cm / 90",
+    "price": 193000,
+    "available": true
+   },
+   {
+    "id": 56984478941524,
+    "title": "280 cm / 100",
+    "price": 197000,
+    "available": true
+   },
+   {
+    "id": 56984478974292,
+    "title": "280 cm / 110",
+    "price": 202000,
+    "available": true
+   },
+   {
+    "id": 56984479007060,
+    "title": "300 cm / 90",
+    "price": 237000,
+    "available": true
+   },
+   {
+    "id": 56984479039828,
+    "title": "300 cm / 100",
+    "price": 238000,
+    "available": true
+   },
+   {
+    "id": 56984479072596,
+    "title": "300 cm / 110",
+    "price": 242000,
+    "available": true
+   },
+   {
+    "id": 56984479105364,
+    "title": "350 cm / 90",
+    "price": 309000,
+    "available": true
+   },
+   {
+    "id": 56984479138132,
+    "title": "350 cm / 100",
+    "price": 312500,
+    "available": true
+   },
+   {
+    "id": 56984479170900,
+    "title": "350 cm / 110",
+    "price": 316000,
+    "available": true
+   },
+   {
+    "id": 56984479203668,
+    "title": "400 cm / 90",
+    "price": 407000,
+    "available": true
+   },
+   {
+    "id": 56984479236436,
+    "title": "400 cm / 100",
+    "price": 412000,
+    "available": true
+   },
+   {
+    "id": 56984479269204,
+    "title": "400 cm / 110",
+    "price": 417000,
+    "available": true
+   }
+  ]
+ },
  "rechhoekige-tafel-eikenhout-verjongde-rand": {
   "title": "Rechthoekige Eettafel \"Alonzo\" uit massief eikenhout met verjongde rand",
   "variants": [
@@ -401,13 +609,13 @@
    {
     "id": 42946616459478,
     "title": "350cm x 100cm x 4cm",
-    "price": 251900,
+    "price": 271900,
     "available": true
    },
    {
     "id": 52770636857684,
     "title": "400cm x 100cm x 4cm",
-    "price": 296900,
+    "price": 316900,
     "available": true
    }
   ]
@@ -460,13 +668,13 @@
    {
     "id": 52770637611348,
     "title": "350cm x 100cm x 4cm",
-    "price": 244900,
+    "price": 264900,
     "available": true
    },
    {
     "id": 52770637644116,
     "title": "400cm x 100cm x 4cm",
-    "price": 289900,
+    "price": 309900,
     "available": true
    }
   ]
@@ -519,13 +727,13 @@
    {
     "id": 43586967732438,
     "title": "350cm x 100cm x 4cm",
-    "price": 244900,
+    "price": 264900,
     "available": true
    },
    {
     "id": 52770636267860,
     "title": "400cm x 100cm x 4cm",
-    "price": 289900,
+    "price": 309900,
     "available": true
    }
   ],
