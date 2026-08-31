@@ -5,7 +5,7 @@ const BASE_PATH = '..';
 
 // Single cache-bust across the whole app — bumped by the deploy script so all
 // static assets (JS, images, GLBs) invalidate together. Never edit by hand.
-export const BUILD_VERSION = '7f3e9c01';
+export const BUILD_VERSION = '8a4c2d17';
 
 export const TABLE_SHAPES = [
   {

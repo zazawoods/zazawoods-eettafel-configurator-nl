@@ -5,9 +5,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=7f3e9c01';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=8a4c2d17';
 // NL locale layer: canonical (German) titles internally, Dutch labels via L()/T().
-import { L, T, SHOP_URL, LOCALE, canonicalizeProducts, canonicalTitle } from './locale.js?v=7f3e9c01';
+import { L, T, SHOP_URL, LOCALE, canonicalizeProducts, canonicalTitle } from './locale.js?v=8a4c2d17';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -240,7 +240,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=7f3e9c01';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=8a4c2d17';
 
 class TableConfigurator {
   constructor() {
@@ -4529,6 +4529,9 @@ class TableConfigurator {
         100: ['Spider Gestell (rund)']
       },
       'oval': {
+        // NL-only size 160×90 (audit 2026-08-31): everything hidden at 180 plus the
+        // single Ovale column (130 cm long → 2.8 cm past the tapering ends).
+        160: ['Thorn Tischgestelle (Satz)', 'Drone Tischbeine (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)', 'U Tischgestell (schmal) (Satz)', 'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Trapezium Tischgestell (Satz)', 'Stahlwangen Tischgestell (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)', 'Butterfly Tischbeine aus Eichenholz (Satz) (A)', 'Butterfly Tischgestell (Satz)', 'Ovale Holzsäule aus Stäbchenholz, Eiche'],
         180: ['Thorn Tischgestelle (Satz)', 'Drone Tischbeine (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)', 'U Tischgestell (schmal) (Satz)', 'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Trapezium Tischgestell (Satz)', 'Stahlwangen Tischgestell (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)', 'Butterfly Tischbeine aus Eichenholz (Satz) (A)', 'Butterfly Tischgestell (Satz)'],
         200: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (M) (Satz)', 'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)', 'Butterfly Tischgestell (Satz)']
       },
