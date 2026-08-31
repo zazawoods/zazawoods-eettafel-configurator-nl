@@ -178,3 +178,32 @@ dessen HANDOFF-Dateien erklären die Historie (Beine, Audits, Mobile-Perf).
 - ~~Button auf den Tafel-Produktseiten + Marquee-Ausblenden~~ → erledigt (Punkt 10).
 - Die Seite `/pages/eettafel-configurator` ist öffentlich, aber nirgends
   verlinkt (Menü/Produktseiten) — Verlinkung ist Sache des Inhabers.
+
+## Nachtrag 2026-08-31 abends (Build c9b2e7d4)
+
+1. **Konische houten zuil stand quer** — gleicher Fix wie DE:
+   `isSaeuleExt = /^(Ovale|Konische) Holzsäule/i` in `app.js` (Titel sind
+   intern deutsch). Kein Überstand auf allen Formen (Convex-Hull-Check).
+2. **Karten-Reihenfolge der Tischgestelle = exakt wie im DE-Konfigurator**
+   (Wunsch Inhaber): in `renderLegGrid` sortiert nach der eingefrorenen Liste
+   `DE_CARD_ORDER` (kanonische DE-Titel; unbekannte Titel fallen ans Ende).
+   Verifiziert auf Prod: Rechteck 28 Karten + Rund 4 Karten 1:1 wie DE.
+3. **Boot-Watchdog + Prefetch-Timeout** wie DE (Hinweistext läuft durch `T()`,
+   NL-Übersetzung in `locale.js`: „Trage verbinding — laad de pagina opnieuw.").
+4. **Shop-Kollektionen umsortiert** (Wunsch Inhaber, „Reihenfolge wie
+   Deutschland"): In `zaza-woods`-Admin die manuelle Sortierung gesetzt für
+   - `eikentafels` (ID 406871081174): aktive Tafeln jetzt in DE-Reihenfolge
+     der Collection `tische-fur-den-innenbereich`; NL-Produkte ohne
+     DE-Pendant (Elena, Sienna) am Ende der aktiven, Drafts dahinter
+     unverändert.
+   - `tafel-onderstellen` „Metalen Tafelpoten" (ID 406871310550): alle 36
+     aktiven Beine jetzt in DE-Reihenfolge der Collection `tischgestelle`,
+     inkl. der neuen Holzbeine und der neuen „Konische houten zuil van
+     eikenhout" am Schluss (wie DE).
+   Verifiziert per Storefront-JSON: beide Kollektionen matchen die Zielliste
+   1:1. Hinweis: Beide Kollektionen sind Tag-automatisiert („binnentafel" /
+   „onderstel") mit Default sort „Manually" — NEUE Produkte mit diesen Tags
+   landen irgendwo in der Liste und müssen ggf. manuell einsortiert werden.
+
+Prod-Verifikation: fulltest_nl ALL PASS (alle 7 Formen, alle Karten),
+sizetest 59 Checks PASS, Mobile-Emulation (Pixel-UA) alle 7 Formen PASS.
