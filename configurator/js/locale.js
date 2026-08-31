@@ -141,6 +141,7 @@ export const UI = {
   'Löschen':                              'Verwijderen',
   'Länge (cm)':                           'Lengte (cm)',
   'Plattenstärke':                        'Bladdikte',
+  'Verbindung langsam — bitte Seite neu laden.': 'Trage verbinding — laad de pagina opnieuw.',
 };
 export function T(s) { return UI[s] || s; }
 

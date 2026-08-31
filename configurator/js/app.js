@@ -5,9 +5,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=a7d3e5f1';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=c9b2e7d4';
 // NL locale layer: canonical (German) titles internally, Dutch labels via L()/T().
-import { L, T, SHOP_URL, LOCALE, canonicalizeProducts, canonicalTitle } from './locale.js?v=a7d3e5f1';
+import { L, T, SHOP_URL, LOCALE, canonicalizeProducts, canonicalTitle } from './locale.js?v=c9b2e7d4';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -240,7 +240,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=a7d3e5f1';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=c9b2e7d4';
 
 class TableConfigurator {
   constructor() {
@@ -549,6 +549,24 @@ class TableConfigurator {
       setTimeout(() => this._maybeAutoAR(), 1200);
       this.updatePrice();
     });
+    // Boot watchdog (2026-08-31): whatever goes wrong on a phone (hung fetch,
+    // dead GPU context, decoder failure) the customer must never sit in front
+    // of an endless loader. 40 s after init: one guarded reload; if that
+    // already happened recently, surface a clear message.
+    this._bootWatchdog = setTimeout(() => {
+      if (this._initialLoadDone) return;
+      let last = 0;
+      try { last = parseInt(sessionStorage.getItem('zw_boot_reload') || '0', 10); } catch (e) {}
+      if (Date.now() - last > 120000) {
+        try { sessionStorage.setItem('zw_boot_reload', String(Date.now())); } catch (e) {}
+        console.warn('[ZW] boot watchdog: first load stuck — reloading once');
+        location.reload();
+      } else {
+        console.warn('[ZW] boot watchdog: still stuck after reload — showing hint');
+        const el = document.getElementById('loader-text');
+        if (el) el.textContent = T('Verbindung langsam — bitte Seite neu laden.');
+      }
+    }, 40000);
     this.loadModel(this.state.shape);
     this.animate();
     this.fixMobileHeight();
@@ -1149,7 +1167,10 @@ class TableConfigurator {
         // Skip the extra 90° Y rotation and use splitSetLeg → splitHalves spread.
         const isButterflyExt = /^Butterfly Tischbeine aus Eichenholz/i.test(title);
         const isHalbrundeExt = /^Halbrunde Tischbeine aus Eichenholz/i.test(title);
-        const isSaeuleExt = /^(Ovale|Konische) Holzsäule aus Stäbchenholz/i.test(title);
+        // NOTE: must also match the renamed 'Konische Holzsäule aus Eichenholz'
+        // (2026-08-31 rename broke this — the column then got the default 90°
+        // rotation and stood ACROSS the table instead of along it).
+        const isSaeuleExt = /^(Ovale|Konische) Holzsäule/i.test(title);
         const isX_alignedSat = isButterflyExt || isHalbrundeExt || isSaeuleExt;
         const placements = isPair
           ? [{ x: -0.75, mirror: false }, { x: 0.75, mirror: true }]   // pair: second instance faces opposite
@@ -3141,7 +3162,12 @@ class TableConfigurator {
     const pf = window.__glbPrefetch;
     if (pf && pf.file && decodeURIComponent(url).includes(pf.file)) {
       window.__glbPrefetch = null;
-      return pf.promise.then((buf) => {
+      // Mobile safety (2026-08-31): the index.html prefetch fetch() has no
+      // timeout — on a flaky phone connection it can hang forever and the
+      // loader would never hide. Race it against 10 s, then fall back.
+      const raced = Promise.race([pf.promise,
+        new Promise((_, rej) => setTimeout(() => rej(new Error('prefetch timeout')), 10000))]);
+      return raced.then((buf) => {
         if (!buf) throw new Error('prefetch failed');
         return new Promise((res, rej) => this.loader.parse(buf, '', res, rej));
       }).catch(() => this.loadGLTF(url, opts)); // fall back to a normal load
@@ -4646,6 +4672,38 @@ class TableConfigurator {
         tischgestellList.splice(newAnchorIdx + 1, 0, ...pinned);
       }
     }
+
+    // NL (2026-08-31, Inhaber-Wunsch): Karten-Reihenfolge exakt wie im DEUTSCHEN
+    // Konfigurator. Die generische Sortierung (frei → Preis aufsteigend) ergibt
+    // hier eine andere Folge, weil NL-Preise/-Datenreihenfolge abweichen (z. B.
+    // Holzbeine alle 440 € statt 440/520/540). Darum wird nach der Sortierung
+    // auf die eingefrorene DE-Reihenfolge (kanonische Titel) umsortiert;
+    // unbekannte Titel behalten ihre Position am Ende.
+    const DE_CARD_ORDER = [
+      'Spider Tischgestell (L)', 'Spider Tischgestell (M)', 'Spider Tischgestell (S)',
+      'Thorn Tischgestelle (Satz)', 'Konisches Spidertischgestell', 'V Tischgestell',
+      'Drone Tischbeine (Satz)',
+      'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)', 'U Tischgestell (schmal) (Satz)',
+      'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Trapezium Tischgestell (Satz)',
+      'Butterfly Tischgestell (Satz)', 'Aeris Tischgestell', 'Felix Tischgestell',
+      'Doppel V-Tischgestell', 'Vario Tischgestell',
+      'Spider Tischgestell Edelstahl', 'Spider Tischgestell Edelstahl (S)',
+      'Stahlwangen Tischgestell (Satz)', 'Stahlwangen Tischgestell (S) (Satz)',
+      'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)',
+      'Butterfly Tischbeine aus Eichenholz (Satz) (A)',
+      'Halbrunde Tischbeine aus Eichenholz (Satz) (A)',
+      'Konische Holzsäule aus Eichenholz',
+      'Aeris Tischgestell aus Eichenholz',
+      'Ovale Holzsäule aus Stäbchenholz, Eiche',
+      // Rund
+      'Spider Gestell - Schmal (Rund)', 'Spider Gestell (rund)',
+      'Runde Holzsäule aus Stäbchenholz, Eiche', 'Runde Holzsäule aus Eichenholz (Satz) (A)'
+    ];
+    const _dePos = (t) => { const i = DE_CARD_ORDER.indexOf(t); return i < 0 ? 998 : i; };
+    tischgestellList = tischgestellList
+      .map((a, i) => [a, i])
+      .sort((x, y) => (_dePos(x[0].title) - _dePos(y[0].title)) || (x[1] - y[1]))
+      .map((x) => x[0]);
 
     // Restore the user's explicitly chosen leg if it is available again for
     // this shape+size (it may have been temporarily replaced by the Spider
@@ -6180,6 +6238,7 @@ class TableConfigurator {
     }
   }
   hideLoader() {
+    clearTimeout(this._bootWatchdog);
     document.getElementById('loader').classList.add('hidden');
     document.getElementById('mini-loader').classList.add('hidden');
     this._initialLoadDone = true;
