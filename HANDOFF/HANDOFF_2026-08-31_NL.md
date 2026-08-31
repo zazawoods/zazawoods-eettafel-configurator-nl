@@ -6,7 +6,7 @@ dessen HANDOFF-Dateien erklären die Historie (Beine, Audits, Mobile-Perf).
 
 ## Was gemacht wurde
 
-1. Repo aus dem DE-Stand (Build `2da8f153`) geklont, NL-Build `7f3e9c01`.
+1. Repo aus dem DE-Stand (Build `2da8f153`) geklont, NL-Build `8a4c2d17`.
 2. **Locale-Schicht** `configurator/js/locale.js` (siehe README „Datenmodell"):
    kanonische deutsche Titel intern, niederländische Labels außen.
    `app.js` wurde nur an den Anzeige-/Text-Stellen angefasst (`L()`/`T()`),
@@ -24,9 +24,19 @@ dessen HANDOFF-Dateien erklären die Historie (Beine, Audits, Mobile-Perf).
    `docs/eettafel-configurator-*.liquid` (NL-Handles, Seite
    `/pages/eettafel-configurator`, Sektionen Behandeling/Randafwerking/Onderstel).
 5. **Tests lokal** (Port 3211): alle Karten × 5 Formen → richtige NL-Variant-IDs
-   und Preise, Konsole leer. Überstand-Audit: nur „Matrix Tafelonderstel (Rond)"
-   ragt bei Ø100 0,9 cm über → versteckt (`HIDE_LEGS_BY_SHAPE_LENGTH.round[100]`).
-   Hinweis: gilt geometrisch genauso im DE-Shop (dort noch nicht versteckt).
+   und Preise, Konsole leer. Überstand-Audit (Vertices vs. Platten-Hülle, alle
+   Karten × alle Größen): „Matrix Tafelonderstel (Rond)" ragt bei Ø100 0,9 cm
+   über → versteckt (`HIDE_LEGS_BY_SHAPE_LENGTH.round[100]`; gilt geometrisch
+   genauso im DE-Shop, dort noch nicht versteckt). Ovaal 160×90 (nur NL):
+   Thorn/U(M)/X/Ovale zuil/Ovale set ragen 1,9–4,3 cm über → `oval[160]`
+   versteckt die komplette 180er-Liste + die Ovale zuil. Alles andere sauber.
+
+6. **Deploy:** GitHub `zazawoods/zazawoods-eettafel-configurator-nl` (Import des
+   DE-Repos + 6 Commits), Railway-Projekt `zazawoods-configurator-nl`
+   (ID 8353bdc3-f7ee-4aa5-b851-f52eea561f4c), Service
+   `zazawoods-eettafel-configurator-nl`, Variable `PORT=3000` (ohne sie 502),
+   Domain **https://zazawoods-eettafel-configurator-nl-production.up.railway.app**.
+   Build `8a4c2d17` live.
 
 ## Offen / Fragen an den Inhaber
 
