@@ -40,11 +40,14 @@
       }
     })();
   </script>
-  <link rel="stylesheet" href="css/styles.css?v=27fe604e">
+  <link rel="stylesheet" href="css/styles.css?v=2da8f153">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Non-blocking font load (mobile perf 2026-08-30): a render-blocking stylesheet
+       also delays module-script execution; media=print swap keeps first paint + JS boot fast. -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"></noscript>
   <script type="importmap">
   {
     "imports": {
@@ -55,7 +58,26 @@
   </script>
   <!-- Warm the module graph in parallel with app.js instead of discovering it one hop later
        (importmap must stay above these — a modulepreload before the map would disable it). -->
-  <link rel="modulepreload" href="js/config.js?v=27fe604e">
+  <link rel="modulepreload" href="js/config.js?v=2da8f153">
+  <!-- Mobile perf (2026-08-30): start downloading the initial shape's GLB in
+       parallel with the three.js/app module graph instead of after it.
+       app.js consumes window.__glbPrefetch in loadGLTF(). -->
+  <script>
+  (function () {
+    try {
+      var files = { 'rectangle': 'rectangle.glb', 'oval': 'Oval.glb', 'danish-oval': 'DanishOval.glb',
+                    'round': 'Round.glb', 'organic': 'Organic.glb', 'bootsform': 'Bootsform.glb',
+                    'halfrond': 'Halfrond.glb' };
+      var shape = new URLSearchParams(location.search).get('shape') || 'rectangle';
+      var file = files[shape] || files['rectangle'];
+      var link = document.querySelector('link[rel="modulepreload"][href^="js/config.js?v="]');
+      var v = link ? link.getAttribute('href').split('v=')[1] : '';
+      var url = '../glb%20files%20tables%20and%20legs/' + encodeURIComponent(file) + '?v=' + v;
+      window.__glbPrefetch = { file: file,
+        promise: fetch(url).then(function (r) { return r.ok ? r.arrayBuffer() : null; }).catch(function () { return null; }) };
+    } catch (e) { window.__glbPrefetch = null; }
+  })();
+  </script>
   <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js" crossorigin>
   <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/controls/OrbitControls.js" crossorigin>
   <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/loaders/GLTFLoader.js" crossorigin>
@@ -333,6 +355,6 @@
     Konfigurieren
   </button>
 
-  <script type="module" src="js/app.js?v=27fe604e"></script>
+  <script type="module" src="js/app.js?v=2da8f153"></script>
 </body>
 </html>
