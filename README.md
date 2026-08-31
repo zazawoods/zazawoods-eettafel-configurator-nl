@@ -59,6 +59,12 @@ Danach `BUILD_VERSION` bumpen.
   + `templates/page.eettafel-configurator.json`, Seite
   https://zazawoods.nl/pages/eettafel-configurator. Domain NICHT mehr ändern
   (steht hart in der Theme-Sektion, `cfg_base`).
+- **Theme-Editor-Bausteine (kein Code im Theme):** „Configurator openen"-Button
+  = Block „Custom Liquid" unter „Buy buttons" im Template „Default product"
+  (Inhalt `docs/eettafel-configurator-button.liquid`, zeigt sich nur bei den
+  Handles aus `zw-products-by-handle.json`); Marquee/Footer-Ausblenden =
+  Sektion „Custom Liquid" im Template `page.eettafel-configurator`
+  (`docs/hide-marquee-on-configurator.liquid`). Details HANDOFF Punkt 10.
 - `BUILD_VERSION` steht in **7 Stellen** (eine mehr als DE — der Import von
   `locale.js` in `app.js`): `js/config.js:7`, `index.html` (styles.css?v=,
   modulepreload config.js?v=, app.js?v=), `app.js` (import config.js?v=,
