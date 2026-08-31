@@ -43,7 +43,7 @@ app.use('/api', (req, res, next) => {
 app.use((req, res, next) => {
   if (!req.path.startsWith('/api')) {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Content-Security-Policy', "frame-ancestors 'self' https://zazawoods.de https://www.zazawoods.de https://zazawoods.nl https://www.zazawoods.nl https://zazawoods-esstisch-konfigurator-production.up.railway.app");
+    res.setHeader('Content-Security-Policy', "frame-ancestors 'self' https://zazawoods.de https://www.zazawoods.de https://zazawoods.nl https://www.zazawoods.nl https://*.up.railway.app");
   }
   next();
 });
@@ -129,7 +129,7 @@ app.get('/api/usdz/:name', async (req, res) => {
   try {
     const data = await readFile(`${TEMP_DIR}/${name}`);
     res.setHeader('Content-Type', 'model/vnd.usdz+zip');
-    res.setHeader('Content-Disposition', `inline; filename="zazawoods-tisch.usdz"`);
+    res.setHeader('Content-Disposition', `inline; filename="zazawoods-tafel.usdz"`);
     res.setHeader('Cache-Control', 'public, max-age=600');
     return res.status(200).send(data);
   } catch {
@@ -227,5 +227,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Zaza Woods Esstisch-Konfigurator running on port ${PORT}`);
+  console.log(`Zaza Woods Eettafel-configurator (NL) running on port ${PORT}`);
 });

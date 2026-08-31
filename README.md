@@ -1,79 +1,76 @@
-# zazawoods-esstisch-konfigurator-de  `[DE]`
+# zazawoods-eettafel-configurator-nl  `[NL]`
 
-3D-Esstisch-Konfigurator für den **deutschen** Shop **zazawoods.de** (Shopify-Store
-`zazawood.myshopify.com`, Admin: admin.shopify.com/store/zazawood).
-Ein separater NL-Klon für zazawoods.nl ist geplant (eigenes Repo + eigenes
-Railway-Projekt) — dieses Repo bleibt ausschließlich DE.
+3D-Eettafel-Configurator für den **niederländischen** Shop **zazawoods.nl**.
+Klon des deutschen Konfigurators (`zazawoods/zazawoods-esstisch-konfigurator-de`,
+Stand Build `2da8f153`, 2026-08-31) — gleiche 3D-Modelle, gleiche Engine,
+eigene Produktdaten, eigene Sprache, eigenes Railway-Projekt.
 
 **Wer hier arbeitet (Mensch oder KI-Agent): erst diese Datei + das neueste
-`HANDOFF/HANDOFF_*.md` lesen.**
+`HANDOFF/HANDOFF_*.md` lesen.** Änderungen an der Engine (app.js) bitte im
+DE-Repo machen und hierher portieren — dieses Repo unterscheidet sich nur in
+den unten aufgeführten Punkten.
+
+## Was ist anders als im DE-Repo
+
+| Bereich | DE | NL (dieses Repo) |
+|---|---|---|
+| Shop | zazawoods.de | zazawoods.nl (`SHOP_URL` in `js/locale.js`) |
+| Sprache UI | Deutsch (hart im Code) | Niederländisch über `js/locale.js` (`T()` für UI-Strings, `L()` für Produkttitel) + übersetztes `index.html`/`config.js` |
+| Produktdaten | `js/zw-products.json` aus dem DE-Shop | `js/zw-products.json` aus dem NL-Shop (Titel niederländisch, siehe „Datenmodell") |
+| Formen | 7 (inkl. Organisch, Halbrund) | **5**: Rechthoek, Ovaal, Deens ovaal, Rond, Stadionvorm — der NL-Shop hat (noch) keine organische / halbrunde Tafel. Die GLBs liegen trotzdem im Repo; Form wieder aktivieren = Eintrag in `TABLE_SHAPES` + Produkt in `zw-products.json`. |
+| Größen | DE-Varianten | NL-Varianten: Ovaal hat zusätzlich 160×90, Deens ovaal 240×110, Stadionvorm nur 7 Größen (alle 100 breit) |
+| Addon-Beine ohne Shop-Produkt (`CATALOG_ONLY_LEGS`) | 9 Einträge | **leer** — Drone, Stahlwangen, Aeris/Butterfly/Vario/Doppel V/Felix (Metall), Konische Holzsäule gibt es im NL-Shop noch nicht als Addon |
+| Preise Holzbeine | 540 € (Aeris, Ovale Säule) | 440 € für alle Holzbeine (so im NL-Shop) |
+| Yakisugi | eigenes Addon 220 € + Produktwechsel | NL-Finish „Black" (0 €), kein Produktwechsel (`LOCALE === 'nl'` schaltet den Alias ab) |
+
+## Datenmodell — der wichtigste Trick
+
+Die gesamte Engine (3D-Modell-Zuordnung `ZW_LEG_MODEL_MAP`, Swatch-Dateinamen,
+`HIDE_LEGS_BY_SHAPE_LENGTH`, `LEG_TITLE_EXCLUDE`, Rund-Whitelist …) arbeitet
+weiterhin mit den **deutschen Addon-Titeln** („kanonisch"). `js/locale.js`
+übersetzt beim Laden von `zw-products.json`:
+
+- Kategorie `Onderstel` → `Tischgestell`, `Randafwerking` → `Kantenbearbeitung`,
+  `Behandeling` → `Behandlung` (`CATEGORY_ALIASES`)
+- jeden Addon-Titel über `TITLE_TO_CANONICAL` (z. B. „Matrix Tafelonderstel"
+  → „Spider Tischgestell (L)"); der niederländische Originaltitel bleibt als
+  `label` erhalten und wird über `L(title)` angezeigt.
+- URL-Parameter von den Produktseiten-Buttons (`leg=`, `edge=`, `behandlung=`,
+  niederländische Titel) werden mit `canonicalTitle()` ebenfalls umgesetzt.
+
+**Neues Bein im NL-Shop?** Titel in `TITLE_TO_CANONICAL` eintragen (→ deutscher
+Titel, der in `ZW_LEG_MODEL_MAP`/`EXTERNAL_LEG_FILES` ein Modell hat) und
+`zw-products.json` neu erzeugen. Ohne Eintrag erscheint die Karte rot („kein Modell").
+
+**`zw-products.json` neu erzeugen:** Skript `tools/scrape_nl_products.py`
+(liest `zazawoods.nl/products.json` + die Addon-Widgets der 5 Tafel-Produktseiten).
+Danach `BUILD_VERSION` bumpen.
 
 ## Deployment (Produktion)
 
-- **GitHub:** `zazawoods/zazawoods-esstisch-konfigurator-de`, Branch `main` ist die Wahrheit.
-- **Railway:** Projekt `zazawoods-konfigurator-de`, Service `zazawoods-esstisch-konfigurator-de`.
-  Jeder Push auf `main` deployt automatisch (~60–90 s).
-- **Prod-URL:** https://zazawoods-esstisch-konfigurator-production.up.railway.app
-  (Domain absichtlich unverändert gelassen — sie ist im Shopify-Theme von
-  zazawoods.de eingebettet, siehe `docs/*.liquid`.)
-- `BUILD_VERSION` steht in **6 Stellen** und muss bei JEDEM Deploy zusammen
-  geändert werden (neues 8-hex, global ersetzen — am einfachsten
-  `grep -rn "<alte-version>" configurator/` und alle Treffer ersetzen):
-  `js/config.js:7`, `index.html` (styles.css?v=, modulepreload config.js?v=,
-  app.js?v=), `app.js` (import config.js?v= und import shopify.js?v=).
-  Das Inline-Prefetch-Skript in `index.html` liest die Version aus dem
-  modulepreload-Link und braucht keine eigene Änderung.
+- **GitHub:** `zazawoods/zazawoods-eettafel-configurator-nl`, Branch `main`.
+- **Railway:** Projekt `zazawoods-configurator-nl` (Service gleichen Namens),
+  Auto-Deploy bei Push auf `main`. Prod-URL: siehe `HANDOFF` (Railway-Domain),
+  eingebettet über `docs/eettafel-configurator-embed.liquid` im NL-Theme.
+- `BUILD_VERSION` steht in **7 Stellen** (eine mehr als DE — der Import von
+  `locale.js` in `app.js`): `js/config.js:7`, `index.html` (styles.css?v=,
+  modulepreload config.js?v=, app.js?v=), `app.js` (import config.js?v=,
+  import locale.js?v=, import shopify.js?v=). Global ersetzen.
 
-## Architektur (Kurzfassung)
+## Architektur, Testen, Mobile-Performance
 
-- Statisches Frontend (`configurator/`), Express-Server (`server.js`), three.js 0.162
-  vom CDN (importmap in `index.html`), Draco-Decoder lokal (`configurator/js/draco/`).
-- **Beine** sind Meshes IN den Form-GLBs (`glb files tables and legs/*.glb`) —
-  Discovery in `app.js → discoverModelParts`, Anzeigenamen über `nameMap`.
-  Zusätzliche Standalone-Beine liegen in `external-legs/` und sind in
-  `EXTERNAL_LEG_FILES` registriert (Titel → Datei). Externe Beine, die aus
-  UNSEREN GLBs extrahiert wurden, brauchen KEINE 90°-Rotation → siehe
-  `isX_alignedSat` in app.js.
-- **Grid** = Union aller `addons.Tischgestell` aus `zw-products.json` (statisch
-  im Repo, aus dem Shop generiert) + `CATALOG_ONLY_LEGS` (app.js). Karte-Titel
-  → 3D-Modell über `ZW_LEG_MODEL_MAP`. Ausschlüsse: `LEG_TITLE_EXCLUDE`,
-  per-Form/Größe: `HIDE_LEGS_BY_SHAPE_LENGTH`, Round hat eine Whitelist
-  (`isRoundOnly`).
-- **Preis/Warenkorb:** `updatePrice()` löst Titel → Variant/Preis über das
-  Produkt der aktuellen Form auf, mit Fallback auf CATALOG_ONLY_LEGS und
-  UNION-Fallback über alle Formen (Audit-Fix 2026-08-30 — ohne ihn blockierte
-  der Warenkorb auf Oval). Warenkorb = Shopify-Permalink `zazawoods.de/cart/…`.
-- **Swatches** der Beinkarten: `configurator/Swatches/Onderstel/<Titel>.png`
-  (Holz, farbig) bzw. `<Titel>_bw.png` (Metall, s/w-Foto), ≤400 px.
+Identisch mit dem DE-Repo — siehe dessen README. Kurz: statisches Frontend
+(`configurator/`), Express (`server.js`), three.js 0.162 vom CDN, Draco lokal,
+Beine als Meshes in den Form-GLBs + externe GLBs in `external-legs/`.
+Test-Rezept: alle `.leg-option`-Karten klicken, prüfen dass
+`L(state.zwLegName)` = Kartentitel, `_selectedVariants.leg` = NL-Variant-ID,
+Konsole leer; Überstand-Audit Vertices-gegen-Platten-Hülle (Session-Skripte
+`fulltest_nl.js` / `overhang_audit.js`, siehe HANDOFF).
 
-## Mobile-Performance (eingebaut 2026-08-30)
+## Shopify-Konventionen (NL)
 
-1. Google-Fonts-CSS lädt non-blocking (media=print-Swap) — ein blockierendes
-   Stylesheet verzögert sonst auch die Modul-Skripte.
-2. `index.html` startet einen **GLB-Prefetch** der Start-Form parallel zum
-   JS-Boot (`window.__glbPrefetch`), `loadGLTF()` konsumiert ihn.
-3. Externe Bein-GLBs (18 Stück) laden beim Kaltstart **verzögert/gestaffelt**
-   (`_deferredExtLoads`), außer dem per URL gewählten Bein.
-4. Nach dem ersten Load werden die GLBs der übrigen Formen im Leerlauf in den
-   HTTP-Cache geholt (`_warmOtherShapes`, Dateien sind immutable/1 Jahr).
-5. `modelCache` hält geparste GLTFs pro Form; Pixel-Ratio ist auf 2 gekappt.
-
-## Testen (Pflicht vor jedem Deploy)
-
-Headless Chromium (swiftshader) + Playwright; das CDN three@0.162.0 ist aus
-Containern oft nicht erreichbar → Routen auf lokale npm-Dateien umbiegen.
-Rezept: `/configurator/?shape=X` laden, warten bis `#loader` die Klasse
-`hidden` hat, ALLE `.leg-option`-Karten klicken, prüfen: `state.zwLegName`
-synchron, `_selectedVariants.leg` = korrekte Variant-ID, Preis-Badge, Konsole
-leer; Screenshot über `renderer.domElement.toDataURL`. Alle 7 Formen fahren.
-Für Überstand-Audits: Bein-Vertices gegen die konvexe Hülle der Platte messen
-(Vorlage: Session-Skripte `fulltest.js` / Audit vom 2026-08-30 im HANDOFF).
-
-## Shopify-Konventionen (DE)
-
-- Addon-Beine = Typ `Tischgestell`, Tags `addon, legs`, **„Continue selling
-  when out of stock" = ON**, Preis = Aufpreis; Neuanlage per **Duplizieren von
-  „Thorn Tischgestelle (Satz)"** (Produkt 10159918514442). Duplikate erben die
-  Collection „Tischgestell addons list" (Widget der Tischseiten).
-- Login-Hinweis: im Browser können zwei Shopify-Konten stecken — immer
-  **Nisar Derbaj (info@zazawoods.nl)** wählen, nie info@tablekings.de.
+- Store: zazawoods.nl (Shopify-Admin über accounts.shopify.com → Konto
+  **Nisar Derbaj, info@zazawoods.nl**, nie info@tablekings.de).
+- Addon-Produkte im NL-Shop: Typ `Onderstel` / `Randafwerking` / `Behandeling`,
+  werden über das Addon-Widget der Tafel-Produktseite ausgespielt (Collections
+  wie im DE-Shop). Neue Addon-Beine: Duplikat eines bestehenden Onderstel-Addons.
