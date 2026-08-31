@@ -53,9 +53,11 @@ Danach `BUILD_VERSION` bumpen.
   Auto-Deploy bei Push auf `main`. Service-Variable `PORT=3000` ist Pflicht
   (ohne sie antwortet Railway mit 502).
 - **Prod-URL:** https://zazawoods-eettafel-configurator-nl-production.up.railway.app
-  — eingebettet über `docs/eettafel-configurator-embed.liquid` im NL-Theme
-  (Seite `/pages/eettafel-configurator`). Domain nach dem Theme-Einbau NICHT
-  mehr ändern.
+  — eingebettet im NL-Theme „codixel-update" als
+  `sections/eettafel-configurator-embed.liquid` (= `docs/eettafel-configurator-embed.liquid`)
+  + `templates/page.eettafel-configurator.json`, Seite
+  https://zazawoods.nl/pages/eettafel-configurator. Domain NICHT mehr ändern
+  (steht hart in der Theme-Sektion, `cfg_base`).
 - `BUILD_VERSION` steht in **7 Stellen** (eine mehr als DE — der Import von
   `locale.js` in `app.js`): `js/config.js:7`, `index.html` (styles.css?v=,
   modulepreload config.js?v=, app.js?v=), `app.js` (import config.js?v=,
