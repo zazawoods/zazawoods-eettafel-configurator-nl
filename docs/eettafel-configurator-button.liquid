@@ -24,15 +24,22 @@
   {%- assign init_shape = 'bootsform' -%}
 {%- elsif h == 'runder-esstisch-romano-aus-massiver-eichenholz' -%}
   {%- assign init_shape = 'round' -%}
+{%- elsif h == 'organische-eettafel-pure-van-massief-eikenhout' -%}
+  {%- assign init_shape = 'organic' -%}
+{%- elsif h == 'halfronde-eettafel-van-massief-eikenhout' -%}
+  {%- assign init_shape = 'halfrond' -%}
 {%- else -%}
   {%- comment -%}
     Fallback for products not in the explicit map (colour/edge variants of the
     same table lines): infer the shape from the handle so e.g. an oval variant
-    never opens the configurator as a rectangle. NL shop has no organic /
-    half-round table products (yet) — those shapes are not in the NL build.
+    never opens the configurator as a rectangle.
   {%- endcomment -%}
   {%- if h contains 'deens-ovaal' or h contains 'deens-ovale' or h contains 'danisch-oval' -%}
     {%- assign init_shape = 'danish-oval' -%}
+  {%- elsif h contains 'organisch' or h contains 'kiezel' -%}
+    {%- assign init_shape = 'organic' -%}
+  {%- elsif h contains 'halfrond' or h contains 'halbrund' or h contains 'halbkreis' -%}
+    {%- assign init_shape = 'halfrond' -%}
   {%- elsif h contains 'bootsform' or h contains 'stadionvorm' -%}
     {%- assign init_shape = 'bootsform' -%}
   {%- elsif h contains 'ovaal' or h contains 'ovale' or h contains 'oval' -%}
@@ -62,6 +69,12 @@
   {%- assign oname = opt.name | downcase | strip -%}
   {%- assign val   = opt.selected_value | default: '' | downcase | strip -%}
   {%- if val == '' -%}{%- continue -%}{%- endif -%}
+  {%- comment -%} Halfrond sells Lengte + Breedte as two separate options ("240 cm" / "100") {%- endcomment -%}
+  {%- if oname contains 'breedte' or oname contains 'breite' or oname contains 'width' -%}
+    {%- assign wn = val | replace: 'cm', ' ' | strip | times: 1 -%}
+    {%- if wn >= 40 and init_width == '' -%}{%- assign init_width = wn -%}{%- endif -%}
+    {%- continue -%}
+  {%- endif -%}
   {%- if oname contains 'maat' or oname contains 'afmeting' or oname contains 'lengte' or oname contains 'diameter'
         or oname contains 'maß' or oname contains 'länge' or oname contains 'lange'
         or oname contains 'durchmesser' or oname contains 'size' or oname contains 'length' -%}
