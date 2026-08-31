@@ -19,7 +19,8 @@ dessen HANDOFF-Dateien erklären die Historie (Beine, Audits, Mobile-Perf).
      (12083205046612, gleiche Größen/Preise) nur in `zw-products-by-handle.json`
    - round → „Ronde eettafel Romano" (7678780080342)
    - bootsform → „Eettafel Stadionvorm Valerio" (7970329395414, 7 Größen ×100)
-   - KEIN organic / halfrond im NL-Shop → Formen aus `config.js` entfernt.
+   - KEIN organic / halfrond im NL-Shop → Formen aus `config.js` entfernt
+     (seit Punkt 9 wieder drin: eigene NL-Produkte).
 4. `config.js`, `index.html`, `server.js` (Titel, CSP `*.up.railway.app`),
    `docs/eettafel-configurator-*.liquid` (NL-Handles, Seite
    `/pages/eettafel-configurator`, Sektionen Behandeling/Randafwerking/Onderstel).
@@ -62,14 +63,72 @@ dessen HANDOFF-Dateien erklären die Historie (Beine, Audits, Mobile-Perf).
      Nisar Derbaj wählen), der ungespeicherte Puffer bleibt erhalten, dann
      erneut speichern.
 
+8. **Nachtrag (Build `f1c2d8e4`)** — aus dem DE-Repo portiert: Konische Holzsäule
+   umbenannt in „Konische Holzsäule aus Eichenholz" (NL-Label „Konische houten zuil
+   van eikenhout", neues Swatch + Render), Mobile-Fix gegen „WebGL context lost"
+   (kein AR-Export mehr bei jeder Änderung, GPU-Puffer alter Formen freigeben,
+   Context-Loss-Guard mit Reload, Shadow-Map 1024² auf Handys) — Details im
+   DE-HANDOFF 2026-08-30, Abschnitt „Mobile".
+
+9. **Vollausbau NL-Shop + Preiserhöhung (Build `a7d3e5f1`, 2026-08-31 abends)**
+   - **10 Addon-Beine im NL-Shop angelegt** (CSV-Import, Typ „Onderstel", Tag
+     `addon`, DE-Preise, DE-CDN-Bilder, NL-Beschreibungen): Drone Tafelonderstel
+     (set) 185 €, Stalen wangen tafelonderstel (set) / (S) (set) 560 €, Aeris
+     Tafelonderstel 195 €, Butterfly Tafelonderstel (set) 175 €, Vario
+     Tafelonderstel 245 €, Dubbel V-Tafelonderstel 225 €, Felix Tafelonderstel
+     220 €, Konische houten zuil van eikenhout 520 € (6 Renders vom Railway-DE),
+     U Tafelonderstel (smal) (set) 0 €. Handles: wie Titel; die vier Metall-Beine
+     Aeris/Vario/Dubbel V/Felix enden auf `-addon`, weil die bestehenden
+     Einzelprodukte „… Tafelpoot" (375–575 €, unverändert) die kurzen Handles
+     belegen. Variant-IDs stehen in `zw-products.json`.
+   - **Addons-Widget:** im NL-Theme kommt die Addon-Liste NICHT aus einer
+     Collection (wie DE), sondern aus dem Produkt-Metafeld **„addons list"**
+     (Product-List) jedes Tafel-Produkts. Die 10 neuen Beine wurden bei Milano,
+     Danilo, Sergio, Valerio, Organisch und Halfrond eingetragen (Admin →
+     Produkt → Metafeld → „Select products"). Romano (rund) absichtlich nicht
+     (dort nur die runden Beine). Andreas (Deens ovaal, nur `by-handle`) auch nicht.
+   - **Zwei neue Tafel-Produkte** (Duplikat von Milano → per CSV-Overwrite mit
+     den DE-Varianten/Preisen/Bildern gefüllt, Titel nur übersetzt):
+     `organische-eettafel-pure-van-massief-eikenhout` (15732884177236, „Organische
+     eettafel „Pure“ van massief eikenhout", 6 Größen) und
+     `halfronde-eettafel-van-massief-eikenhout` (15732884767060, „Halfronde
+     eettafel van massief eikenhout", Lengte × Breedte, 27 Varianten). Beide
+     aktiv, Collection „tafels", Tags `binnentafel, mytag01, vierkant`, SEO-Titel/
+     -Beschreibung gesetzt, Metafelder (Custom Tabs, addons list) von Milano.
+     → `config.js`: Formen `organic` („Organisch") und `halfrond` („Halfrond")
+     wieder drin, jetzt 7 Formen wie DE; `scrape_nl_products.py` SHAPES/HANDLES
+     erweitert; Button-Snippet `docs/eettafel-configurator-button.liquid` kennt
+     die zwei Handles + parst „Breedte" als Breite.
+   - **Preise +200 € ab 320 cm** (Auftrag Inhaber, beide Shops): alle Tisch-
+     Varianten mit Länge ≥ 320 cm (350/400 bei den 9-Größen-Tischen, 350/400 beim
+     Halfrond, 320–400 bei den Romeo-Tischen mit Aansteekplaten). NL: 76
+     Varianten in 12 Produkten (+ Halfrond schon mit +200 importiert), DE: 138
+     Varianten in 20 Produkten. Gemacht mit dem Shopify-**Bulk-Editor**
+     (`/bulk?resource_name=ProductVariant&edit=price&ids=…`) → Variant-IDs bleiben
+     stabil, nur der Preis ändert sich. NICHT erhöht (Rückfrage an Inhaber):
+     Tuintafel/Picknicktafel Douglas (NL), Gartentisch/Picknicktisch Douglas und
+     Baumscheiben-Tische Sipo (DE). Verifiziert über `/products/<handle>.json`.
+   - `locale.js`: NL-Titel der neuen Beine in `TITLE_TO_CANONICAL` (Drone jetzt
+     „Drone Tafelonderstel (set)"), UI-Strings „Lengte (cm)" / „Bladdikte"
+     (waren noch deutsch). `app.js`: Organisch 200 versteckt zusätzlich die
+     Ovale Holzsäule (DE-Audit, 3,8 cm Überstand).
+   - **Tests** (Harness `fulltest_nl.js` + neues `sizetest.js` = jede Größe jeder
+     Form: gewählte Basis-Variante existiert im Shop, angezeigter Gesamtpreis =
+     Shop-Preis + Addon-Preise): alle 7 Formen, alle Karten, alle Größen PASS,
+     Konsole leer — lokal und auf Railway.
+
 ## Offen / Fragen an den Inhaber
 
-- **Fehlende NL-Addon-Produkte** (im DE-Shop vorhanden, hier nicht): Drone
-  (185 €), Stahlwangen ×2 (560 €), Aeris/Butterfly/Vario/Doppel V/Felix Metall
-  (195/175/245/225/220 €), Konische Holzsäule (520 €), U (schmal). Sobald sie
-  im NL-Shop existieren → `CATALOG_ONLY_LEGS` (app.js) mit NL-Variant-IDs füllen;
-  die niederländischen Titel stehen schon in `locale.js` (`TITLE_TO_CANONICAL`).
-- **Organische / halbrunde Tafel** gibt es im NL-Shop nicht → Formen fehlen.
+- ~~Fehlende NL-Addon-Produkte~~ → erledigt (Punkt 9).
+- ~~Organische / halbrunde Tafel~~ → erledigt (Punkt 9). Beide Produkte tragen
+  wie Milano das Theme-Template `tafels`, das im aktuellen Theme nicht mehr
+  existiert (Admin zeigt „Template not available") — rendert mit dem
+  Standard-Produkttemplate, genau wie Milano. Verlinkung im Menü/Collections
+  ist Sache des Inhabers.
+- **Gartentische / Picknicktische** (Douglas) und DE-Baumscheiben-Tische: bei der
+  +200-€-Erhöhung ausgelassen — Inhaber fragen.
+- Die alten NL-Draft-Tische (Salvatore/Mauricio/Valentino/Lorenzo/Verona) sind
+  weiterhin Entwürfe und unangetastet.
 - **danish-oval**: Sergio als Hauptprodukt gewählt (älter); Andreas ist
   preisgleich. Bei Bedarf `shopifyHandle` in `config.js` tauschen.
 - **Button auf den Tafel-Produktseiten** + Marquee-Ausblenden (siehe Punkt 7)
