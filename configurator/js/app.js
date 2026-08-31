@@ -5,7 +5,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=27fe604e';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=2da8f153';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -121,7 +121,9 @@ const ZW_LEG_MODEL_MAP = {
   'X Tischgestell (Satz)':                              { name: 'X-Form',          isWood: false },
   'A Tischgestell (Satz)':                              { name: 'A-Form',          isWood: false },
   'Aeris Tischgestell aus Eichenholz':                  { name: 'Lara',            isWood: true  },
-  'Ovale Holzsäule aus Stäbchenholz, Eiche':            { name: 'Wellen-Säule',    isWood: true  },
+  // 'Ovale Holzsäule aus Stäbchenholz, Eiche' — NO internal map on purpose:
+  // the external GLB (see EXTERNAL_LEG_FILES) is used on every shape because
+  // Bootsform's internal 'Fluted' mesh is a different model (conical column).
   'Runde Holzsäule aus Stäbchenholz, Eiche':            { name: 'Wellen-Rund',     isWood: true  },
   'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)':  { name: 'Wellen-Duo',      isWood: true  },
   'Runde Holzsäule aus Eichenholz (Satz) (A)':          { name: 'Pilares',         isWood: true  },
@@ -183,6 +185,14 @@ const EXTERNAL_LEG_FILES = {
   // Halbrunde Eichenholz — extracted from rectangle.glb so all shapes render the
   // canonical rectangle-style arches (some GLBs had faceted/rotated variants).
   'Halbrunde Tischbeine aus Eichenholz (Satz) (A)':   'Halbrunde Tischbeine aus Eichenholz (Satz).glb',
+  // Ovale Holzsäule — extracted from rectangle.glb (audit 2026-08-30): the
+  // Bootsform GLB carried a DIFFERENT mesh (a conical column) under the same
+  // 'Fluted' name, so the customer saw the wrong leg there. External file =
+  // the canonical oval column on every shape.
+  'Ovale Holzsäule aus Stäbchenholz, Eiche':          'Ovale Holzsaeule Staebchenholz.glb',
+  // Konische Holzsäule — the mesh that hid inside Bootsform.glb as 'Fluted';
+  // now a leg of its own on all shapes (owner request 2026-08-30).
+  'Konische Holzsäule aus Stäbchenholz, Eiche':       'Konische Holzsaeule.glb',
 };
 
 // Persistent cache of loaded external leg gltf.scene clones — reused across shape switches.
@@ -204,7 +214,12 @@ const CATALOG_ONLY_LEGS = [
   { title: 'Butterfly Tischgestell (Satz)', variantId: '53598132175114', price: 17500 },
   { title: 'Vario Tischgestell',            variantId: '53598115856650', price: 24500 },
   { title: 'Doppel V-Tischgestell',         variantId: '53598118412554', price: 22500 },
-  { title: 'Felix Tischgestell',            variantId: '53598124540170', price: 22000 }
+  { title: 'Felix Tischgestell',            variantId: '53598124540170', price: 22000 },
+  // Konische Holzsäule — the conical column that hid inside Bootsform.glb under
+  // the Ovale's mesh name. Own addon product (duplicate of Runde Holzsäule
+  // 10399839781130, created 2026-08-31, product 10605388759306, 520 € surcharge
+  // confirmed by owner). 3D: external GLB, see EXTERNAL_LEG_FILES.
+  { title: 'Konische Holzsäule aus Stäbchenholz, Eiche', variantId: '53602745778442', price: 52000 }
 ];
 
 
@@ -236,7 +251,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=27fe604e';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=2da8f153';
 
 class TableConfigurator {
   constructor() {
@@ -682,6 +697,20 @@ class TableConfigurator {
 
   // ─── Model Loading & Part Discovery ───────────
 
+  // Warm the browser HTTP cache for the other shapes' GLBs while the user is
+  // idle (files are served immutable/1y). First switch to another shape then
+  // only pays the Draco decode, not the network. Runs once, staggered, and
+  // skips when the user asked to save data.
+  _warmOtherShapes() {
+    if (this._shapesWarmed) return;
+    this._shapesWarmed = true;
+    if (navigator.connection && navigator.connection.saveData) return;
+    const others = TABLE_SHAPES.filter(s => s.id !== this.state.shape && s.glbFile);
+    others.forEach((s, i) => setTimeout(() => {
+      fetch(s.glbFile + '?v=' + BUILD_VERSION).catch(() => {});
+    }, 4000 + i * 1500));
+  }
+
   async loadModel(shapeId) {
     const shape = TABLE_SHAPES.find(s => s.id === shapeId);
     if (!shape) return;
@@ -905,6 +934,7 @@ class TableConfigurator {
       if (this._loadToken === myToken) {
         this.isLoading = false;
         this.hideLoader();
+        this._warmOtherShapes();
       }
     }
     // Stop here if we got superseded — don't run price/preload for stale load
@@ -1086,7 +1116,8 @@ class TableConfigurator {
         // Skip the extra 90° Y rotation and use splitSetLeg → splitHalves spread.
         const isButterflyExt = /^Butterfly Tischbeine aus Eichenholz/i.test(title);
         const isHalbrundeExt = /^Halbrunde Tischbeine aus Eichenholz/i.test(title);
-        const isX_alignedSat = isButterflyExt || isHalbrundeExt;
+        const isSaeuleExt = /^(Ovale|Konische) Holzsäule aus Stäbchenholz/i.test(title);
+        const isX_alignedSat = isButterflyExt || isHalbrundeExt || isSaeuleExt;
         const placements = isPair
           ? [{ x: -0.75, mirror: false }, { x: 0.75, mirror: true }]   // pair: second instance faces opposite
           : [{ x: 0, mirror: false }];                                    // single centered
@@ -1170,12 +1201,33 @@ class TableConfigurator {
       const cached = EXTERNAL_LEG_CACHE.get(title);
       if (cached) { registerLoaded(cached); return; }
       const url = '../glb files tables and legs/external-legs/' + encodeURIComponent(file) + '?v=' + BUILD_VERSION;
-      enclosingThis.loader.load(url,
+      const startLoad = () => enclosingThis.loader.load(url,
         (gltf) => { EXTERNAL_LEG_CACHE.set(title, gltf.scene); registerLoaded(gltf.scene); },
         undefined,
         (err) => { console.warn('[ZW] external leg load failed:', title, err?.message || err); }
       );
+      // Mobile perf (2026-08-30): on the very first model load, 18 external GLB
+      // fetches + Draco decodes used to compete with the main table GLB and JS
+      // boot on the critical path. Defer them until after the first paint,
+      // staggered — EXCEPT a leg the URL/user already selected (loads at once
+      // so the selection still auto-applies as before).
+      if (!enclosingThis._coldStartDone && title !== enclosingThis.state.zwLegName) {
+        enclosingThis._deferredExtLoads = enclosingThis._deferredExtLoads || [];
+        enclosingThis._deferredExtLoads.push(startLoad);
+        return;
+      }
+      startLoad();
     });
+    // Flush deferred external-leg loads shortly after the first table is
+    // visible, 120ms apart so decode work never blocks a frame for long.
+    if (!enclosingThis._coldStartDone) {
+      enclosingThis._coldStartDone = true;
+      setTimeout(() => {
+        const q = enclosingThis._deferredExtLoads || [];
+        enclosingThis._deferredExtLoads = [];
+        q.forEach((fn, i) => setTimeout(fn, i * 120));
+      }, 1200);
+    }
 
     // Sort legs: wood first, then metal; within each group sort by position distance
     // from origin (legs closer to tabletop center look better as default)
@@ -2416,6 +2468,7 @@ class TableConfigurator {
       'Oval-Säule', 'Pluto', 'Kolom Kiezel', 'Kolom Organic', 'Rund-Säule',
       'Diablo', 'Wellen-Säule', 'Positivo',
       'Konische Spider', 'Hannah', 'Lara',
+      'Ovale Holzsäule aus Stäbchenholz, Eiche', 'Konische Holzsäule aus Stäbchenholz, Eiche',
       'Vera', 'V-Form', 'Matrix', 'Stative',
       'Vedo', 'Thore', 'Criss Cross', 'Tapse Spin'
     ];
@@ -3049,6 +3102,17 @@ class TableConfigurator {
 
   loadGLTF(url, opts = {}) {
     const silent = !!opts.silent;
+    // index.html starts fetching the initial shape's GLB in parallel with the
+    // JS module graph (mobile perf, 2026-08-30). If that prefetch matches this
+    // URL, parse its ArrayBuffer directly instead of fetching again.
+    const pf = window.__glbPrefetch;
+    if (pf && pf.file && decodeURIComponent(url).includes(pf.file)) {
+      window.__glbPrefetch = null;
+      return pf.promise.then((buf) => {
+        if (!buf) throw new Error('prefetch failed');
+        return new Promise((res, rej) => this.loader.parse(buf, '', res, rej));
+      }).catch(() => this.loadGLTF(url, opts)); // fall back to a normal load
+    }
     return new Promise((resolve, reject) => {
       // Simulate smooth progress since servers often don't send Content-Length
       let simPct = 0;
