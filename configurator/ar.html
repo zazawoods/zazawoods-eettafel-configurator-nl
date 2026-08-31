@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="nl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,9 +16,9 @@
 </head>
 <body>
   <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
-  <h1 id="msg">AR wird geöffnet …</h1>
-  <p id="sub">Einen Moment bitte</p>
-  <a id="arl" class="btn" style="display:none">In AR öffnen</a>
+  <h1 id="msg">AR wordt geopend …</h1>
+  <p id="sub">Een ogenblik geduld</p>
+  <a id="arl" class="btn" style="display:none">In AR openen</a>
 <script>
   // Only accept same-origin model URLs from our upload API. Blocks
   // ?u=javascript:... and any cross-origin redirect via the QR/link.
@@ -63,13 +63,13 @@
     if (isIOS) {
       a.setAttribute('rel', 'ar');
       // tiny invisible 1×1 GIF — required by Quick Look
-      a.innerHTML = '<img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">In AR öffnen';
+      a.innerHTML = '<img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">In AR openen';
     }
     a.href = target;
     a.style.display = 'inline-block';
     // auto-click the anchor (NOT location.href — that bypasses rel="ar")
     setTimeout(function () { try { a.click(); } catch (e) {} }, 250);
-    document.getElementById('sub').textContent = 'Falls sich nichts öffnet, tippe auf den Button.';
+    document.getElementById('sub').textContent = 'Als er niets opent, tik dan op de knop.';
   } else {
     document.getElementById('msg').textContent = 'Kein Modell angegeben.';
     document.getElementById('sub').textContent = '';
