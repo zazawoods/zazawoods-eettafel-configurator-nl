@@ -1,8 +1,11 @@
 {%- comment -%}
-  Zaza Woods: on the two configurator pages hide (1) the top marquee strip
-  (Kostenlose Lieferung / Individuelle Maßanfertigung / Monatsraten) and
-  (2) the footer, whose top edge peeked out as an empty dark strip below
-  the configurator. Paste into layout/theme.liquid directly BEFORE </head>.
+  Zaza Woods NL: op de configurator-pagina de marquee-strook (Gratis verzending /
+  Specialist in maatwerk / Gratis adviesgesprek) en de footer verbergen, zodat het
+  configurator-iframe de volledige hoogte krijgt.
+  EINGEBAUT (2026-08-31) als Sektion „Custom Liquid" (Padding oben/unten 0) im
+  Template templates/page.eettafel-configurator.json — kein Eingriff in
+  layout/theme.liquid nötig, das <style> wirkt seitenweit. Der schwarze
+  „zw countdown"-Balken (Aktions-Countdown) bleibt sichtbar.
 {%- endcomment -%}
 {%- if page.handle == 'konfigurator' or page.handle == 'eettafel-configurator' -%}
 <style>

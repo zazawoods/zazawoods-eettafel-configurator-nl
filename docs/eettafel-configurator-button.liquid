@@ -1,7 +1,19 @@
-{%- assign suffix = template.suffix | downcase -%}
-{%- assign tname  = template.name   | downcase -%}
+{%- comment -%}
+  Zaza Woods NL — „Configurator openen"-Button auf den Tafel-Produktseiten.
+  Eingebaut als Block „Custom Liquid" in der Sektion „Product information"
+  des Templates „Default product" (Theme codixel-update). Die NL-Tafeln haben
+  kein eigenes Produkt-Template (Suffix „tafels" existiert im Theme nicht),
+  darum wird hier über die Handle-Liste der konfigurierbaren Tafeln
+  (= Schlüssel von configurator/js/zw-products-by-handle.json) entschieden.
+  Neue Tafel im Konfigurator → Handle hier ergänzen.
+{%- endcomment -%}
+{%- assign configurable = "rechthoekige-eettafel-massief-eikenhout,ovale-eettafel-danilo-uit-massief-eikenhout-met-een-verjongde-rand,massief-eiken-tafel-ovaal,massief-eiken-tafel-deens-ovaal-andreas-met-verjongde-rand,runder-esstisch-romano-aus-massiver-eichenholz,bootsform-esstisch-sergio-aus-massivem-eichenholz-1,organische-eettafel-pure-van-massief-eikenhout,halfronde-eettafel-van-massief-eikenhout,rechhoekige-tafel-eikenhout-verjongde-rand,rechteckiger-esstisch-luciano-aus-2-teilen,gekohlter-esstisch-yakisugi" | split: "," -%}
 {%- assign show = false -%}
-{%- if suffix == 'eettafel-configurator' or tname == 'eettafel-configurator' or suffix == 'esstisch-konfigurator' or tname == 'esstisch-konfigurator' -%}
+{%- if configurable contains product.handle -%}
+  {%- assign show = true -%}
+{%- endif -%}
+{%- assign suffix = template.suffix | downcase -%}
+{%- if suffix == 'eettafel-configurator' or suffix == 'esstisch-konfigurator' -%}
   {%- assign show = true -%}
 {%- endif -%}
 
@@ -187,6 +199,9 @@
           var nums = (v.match(/\d+/g) || []).map(Number).filter(function (n) { return n >= 40; });
           if (nums[0]) length = nums[0];
           if (nums[1]) width = nums[1];
+        } else if (/breedte|breite|width/i.test(k)) {
+          // Halfrond: separate "Breedte" option ("100")
+          var wn = firstInt(v); if (wn && wn >= 40) width = wn;
         } else if (/behandeling|kleur|behandlung|farbe|colou?r/i.test(k)) {
           color = v;
         } else if (/rand|kant|kante|edge/i.test(k)) {
