@@ -5,7 +5,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=2da8f153';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=7f3e9c01';
+// NL locale layer: canonical (German) titles internally, Dutch labels via L()/T().
+import { L, T, SHOP_URL, LOCALE, canonicalizeProducts, canonicalTitle } from './locale.js?v=7f3e9c01';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -61,7 +63,7 @@ async function loadZWProducts() {
   try {
     const r = await fetch('js/zw-products.json?v=' + BUILD_VERSION);
     if (r.ok) {
-      ZW_PRODUCTS_DATA = await r.json();
+      ZW_PRODUCTS_DATA = canonicalizeProducts(await r.json());
       console.log('[ZW] product data loaded', Object.keys(ZW_PRODUCTS_DATA));
     } else {
       console.warn('[ZW] zw-products.json fetch returned', r.status);
@@ -198,28 +200,15 @@ const EXTERNAL_LEG_FILES = {
 // Persistent cache of loaded external leg gltf.scene clones — reused across shape switches.
 const EXTERNAL_LEG_CACHE = new Map();
 
-// Catalog-only legs from /collections/tischgestelle that aren't sold as addons on any Esstisch.
+// Catalog-only legs: legs that have a 3D model but are not sold as addons on
+// any NL table product yet. EMPTY on purpose for the NL shop — the German shop
+// has 9 such addon products (Drone, Stahlwangen ×2, Aeris/Butterfly/Vario/
+// Doppel V/Felix metal legs, Konische Holzsäule). As soon as the NL shop gets
+// the equivalent addon products, add them here with the NL variant IDs and
+// surcharge prices (title = canonical German title, see locale.js LABELS for
+// the Dutch card label), e.g.:
+//   { title: 'Konische Holzsäule aus Stäbchenholz, Eiche', variantId: '…', price: 52000 },
 const CATALOG_ONLY_LEGS = [
-  // Legs that have a 3D model but aren't addons in zw-products.json.
-  // Drone: dedicated addon product "Drone Tischgestelle (Satz)" (185€ surcharge,
-  // created 2026-08-22 after a customer flagged the 345€ full standalone price
-  // being charged as an "Aufpreis"). The 3D/UI title stays "Drone Tischbeine
-  // (Satz)" — only the cart variant + price come from the addon product.
-  { title: 'Drone Tischbeine (Satz)',             variantId: '53548722028810', price: 18500 },
-  { title: 'Stahlwangen Tischgestell (Satz)',     variantId: '44218834026762', price: 56000 },
-  { title: 'Stahlwangen Tischgestell (S) (Satz)', variantId: '44218853032202', price: 56000 },
-  // 5 addon products created 2026-08-30 (duplicated from Thorn, surcharge prices
-  // confirmed by owner). Metal counterparts of catalog legs missing from the grid.
-  { title: 'Aeris Tischgestell',            variantId: '53598108975370', price: 19500 },
-  { title: 'Butterfly Tischgestell (Satz)', variantId: '53598132175114', price: 17500 },
-  { title: 'Vario Tischgestell',            variantId: '53598115856650', price: 24500 },
-  { title: 'Doppel V-Tischgestell',         variantId: '53598118412554', price: 22500 },
-  { title: 'Felix Tischgestell',            variantId: '53598124540170', price: 22000 },
-  // Konische Holzsäule — the conical column that hid inside Bootsform.glb under
-  // the Ovale's mesh name. Own addon product (duplicate of Runde Holzsäule
-  // 10399839781130, created 2026-08-31, product 10605388759306, 520 € surcharge
-  // confirmed by owner). 3D: external GLB, see EXTERNAL_LEG_FILES.
-  { title: 'Konische Holzsäule aus Stäbchenholz, Eiche', variantId: '53602745778442', price: 52000 }
 ];
 
 
@@ -251,7 +240,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=2da8f153';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=7f3e9c01';
 
 class TableConfigurator {
   constructor() {
@@ -382,7 +371,7 @@ class TableConfigurator {
       }
     }
     if (params.has('edge')) {
-      const edgeId = params.get('edge');
+      const edgeId = canonicalTitle(params.get('edge'));
       const eq = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
       let match = EDGE_OPTIONS.find(e => e.id === edgeId || eq(e.name, edgeId));
       // Also accept the ZW shop addon titles ("Gerade Kanten", "Schweizer
@@ -401,7 +390,7 @@ class TableConfigurator {
     // customer picked a Behandlung addon (e.g. "Pure", "Unsichtbarer
     // Skylt-Lack"). Maps to our color id + remembers the exact title.
     if (params.has('behandlung')) {
-      const bt = params.get('behandlung').trim();
+      const bt = canonicalTitle(params.get('behandlung').trim());
       const entry = Object.entries(BEHANDLUNG_TEXTURE_MAP)
         .find(([title]) => title.toLowerCase() === bt.toLowerCase());
       if (entry) {
@@ -410,7 +399,7 @@ class TableConfigurator {
           this.state.color = entry[1];
           // Normalize legacy titles: the shop's old "Black" addon is now sold
           // as "Yakisugi" (€220) — old product buttons still send Black.
-          const TITLE_ALIASES = { 'Black': 'Yakisugi' };
+          const TITLE_ALIASES = LOCALE === 'nl' ? {} : { 'Black': 'Yakisugi' };
           this.state.behandlungTitle = TITLE_ALIASES[entry[0]] || entry[0];
           this.state.userPickedBehandlung = true;
         }
@@ -430,7 +419,8 @@ class TableConfigurator {
       }
     }
     if (params.has('leg')) {
-      const legParam = params.get('leg');
+      // NL: product-page buttons send the Dutch shop title → canonical.
+      const legParam = canonicalTitle(params.get('leg'));
       this._preferredLegName = legParam;
       // Also seed zwLegName + userPickedLeg so async external-leg loads (which
       // haven't finished by the time discoverModelParts runs) will auto-apply
@@ -497,7 +487,7 @@ class TableConfigurator {
 
     // Notify parent page (Shopify) to update its URL
     if (window.parent !== window) {
-      window.parent.postMessage({ type: 'configurator-state', params: params.toString() }, 'https://zazawoods.de');
+      window.parent.postMessage({ type: 'configurator-state', params: params.toString() }, SHOP_URL);
     }
 
     // Phones: pre-build the AR model for the new configuration in the
@@ -1270,7 +1260,7 @@ class TableConfigurator {
     if (this.legObjects.length > 0) {
       const activeLeg = this.legObjects[this.activeLegIndex] || this.legObjects[0];
       document.getElementById('val-legs').textContent =
-        this.state.zwLegName || `${activeLeg.displayName}${activeLeg.isWood ? ' (Holz)' : ''}`;
+        L(this.state.zwLegName) || `${activeLeg.displayName}${activeLeg.isWood ? ' (' + T('Holz') + ')' : ''}`;
       this.state.legId = activeLeg.rawName;
     }
   }
@@ -2723,7 +2713,7 @@ class TableConfigurator {
 
     this.state.legId = leg.rawName;
     document.getElementById('val-legs').textContent =
-      this.state.zwLegName || `${leg.displayName}${leg.isWood ? ' (Holz)' : ''}`;
+      L(this.state.zwLegName) || `${leg.displayName}${leg.isWood ? ' (' + T('Holz') + ')' : ''}`;
 
     // CRITICAL: apply per-length/shape leg positioning to the newly-selected
     // leg. Without this, the leg becomes visible at its baked GLB position
@@ -3151,7 +3141,7 @@ class TableConfigurator {
 
   updateLoaderProgress(pct) {
     const el = document.getElementById('loader-text');
-    if (el) el.textContent = `Wir bauen Ihren Tisch auf… ${pct}%`;
+    if (el) el.textContent = `${T('Wir bauen Ihren Tisch auf…')} ${pct}%`;
   }
 
   // ─── Morph Animation ─────────────────────────
@@ -4170,13 +4160,13 @@ class TableConfigurator {
       // product page) are valid choices — one click to cart. Only block what
       // genuinely cannot be added (e.g. no Behandlung known at all).
       const missing = [];
-      if (!this._behandlungIncluded && (!this.state.behandlungTitle || !okId(vv.behandlung))) missing.push('Behandlung');
-      if (!okId(vv.edge)) missing.push('Kantenbearbeitung');
-      if (!okId(vv.leg))  missing.push('Tischgestell');
+      if (!this._behandlungIncluded && (!this.state.behandlungTitle || !okId(vv.behandlung))) missing.push(T('Behandlung'));
+      if (!okId(vv.edge)) missing.push(T('Kantenbearbeitung'));
+      if (!okId(vv.leg))  missing.push(T('Tischgestell'));
       if (missing.length > 0) {
-        this.showToast('Bitte wähle: ' + missing.join(', '));
+        this.showToast(T('Bitte wähle: ') + missing.join(', '));
         // Visually expand the first missing section so the user sees it
-        const map = { Behandlung: 'material', Kantenbearbeitung: 'edge', Tischgestell: 'legs' };
+        const map = { Behandlung: 'material', Kantenbearbeitung: 'edge', Tischgestell: 'legs', [T('Behandlung')]: 'material', [T('Kantenbearbeitung')]: 'edge', [T('Tischgestell')]: 'legs' };
         const sectionId = map[missing[0]];
         const sec = document.querySelector(`[data-section='${sectionId}']`);
         if (sec && !sec.classList.contains('active')) sec.querySelector('.section-header')?.click();
@@ -4197,14 +4187,14 @@ class TableConfigurator {
       // Base table is mandatory — without it Shopify receives an addon-only cart
       // (behandlung/edge/leg are €0 line items on the base product's page).
       if (!validId(v.base)) {
-        this.showToast('Diese Größe ist gerade nicht verfügbar — bitte andere Länge/Breite wählen.');
+        this.showToast(T('Diese Größe ist gerade nicht verfügbar — bitte andere Länge/Breite wählen.'));
         return;
       }
       if (items.length === 0) {
-        this.showToast('Konfiguration unvollständig — bitte erneut auswählen');
+        this.showToast(T('Konfiguration unvollständig — bitte erneut auswählen'));
         return;
       }
-      const cartUrl = 'https://zazawoods.de/cart/' + items.join(',');
+      const cartUrl = SHOP_URL + '/cart/' + items.join(',');
       // Embedded in the shop page the checkout CANNOT be framed (Shopify
       // forbids it → the customer saw a connection error). Always break out
       // of the iframe: navigate the TOP window (allowed on a user click);
@@ -4481,7 +4471,7 @@ class TableConfigurator {
     // Build a UNION of all Tischgestell addons across every product (so every leg
     // is available on every shape), then apply per-shape compatibility filtering.
     if (!ZW_PRODUCTS_DATA) {
-      grid.innerHTML = '<p style="font-size:12px;color:#999;padding:8px 0;">Lade Untergestelle…</p>';
+      grid.innerHTML = '<p style="font-size:12px;color:#999;padding:8px 0;">' + T('Lade Untergestelle…') + '</p>';
       return;
     }
     const unionByTitle = new Map();
@@ -4533,6 +4523,11 @@ class TableConfigurator {
     ];
     const ORGANIC_ALL = FRAME_SATZ.concat(['Thorn Tischgestelle (Satz)']);
     const HIDE_LEGS_BY_SHAPE_LENGTH = {
+      // NL audit 2026-08-31 (vertices vs tabletop hull): the wide Matrix (Rond)
+      // frame is 101 cm across and pokes 0.9 cm past the Ø100 top → hidden there.
+      'round': {
+        100: ['Spider Gestell (rund)']
+      },
       'oval': {
         180: ['Thorn Tischgestelle (Satz)', 'Drone Tischbeine (Satz)', 'U Tischgestell (Satz)', 'U Tischgestell (M) (Satz)', 'U Tischgestell (schmal) (Satz)', 'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Trapezium Tischgestell (Satz)', 'Stahlwangen Tischgestell (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)', 'Butterfly Tischbeine aus Eichenholz (Satz) (A)', 'Butterfly Tischgestell (Satz)'],
         200: ['Thorn Tischgestelle (Satz)', 'U Tischgestell (M) (Satz)', 'X Tischgestell (Satz)', 'A Tischgestell (Satz)', 'Ovale Tischgestelle aus Eiche-Stäbchenholz (Satz)', 'Butterfly Tischgestell (Satz)']
@@ -4652,7 +4647,7 @@ class TableConfigurator {
         this._legAutoApplyPending = true;
       }
       const vl = document.getElementById('val-legs');
-      if (vl) vl.textContent = this.state.zwLegName;
+      if (vl) vl.textContent = L(this.state.zwLegName);
     }
 
     const renderBtn = (item, idx) => {
@@ -4681,7 +4676,7 @@ class TableConfigurator {
       return `
         <button class="leg-option ${hasModel ? 'has-model' : 'no-model'} ${active ? 'active' : ''}" data-zw-index="${idx}" data-leg-index="${legIdx}">
           <div class="leg-swatch-img">${swatch}</div>
-          <div class="leg-name">${item.title}</div>
+          <div class="leg-name">${L(item.title)}</div>
           ${priceTag}
         </button>
       `;
@@ -4694,14 +4689,14 @@ class TableConfigurator {
     tischgestellList.forEach((item, idx) => (isWoodTitle(item.title) ? woodLegs : metalLegs).push({ item, idx }));
     let html = '';
     if (metalLegs.length) {
-      html += '<div class="leg-category-label">Metall</div>';
+      html += '<div class="leg-category-label">' + T('Metall') + '</div>';
       html += `<div class="leg-category-grid">${metalLegs.map(o => renderBtn(o.item, o.idx)).join('')}</div>`;
     }
     if (woodLegs.length) {
-      html += '<div class="leg-category-label">Holz</div>';
+      html += '<div class="leg-category-label">' + T('Holz') + '</div>';
       html += `<div class="leg-category-grid">${woodLegs.map(o => renderBtn(o.item, o.idx)).join('')}</div>`;
     }
-    html = html || '<p style="font-size:12px;color:#999;padding:8px 0;">Keine Untergestelle verfügbar</p>';
+    html = html || '<p style="font-size:12px;color:#999;padding:8px 0;">' + T('Keine Untergestelle verfügbar') + '</p>';
     // applyDimensions() re-renders this grid on every slider move; if nothing in
     // the markup changed, skip the innerHTML swap (avoids re-creating 26 <img>
     // nodes + re-decoding their images + a layout pass per interaction).
@@ -4752,7 +4747,7 @@ class TableConfigurator {
       }
       grid.querySelectorAll('.leg-option').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      document.getElementById('val-legs').textContent = item.title;
+      document.getElementById('val-legs').textContent = L(item.title);
       this.updateSummary();
       this.updateLegSectionIcon();
     };
@@ -4816,7 +4811,7 @@ class TableConfigurator {
     const product = ZW_PRODUCTS_DATA && ZW_PRODUCTS_DATA[this.state.shape];
     const behandlungs = product?.addons?.Behandlung || [];
     if (behandlungs.length === 0) {
-      container.innerHTML = '<p style="font-size:12px;color:#999;padding:8px 0;">Lade Farben…</p>';
+      container.innerHTML = '<p style="font-size:12px;color:#999;padding:8px 0;">' + T('Lade Farben…') + '</p>';
       return;
     }
     const matType = MATERIAL_TYPES.oak;
@@ -4830,9 +4825,9 @@ class TableConfigurator {
                 data-behandlung-title="${b.title.replace(/"/g,'&quot;')}"
                 data-variant-id="${b.variantId}"
                 data-oak-id="${oakColor.id}"
-                title="${b.title}">
+                title="${L(b.title)}">
           <div class="color-swatch-img" style="width:36px;height:36px;border-radius:50%;background:#e6dcc7 url('${fileUrl}') center/cover no-repeat;box-shadow:inset 0 0 0 1px rgba(0,0,0,0.06);flex-shrink:0;"></div>
-          <span class="color-swatch-name">${b.title}${(b.price > 0) ? `<span class="leg-price" style="display:block;">+€${(b.price/100).toFixed(0)}</span>` : ''}</span>
+          <span class="color-swatch-name">${L(b.title)}${(b.price > 0) ? `<span class="leg-price" style="display:block;">+€${(b.price/100).toFixed(0)}</span>` : ''}</span>
         </button>
       `;
     }).join('');
@@ -4875,7 +4870,7 @@ class TableConfigurator {
     const color = matType.colors.find(c => c.id === this.state.color);
     // Prefer the actual Shopify Behandlung title if user has picked one (so e.g.
     // 'Unsichtbarer Skylt-Lack' is shown, not just the 'Natural' fallback texture name).
-    const colorDisplay = this.state.behandlungTitle || (color ? color.name : '');
+    const colorDisplay = L(this.state.behandlungTitle) || (color ? color.name : '');
     document.getElementById('val-material').textContent =
       `${matType.name} \u00b7 ${colorDisplay}`;
   }
@@ -5249,22 +5244,22 @@ class TableConfigurator {
     const matType = MATERIAL_TYPES[this.state.materialType];
     const color = matType?.colors.find(c => c.id === this.state.color);
     const activeLeg = this.legObjects[this.activeLegIndex];
-    const edgeNames = { standaard: 'Gerade Kante', facet: 'Schweizer Kante', boomstam: 'Baumstammkante' };
+    const edgeNames = { standaard: T('Gerade Kante'), facet: T('Schweizer Kante'), boomstam: L('Baumstammkante') };
 
     const lines = [];
-    lines.push(`${shape?.name || ''} · ${this.state.materialType === 'oak' ? 'Eiche' : 'Keramik'} ${this.state.behandlungTitle || color?.name || ''}`);
+    lines.push(`${shape?.name || ''} · ${this.state.materialType === 'oak' ? T('Eiche') : T('Keramik')} ${L(this.state.behandlungTitle) || color?.name || ''}`);
     if (this.state.shape === 'round') {
       lines.push(`Ø ${this.state.length} cm · ${this.getThicknessCm()} cm`);
     } else {
       lines.push(`${this.state.length} × ${this.state.width} × ${this.getThicknessCm()} cm`);
     }
-    lines.push(`Kantenbearbeitung: ${edgeNames[this.state.edge] || this.state.edge}`);
-    if (this.state.zwLegName) lines.push(`Tischgestell: ${this.state.zwLegName}`); else if (activeLeg) lines.push(`Tischgestell: ${activeLeg.displayName}${activeLeg.isWood ? ' (Holz)' : ' (Metall)'}`);
+    lines.push(`${T('Kantenbearbeitung')}: ${edgeNames[this.state.edge] || this.state.edge}`);
+    if (this.state.zwLegName) lines.push(`${T('Tischgestell')}: ${L(this.state.zwLegName)}`); else if (activeLeg) lines.push(`${T('Tischgestell')}: ${activeLeg.displayName}${activeLeg.isWood ? ' (' + T('Holz') + ')' : ' (' + T('Metall') + ')'}`);
     return lines;
   }
 
   getShareUrl() {
-    return `https://zazawoods.de/pages/esstisch-konfigurator${window.location.search}`;
+    return `${SHOP_URL}/pages/eettafel-configurator${window.location.search}`;
   }
 
   showSharePopup() {
@@ -5274,17 +5269,17 @@ class TableConfigurator {
   handleShare(channel) {
     const url = this.getShareUrl();
     const summary = this.getConfigSummaryText().join('\n');
-    const text = `Sieh dir meine Zaza Woods Esstisch-Konfiguration an:\n${summary}\n\n`;
+    const text = `${T('Sieh dir meine Zaza Woods Esstisch-Konfiguration an:')}\n${summary}\n\n`;
 
     switch (channel) {
       case 'whatsapp':
         window.open(`https://wa.me/?text=${encodeURIComponent(text + url)}`, '_blank');
         break;
       case 'email':
-        window.open(`mailto:?subject=${encodeURIComponent('Meine Zaza Woods Tischkonfiguration')}&body=${encodeURIComponent(text + url)}`, '_blank');
+        window.open(`mailto:?subject=${encodeURIComponent(T('Meine Zaza Woods Tischkonfiguration'))}&body=${encodeURIComponent(text + url)}`, '_blank');
         break;
       case 'copy':
-        navigator.clipboard.writeText(url).then(() => this.showToast('Link kopiert'));
+        navigator.clipboard.writeText(url).then(() => this.showToast(T('Link kopiert')));
         break;
     }
     document.getElementById('share-popup').classList.add('hidden');
@@ -5398,7 +5393,7 @@ class TableConfigurator {
     const color = matType?.colors.find(c => c.id === this.state.color);
     const activeLeg = this.legObjects[this.activeLegIndex];
     const filename = [
-      shape?.name || 'Tisch',
+      shape?.name || T('Tisch'),
       this.state.length,
       color?.name || '',
       activeLeg?.displayName || ''
@@ -5410,7 +5405,7 @@ class TableConfigurator {
       canvas.toBlob(async (blob) => {
         const file = new File([blob], filename, { type: 'image/png' });
         try {
-          await navigator.share({ title: 'Mein Zaza Woods Tisch', files: [file] });
+          await navigator.share({ title: T('Mein Zaza Woods Tisch'), files: [file] });
         } catch { /* user cancelled */ }
       });
     } else {
@@ -5419,7 +5414,7 @@ class TableConfigurator {
       a.download = filename;
       a.click();
     }
-    this.showToast('Screenshot gespeichert');
+    this.showToast(T('Screenshot gespeichert'));
   }
 
   saveCurrentConfig() {
@@ -5437,8 +5432,8 @@ class TableConfigurator {
     // Prefer ZW product titles the customer actually sees in the sidebar over
     // internal model names ("Hannah" → "Butterfly Tischbeine aus Eichenholz…"),
     // and the picked Behandlung title ("Black") over the raw color id ("Natural").
-    const legLabel = this.state.zwLegName || activeLeg?.displayName || '';
-    const behandlungLabel = this.state.behandlungTitle || color?.name || '';
+    const legLabel = L(this.state.zwLegName) || activeLeg?.displayName || '';
+    const behandlungLabel = L(this.state.behandlungTitle) || color?.name || '';
 
     // Dimension string matches what the sidebar shows.
     const dimStr = this.state.shape === 'round'
@@ -5485,7 +5480,7 @@ class TableConfigurator {
     saved.unshift(config);
     if (saved.length > 10) saved.pop(); // max 10
     localStorage.setItem('zazawoods-saved-configs', JSON.stringify(saved));
-    this.showToast('Konfiguration gespeichert');
+    this.showToast(T('Konfiguration gespeichert'));
     return config;
   }
 
@@ -5499,14 +5494,14 @@ class TableConfigurator {
       list.innerHTML = '';
       empty.style.display = '';
       // Show save button
-      list.innerHTML = `<button id="save-current-btn" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--color-accent);background:var(--color-accent-light);color:var(--color-accent);font-weight:600;font-size:13px;cursor:pointer;margin-bottom:12px;">+ Aktuelle Konfiguration speichern</button>`;
+      list.innerHTML = `<button id="save-current-btn" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--color-accent);background:var(--color-accent-light);color:var(--color-accent);font-weight:600;font-size:13px;cursor:pointer;margin-bottom:12px;">${T('+ Aktuelle Konfiguration speichern')}</button>`;
       list.querySelector('#save-current-btn').onclick = () => {
         this.saveCurrentConfig();
         this.showSavedConfigs(); // refresh
       };
     } else {
       empty.style.display = 'none';
-      let html = `<button id="save-current-btn" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--color-accent);background:var(--color-accent-light);color:var(--color-accent);font-weight:600;font-size:13px;cursor:pointer;margin-bottom:12px;">+ Aktuelle Konfiguration speichern</button>`;
+      let html = `<button id="save-current-btn" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--color-accent);background:var(--color-accent-light);color:var(--color-accent);font-weight:600;font-size:13px;cursor:pointer;margin-bottom:12px;">${T('+ Aktuelle Konfiguration speichern')}</button>`;
       saved.forEach(c => {
         html += `
           <div class="saved-card" data-url="${c.url}">
@@ -5515,7 +5510,7 @@ class TableConfigurator {
               <div class="saved-card-title">${c.title}</div>
               <div class="saved-card-sub">${c.sub}</div>
             </div>
-            <button class="saved-card-del" data-id="${c.id}" title="Löschen">&times;</button>
+            <button class="saved-card-del" data-id="${c.id}" title="${T('Löschen')}">&times;</button>
           </div>`;
       });
       list.innerHTML = html;
@@ -5667,7 +5662,7 @@ class TableConfigurator {
       let c = this._arCache[this._arKey()];
       const ready = env.isIOS ? (c && c.usdz) : (c && c.glb);
       if (!ready) {
-        this.showToast('AR wird geladen …', 0); // sticky until prepared
+        this.showToast(T('AR wird geladen …'), 0); // sticky until prepared
         c = await this._prepareAR(false);
       }
       if (!c) {
@@ -5722,10 +5717,10 @@ class TableConfigurator {
     ov.id = 'ar-auto-overlay';
     ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(255,255,255,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;font-family:Inter,-apple-system,sans-serif;text-align:center;padding:24px;';
     ov.innerHTML =
-      '<div style="font-size:19px;font-weight:600;color:#2f2f2f;">Ihren Tisch in AR ansehen</div>' +
-      '<div style="font-size:14px;color:#777;max-width:280px;">Stellen Sie den konfigurierten Tisch direkt in Ihren Raum.</div>' +
+      '<div style="font-size:19px;font-weight:600;color:#2f2f2f;">' + T('Ihren Tisch in AR ansehen') + '</div>' +
+      '<div style="font-size:14px;color:#777;max-width:280px;">' + T('Stellen Sie den konfigurierten Tisch direkt in Ihren Raum.') + '</div>' +
       '<button id="ar-auto-go" style="background:#577476;color:#fff;border:0;border-radius:8px;padding:15px 40px;font-size:16px;cursor:pointer;">AR starten</button>' +
-      '<button id="ar-auto-skip" style="background:none;border:0;color:#999;font-size:13px;text-decoration:underline;cursor:pointer;">Weiter zum Konfigurator</button>';
+      '<button id="ar-auto-skip" style="background:none;border:0;color:#999;font-size:13px;text-decoration:underline;cursor:pointer;">' + T('Weiter zum Konfigurator') + '</button>';
     document.body.appendChild(ov);
     ov.querySelector('#ar-auto-go').addEventListener('click', () => { ov.remove(); this.handleAR(); });
     ov.querySelector('#ar-auto-skip').addEventListener('click', () => ov.remove());
@@ -5735,7 +5730,7 @@ class TableConfigurator {
     const popup = document.getElementById('ar-popup');
     popup.classList.remove('hidden');
     const qrContainer = document.getElementById('ar-qr');
-    qrContainer.innerHTML = '<div style="font-size:12px;color:#999;padding:60px 0;text-align:center;">QR wird erstellt \u2026</div>';
+    qrContainer.innerHTML = '<div style="font-size:12px;color:#999;padding:60px 0;text-align:center;">' + T('QR wird erstellt …') + '</div>';
     // Upload both formats, QR points at /ar.html which auto-opens native AR
     // on the phone (same flow as the ZW picnic configurator).
     (async () => {
@@ -5778,7 +5773,7 @@ class TableConfigurator {
 
     // Close button
     const closeBtn = document.createElement('button');
-    closeBtn.textContent = 'Schließen';
+    closeBtn.textContent = T('Schließen');
     closeBtn.style.cssText = 'position:fixed;top:20px;right:20px;z-index:100000;padding:12px 24px;border-radius:24px;border:none;background:rgba(0,0,0,0.7);color:#fff;font-size:14px;font-weight:600;cursor:pointer;';
     closeBtn.onclick = () => {
       session.end();
@@ -5991,7 +5986,7 @@ class TableConfigurator {
     const activeLeg = this.legObjects[this.activeLegIndex];
     let legLabel = '';
     if (activeLeg) {
-      const legType = activeLeg.isWood ? 'Holz' : (powder ? powder.name : 'Metall');
+      const legType = activeLeg.isWood ? T('Holz') : (powder ? powder.name : T('Metall'));
       legLabel = `${activeLeg.displayName} (${legType})`;
     }
 
@@ -6005,10 +6000,10 @@ class TableConfigurator {
       ? `\u00d8 ${this.state.length} cm \u00b7 ${this.getThicknessCm()} cm`
       : `${this.state.length} \u00d7 ${this.state.width} \u00d7 ${this.getThicknessCm()} cm`;
     summary.innerHTML = `
-      <strong>${shape.name}</strong> &middot; ${matType.name} ${this.state.behandlungTitle || (color ? color.name : '')}<br>
+      <strong>${shape.name}</strong> &middot; ${matType.name} ${L(this.state.behandlungTitle) || (color ? color.name : '')}<br>
       ${dimStr} &middot;
-      ${edge ? edge.name : 'Gerade Kante'}${extras}
-      ${this.state.zwLegName ? `<br>Tischgestell: ${this.state.zwLegName}` : (legLabel ? `<br>Tischgestell: ${legLabel}` : '')}
+      ${edge ? edge.name : T('Gerade Kante')}${extras}
+      ${this.state.zwLegName ? `<br>${T('Tischgestell')}: ${L(this.state.zwLegName)}` : (legLabel ? `<br>${T('Tischgestell')}: ${legLabel}` : '')}
     `;
 
     // Update live price
@@ -6114,14 +6109,14 @@ class TableConfigurator {
       if (!el) return;
       if (value > 0) {
         // Same format as the picnic configurator: "€ 1.299"
-        el.textContent = '\u20ac ' + new Intl.NumberFormat('de-DE', { maximumFractionDigits: 0 }).format(Math.round(value));
+        el.textContent = '\u20ac ' + new Intl.NumberFormat('nl-NL', { maximumFractionDigits: 0 }).format(Math.round(value));
         el.classList.toggle('price-loading', isStale);
       } else {
         el.textContent = empty;
         el.classList.add('price-loading');
       }
     };
-    setPrice(priceEl,       displayTotal, 'Preis wird berechnet…');
+    setPrice(priceEl,       displayTotal, T('Preis wird berechnet…'));
     setPrice(priceMobileEl, displayTotal, '€ ...');
   }
 

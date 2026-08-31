@@ -1,18 +1,19 @@
-// Zaza Woods Esstisch-Konfigurator — Configuration Data
+// Zaza Woods Eettafel-configurator (NL, zazawoods.nl) — Configuration Data
+// Cloned from the DE configurator; shapes/handles/sizes follow the NL shop.
 
 const BASE_PATH = '..';
 
 // Single cache-bust across the whole app — bumped by the deploy script so all
 // static assets (JS, images, GLBs) invalidate together. Never edit by hand.
-export const BUILD_VERSION = '2da8f153';
+export const BUILD_VERSION = '7f3e9c01';
 
 export const TABLE_SHAPES = [
   {
     id: 'rectangle',
-    name: 'Rechteck',
-    shopifyHandle: 'rechteckiger-esstisch-milano-aus-massiver-eichenholz-mit-baumstammkanten',
+    name: 'Rechthoek',
+    shopifyHandle: 'rechthoekige-eettafel-massief-eikenhout',
     glbFile: `${BASE_PATH}/glb files tables and legs/rectangle.glb`,
-    icon: `<img src="Swatches/Vorm/Rechteck_bw.png?v=${BUILD_VERSION}" alt="Rechteck"/>`,
+    icon: `<img src="Swatches/Vorm/Rechteck_bw.png?v=${BUILD_VERSION}" alt="Rechthoek"/>`,
     meshPrefix: ['rectangle', 'Rectangle'],
     defaultLength: 240,
     defaultWidth: 100,
@@ -21,41 +22,42 @@ export const TABLE_SHAPES = [
   },
   {
     id: 'oval',
-    name: 'Oval',
-    shopifyHandle: 'ovaler-esstisch-danilo-aus-massiver-eichenholz-mit-schweizer-kante',
+    name: 'Ovaal',
+    shopifyHandle: 'ovale-eettafel-danilo-uit-massief-eikenhout-met-een-verjongde-rand',
     glbFile: `${BASE_PATH}/glb files tables and legs/Oval.glb`,
-    icon: `<img src="Swatches/Vorm/Oval_bw.png?v=${BUILD_VERSION}" alt="Oval"/>`,
+    icon: `<img src="Swatches/Vorm/Oval_bw.png?v=${BUILD_VERSION}" alt="Ovaal"/>`,
     meshPrefix: ['Oval'],
     defaultLength: 240,
     defaultWidth: 120,
+    // NL "Danilo" sells one extra small size (160 x 90).
     fixedDimensions: [
-      [180, 90], [200, 100], [220, 100], [240, 120],
+      [160, 90], [180, 90], [200, 100], [220, 100], [240, 120],
       [260, 120], [280, 120], [300, 120], [350, 120], [400, 120]
     ]
   },
   {
     id: 'danish-oval',
-    name: 'Halboval',
-    // Retied to the "Halbovaler Esstisch (White 5%)" Shopify product per user
-    // request. Base variant IDs live in zw-products.json under this same key.
-    shopifyHandle: 'ovaler-esstisch-white-5-aus-massivem-eichenholz',
+    name: 'Deens ovaal',
+    // NL: "Massief eiken tafel Deens Ovaal 'Sergio' met verjongde rand".
+    // Base variant IDs live in zw-products.json under this same key.
+    shopifyHandle: 'massief-eiken-tafel-ovaal',
     glbFile: `${BASE_PATH}/glb files tables and legs/DanishOval.glb`,
-    icon: `<img src="Swatches/Vorm/DanishOval_bw.png?v=${BUILD_VERSION}" alt="Halboval"/>`,
+    icon: `<img src="Swatches/Vorm/DanishOval_bw.png?v=${BUILD_VERSION}" alt="Deens ovaal"/>`,
     meshPrefix: ['Danish_Oval', 'Danish'],
     defaultLength: 240,
     defaultWidth: 120,
-    // Exactly the 9 sizes sold on the ZW product page.
+    // Exactly the 9 sizes sold on the NL product page.
     fixedDimensions: [
-      [180, 90], [200, 100], [220, 100], [240, 120],
+      [180, 100], [200, 100], [220, 100], [240, 110],
       [260, 120], [280, 120], [300, 120], [350, 120], [400, 120]
     ]
   },
   {
     id: 'round',
-    name: 'Rund',
+    name: 'Rond',
     shopifyHandle: 'runder-esstisch-romano-aus-massiver-eichenholz',
     glbFile: `${BASE_PATH}/glb files tables and legs/Round.glb`,
-    icon: `<img src="Swatches/Vorm/Rund_bw.png?v=${BUILD_VERSION}" alt="Rund"/>`,
+    icon: `<img src="Swatches/Vorm/Rund_bw.png?v=${BUILD_VERSION}" alt="Rond"/>`,
     meshPrefix: ['Round'],
     excludeLegs: ['Rondo'],
     defaultLength: 140,
@@ -64,52 +66,26 @@ export const TABLE_SHAPES = [
     lengths: [100, 110, 120, 130, 140, 150, 160, 170, 180]
   },
   {
-    id: 'organic',
-    name: 'Organisch',
-    shopifyHandle: 'esstisch-milano-aus-massivem-eichenholz-mit-baumstammkanten-copy',
-    glbFile: `${BASE_PATH}/glb files tables and legs/Organic.glb`,
-    icon: `<img src="Swatches/Vorm/Organisch_bw.png?v=${BUILD_VERSION}" alt="Organisch"/>`,
-    meshPrefix: ['Organic'],
-    defaultLength: 240,
-    defaultWidth: 120,
-    fixedDimensions: [
-      [200, 100], [220, 110], [240, 120],
-      [260, 130], [280, 140], [300, 140]
-    ]
-  },
-  {
     id: 'bootsform',
-    name: 'Bootsform',
-    shopifyHandle: 'bootsform-esstisch-sergio-aus-massivem-eichenholz',
+    name: 'Stadionvorm',
+    shopifyHandle: 'bootsform-esstisch-sergio-aus-massivem-eichenholz-1',
     glbFile: `${BASE_PATH}/glb files tables and legs/Bootsform.glb`,
-    icon: `<img src="Swatches/Vorm/Bootsform_bw.png?v=${BUILD_VERSION}" alt="Bootsform"/>`,
+    icon: `<img src="Swatches/Vorm/Bootsform_bw.png?v=${BUILD_VERSION}" alt="Stadionvorm"/>`,
     meshPrefix: ['bootsform_', 'Bootsform_'],
     defaultLength: 240,
-    defaultWidth: 110,
-    // Match Shopify variants exactly — 350/400 sold at width 120, not 140.
-    fixedDimensions: [
-      [180, 100], [200, 100], [220, 100], [240, 110],
-      [260, 120], [280, 120], [300, 120], [350, 120], [400, 120]
-    ]
-  },
-  {
-    id: 'halfrond',
-    name: 'Halbrund',
-    shopifyHandle: 'halbkreisform-esstisch-aus-massivem-eichenholz',
-    glbFile: `${BASE_PATH}/glb files tables and legs/Halfrond.glb`,
-    icon: `<img src="Swatches/Vorm/Halbrund_bw.png?v=${BUILD_VERSION}" alt="Halbrund"/>`,
-    meshPrefix: ['Halfrond'],
-    defaultLength: 240,
     defaultWidth: 100,
-    lengths: [180, 200, 220, 240, 260, 280, 300, 350, 400],
-    widths: [90, 100, 110]
+    // NL "Valerio": 7 sizes, all 100 cm wide.
+    fixedDimensions: [
+      [180, 100], [200, 100], [220, 100], [240, 100],
+      [260, 100], [280, 100], [300, 100]
+    ]
   }
 ];
 
 export const MATERIAL_TYPES = {
   oak: {
     id: 'oak',
-    name: 'Eiche',
+    name: 'Eiken',
     thickness: 4,
     roughness: 0.72,
     metalness: 0.0,
@@ -131,7 +107,7 @@ export const MATERIAL_TYPES = {
   },
   ceramic: {
     id: 'ceramic',
-    name: 'Keramik',
+    name: 'Keramiek',
     thickness: 2,
     thicknessOptions: [1.2, 2],
     roughness: 0.35,
@@ -163,17 +139,17 @@ export const MATERIAL_TYPES = {
 };
 
 export const EDGE_OPTIONS = [
-  { id: 'standaard', name: 'Gerade Kante',     description: 'Klassische gerade Kante' },
-  { id: 'facet',     name: 'Schweizer Kante',  description: 'Charakteristische Schweizer Kante', onlyMaterial: ['oak'] },
-  { id: 'boomstam',  name: 'Baumstammkante',   description: 'Natürliche Baumstammkante',         onlyMaterial: ['oak'], onlyShapes: ['rectangle'] }
+  { id: 'standaard', name: 'Rechte kant',     description: 'Klassieke rechte kant' },
+  { id: 'facet',     name: 'Schuine kant',    description: 'Karakteristieke schuine (verjongde) kant', onlyMaterial: ['oak'] },
+  { id: 'boomstam',  name: 'Boomstamkant',    description: 'Natuurlijke boomstamkant',                onlyMaterial: ['oak'], onlyShapes: ['rectangle'] }
 ];
 
 export const POWDER_COAT_COLORS = [
-  { id: 'black',        name: 'Schwarz',          swatch: '#1a1a1a' },
-  { id: 'anthracite',   name: 'Anthrazit',      swatch: '#3d3d3d' },
+  { id: 'black',        name: 'Zwart',          swatch: '#1a1a1a' },
+  { id: 'anthracite',   name: 'Antraciet',      swatch: '#3d3d3d' },
   { id: 'bronze',       name: 'Bronze',          swatch: '#6b5a3e' },
-  { id: 'champagne',    name: 'Champagner',      swatch: '#c9b98a' },
-  { id: 'white',        name: 'Weiß',            swatch: '#f5f5f0' }
+  { id: 'champagne',    name: 'Champagne',      swatch: '#c9b98a' },
+  { id: 'white',        name: 'Wit',            swatch: '#f5f5f0' }
 ];
 
 export const DEFAULT_STATE = {

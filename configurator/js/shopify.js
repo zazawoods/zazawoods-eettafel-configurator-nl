@@ -47,7 +47,7 @@ export function getLineItems() { return []; }
 export async function addToCart() { return; }
 
 export function formatPrice(amount) {
-  return new Intl.NumberFormat('de-DE', {
+  return new Intl.NumberFormat('nl-NL', {
     style: 'currency',
     currency: 'EUR',
     minimumFractionDigits: 0,
