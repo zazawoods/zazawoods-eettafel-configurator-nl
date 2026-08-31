@@ -143,6 +143,25 @@ dessen HANDOFF-Dateien erklären die Historie (Beine, Audits, Mobile-Perf).
       Button; `/pages/eettafel-configurator?shape=halfrond&length=350` → 7 Formen,
       Halfrond 350×100 = € 3.125, Marquee/Footer weg.
 
+11. **Nachträge (Antworten Inhaber, 2026-08-31 abends)**
+    - Douglasie-Tuintafel/Picknicktafel (NL+DE) und Sipo-Tische (DE): bleiben
+      OHNE +200 € (Entscheidung Inhaber).
+    - DE-Datenfehler „Abgerundete Rechteckform" 400 cm < 350 cm korrigiert
+      (400 cm = 4020/4070/4120 € wie Cortado; Produkt nicht im Konfigurator).
+    - Beide neuen Tafeln stehen (via Milano-Duplikat) in der Collection
+      **Eikentafels** — das ist die Seite hinter dem Menü TAFELS → Eikentafels,
+      dort sind sie sichtbar. Hinweis: die Collection `tafels`
+      (Footer-Link „Tafels") ist komplett leer — für ALLE Produkte, war schon
+      vorher so; Befüllen ist Sache des Inhabers.
+    - **Einzelprodukt „Konische houten zuil van eikenhout"** (760 €, wie DE)
+      angelegt: Handle `konische-houten-zuil-van-eikenhout-tafelpoot`
+      (der kurze Handle gehört dem 520-€-Addon), Typ `Onderstel`, Tag
+      `onderstel` → landet automatisch in der Collection `tafel-onderstellen`
+      (Menü TAFELPOTEN), 6 Railway-Renders, aktiv.
+      Produkt-ID 15734007923028, Variante 56989715693908.
+    - Countdown-Balken auf der Konfigurator-Seite bleibt sichtbar
+      (Entscheidung Inhaber).
+
 ## Offen / Fragen an den Inhaber
 
 - ~~Fehlende NL-Addon-Produkte~~ → erledigt (Punkt 9).
@@ -151,8 +170,7 @@ dessen HANDOFF-Dateien erklären die Historie (Beine, Audits, Mobile-Perf).
   existiert (Admin zeigt „Template not available") — rendert mit dem
   Standard-Produkttemplate, genau wie Milano. Verlinkung im Menü/Collections
   ist Sache des Inhabers.
-- **Gartentische / Picknicktische** (Douglas) und DE-Baumscheiben-Tische: bei der
-  +200-€-Erhöhung ausgelassen — Inhaber fragen.
+- ~~Gartentische / Sipo +200?~~ → Inhaber: nein, bleiben wie sie sind (Punkt 11).
 - Die alten NL-Draft-Tische (Salvatore/Mauricio/Valentino/Lorenzo/Verona) sind
   weiterhin Entwürfe und unangetastet.
 - **danish-oval**: Sergio als Hauptprodukt gewählt (älter); Andreas ist
