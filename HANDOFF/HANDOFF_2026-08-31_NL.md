@@ -207,3 +207,11 @@ dessen HANDOFF-Dateien erklären die Historie (Beine, Audits, Mobile-Perf).
 
 Prod-Verifikation: fulltest_nl ALL PASS (alle 7 Formen, alle Karten),
 sizetest 59 Checks PASS, Mobile-Emulation (Pixel-UA) alle 7 Formen PASS.
+
+## Nachtrag 2026-09-03 (Build e5d7a3b9) — Schwarzer Bildschirm auf Pixel
+
+Identischer Fix wie DE-Repo (siehe dessen HANDOFF, Nachtrag 2026-09-03):
+Mobile GPU-Diät (kein MSAA, DPR ≤ 1,5, PCFShadowMap), Lite-Modus-Boot nach
+WebGL-Context-Loss (`zw_gpu_lite`), Fehler-Overlay statt schwarzem Canvas
+(Text hier niederländisch), AR-Prep auf Telefonen erst nach 15 s.
+Recovery-Test lokal RECOVERY PASS; Prod-Mobile-Emulation alle 7 Formen ok.
