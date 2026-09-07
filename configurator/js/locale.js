@@ -52,6 +52,7 @@ export const TITLE_TO_CANONICAL = {
   // "Onderstel", tag "addon"; handles of the four metal legs end in "-addon"
   // because standalone "…Tafelpoot" products already own the plain handles).
   'Konische houten zuil van eikenhout':                 'Konische Holzsäule aus Eichenholz',
+  'Konische Matrix tafelonderstel van eikenhout':       'Konisches Spidertischgestell aus Eichenholz', // wood Konische Spider addon (2026-09-07)
   'Drone Tafelonderstel (set)':                         'Drone Tischbeine (Satz)',
   'Stalen wangen tafelonderstel (set)':                 'Stahlwangen Tischgestell (Satz)',
   'Stalen wangen tafelonderstel (S) (set)':             'Stahlwangen Tischgestell (S) (Satz)',

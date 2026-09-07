@@ -5,9 +5,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=c9b2e7d4';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=a4f1c8e2';
 // NL locale layer: canonical (German) titles internally, Dutch labels via L()/T().
-import { L, T, SHOP_URL, LOCALE, canonicalizeProducts, canonicalTitle } from './locale.js?v=c9b2e7d4';
+import { L, T, SHOP_URL, LOCALE, canonicalizeProducts, canonicalTitle } from './locale.js?v=a4f1c8e2';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -118,6 +118,7 @@ const BEHANDLUNG_TEXTURE_MAP = {
 const ZW_LEG_MODEL_MAP = {
   'Spider Tischgestell (S)':                            { name: 'Matrix',          isWood: false },
   'Konisches Spidertischgestell':                       { name: 'Konische Spider', isWood: false },
+  'Konisches Spidertischgestell aus Eichenholz':        { name: 'Konische Spider', isWood: true  }, // wood = metal Konische Spider geometry + Eiche-Textur (2026-09-07)
   'Thorn Tischgestelle (Satz)':                         { name: 'Pedro',           isWood: false },
   'V Tischgestell':                                     { name: 'V-Form',          isWood: false },
   'X Tischgestell (Satz)':                              { name: 'X-Form',          isWood: false },
@@ -209,6 +210,12 @@ const EXTERNAL_LEG_CACHE = new Map();
 // the Dutch card label), e.g.:
 //   { title: 'Konische Holzsäule aus Eichenholz', variantId: '…', price: 52000 },
 const CATALOG_ONLY_LEGS = [
+  // Konische Spider aus Eichenholz — wood version of the metal Konische Spider.
+  // NL addon product "Konische Matrix tafelonderstel van eikenhout"
+  // (595 € surcharge, created 2026-09-07). 3D: metal 'Konische Spider' geometry
+  // cloned to a wood leg (see metalToWoodClones) + Eiche-Textur. Canonical
+  // German title; Dutch card label via locale.js TITLE_TO_CANONICAL.
+  { title: 'Konisches Spidertischgestell aus Eichenholz', variantId: '57062763266388', price: 59500 }
 ];
 
 
@@ -240,7 +247,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=c9b2e7d4';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal } from './shopify.js?v=a4f1c8e2';
 
 class TableConfigurator {
   constructor() {
@@ -1136,6 +1143,31 @@ class TableConfigurator {
           rawName: clonedObj.name,
           displayName: cloneName,
           isWood: false,
+          originalScale: clonedObj.scale.clone(),
+          originalPosition: clonedObj.position.clone(),
+          childOrigScales: clonedObj.children.map(ch => ch.scale.clone()),
+          geomCenterX: null
+        });
+      }
+    }
+
+    // Create wood clones of specified metal legs (reverse of woodToMetalClones).
+    // Konische Spider aus Eichenholz = the metal 'Konische Spider' geometry
+    // rendered with the Eiche wood material (applyActiveLegMaterial paints any
+    // leg.isWood=true leg with the tabletop wood via box-projected UVs).
+    const metalToWoodClones = ['Konische Spider'];
+    for (const cloneName of metalToWoodClones) {
+      const metalLeg = this.legObjects.find(l => l.displayName === cloneName && !l.isWood);
+      if (metalLeg && !this.legObjects.some(l => l.displayName === cloneName && l.isWood)) {
+        const clonedObj = metalLeg.object.clone(true);
+        clonedObj.name = metalLeg.rawName + '_WOOD_clone';
+        clonedObj.visible = false;
+        model.add(clonedObj);
+        this.legObjects.push({
+          object: clonedObj,
+          rawName: clonedObj.name,
+          displayName: cloneName,
+          isWood: true,
           originalScale: clonedObj.scale.clone(),
           originalPosition: clonedObj.position.clone(),
           childOrigScales: clonedObj.children.map(ch => ch.scale.clone()),
