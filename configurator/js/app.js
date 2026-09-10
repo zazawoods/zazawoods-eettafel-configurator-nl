@@ -5,9 +5,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=96415b81';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=0e478689';
 // NL locale layer: canonical (German) titles internally, Dutch labels via L()/T().
-import { L, T, SHOP_URL, LOCALE, canonicalizeProducts, canonicalTitle } from './locale.js?v=96415b81';
+import { L, T, SHOP_URL, LOCALE, canonicalizeProducts, canonicalTitle } from './locale.js?v=0e478689';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -80,7 +80,9 @@ async function loadZWProducts() {
   } catch (e) { console.warn('[ZW] could not load zw-products-by-handle.json', e); }
   // Overlay live shop prices (non-blocking: on failure the bundled prices stay).
   try {
-    ZW_LIVE_PRICES = await fetchLivePrices();
+    const lp = await fetchLivePrices();
+    ZW_LIVE_PRICES = lp.prices || {};
+    ZW_DISCOUNT_PCT = lp.discountPct || 0;
   } catch (e) { ZW_LIVE_PRICES = ZW_LIVE_PRICES || {}; }
   return ZW_PRODUCTS_DATA;
 }
@@ -251,11 +253,18 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal, fetchLivePrices } from './shopify.js?v=96415b81';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal, fetchLivePrices } from './shopify.js?v=0e478689';
 
 // Live shop prices (variantId → { p: priceCents, c?: compareAtCents }), loaded
 // from /api/live-prices at startup. Null until loaded; empty {} if unavailable.
 let ZW_LIVE_PRICES = null;
+// Current storefront discount fraction (0–1) applied to base tables (e.g. 0.1
+// for a 10 % promo). The shop shows a struck-through regular price + a
+// discounted price on table products; we mirror that in the configurator. The
+// promo covers table collections only, so ONLY the base-table line is
+// discounted here — the leg/edge/finish add-ons stay at full price, matching
+// what the shop and the checkout actually charge.
+let ZW_DISCOUNT_PCT = 0;
 // Return the live price (cents) for a variant if we have one, else the bundled
 // fallback. Keeps the configurator in sync with Shopify with no redeploy.
 function livePrice(variantId, fallbackCents) {
@@ -6189,6 +6198,10 @@ class TableConfigurator {
     // sale, else its normal price). If it ends up higher than `total`, the shop
     // has a scheduled sale and we show the struck-through original.
     let compareTotal = 0;
+    // Full (undiscounted) price of the base-table line, in cents. The automatic
+    // table promo discounts ONLY this line (add-ons are excluded), so we track
+    // it separately to compute the discounted total the way the shop does.
+    let baseFullCents = 0;
     const addLine = (variantId, cents) => {
       const p = livePrice(variantId, cents);
       total += p;
@@ -6198,7 +6211,7 @@ class TableConfigurator {
     let priceIsFresh = false;
     if (product) {
       const baseVariant = findBaseVariant(product, this.state.shape, this.state);
-      if (baseVariant) addLine(baseVariant.id, baseVariant.price);
+      if (baseVariant) { baseFullCents = livePrice(baseVariant.id, baseVariant.price); addLine(baseVariant.id, baseVariant.price); }
       const edgeTitles = EDGE_TITLE_MAP[this.state.edge] || [];
       const edgeAddon = product.addons.Kantenbearbeitung.find(a => edgeTitles.includes(a.title));
       if (edgeAddon) addLine(edgeAddon.variantId, edgeAddon.price);
@@ -6266,9 +6279,21 @@ class TableConfigurator {
     } else {
       setCachedTotal(total);
     }
-    // Show a struck-through original only for a genuine shop sale (live
-    // compare-at total meaningfully above the live total).
-    const wasPrice = (priceIsFresh && compareTotal > displayTotal + 0.5) ? compareTotal : null;
+    // Show the shop's struck-through original + discounted price. Two sources:
+    //  1) The automatic table promo (ZW_DISCOUNT_PCT): discount the base-table
+    //     line only, exactly like the product pages and the checkout.
+    //  2) A scheduled compare-at sale (currently unused): struck compare-at.
+    // `wasPrice` is the crossed-out amount; `showTotal` is the amount charged.
+    let wasPrice = null;
+    let showTotal = displayTotal;
+    if (priceIsFresh && ZW_DISCOUNT_PCT > 0 && baseFullCents > 0) {
+      const baseFullEur = baseFullCents / 100;
+      const baseDiscEur = Math.round(baseFullEur * (1 - ZW_DISCOUNT_PCT) * 100) / 100;
+      const discountedTotal = Math.round((displayTotal - baseFullEur + baseDiscEur) * 100) / 100;
+      if (discountedTotal < displayTotal - 0.005) { wasPrice = displayTotal; showTotal = discountedTotal; }
+    } else if (priceIsFresh && compareTotal > displayTotal + 0.5) {
+      wasPrice = compareTotal; showTotal = displayTotal;
+    }
     const priceEl = document.getElementById('total-price');
     const priceMobileEl = document.getElementById('total-price-mobile');
     const fmt = (v) => '\u20ac ' + new Intl.NumberFormat('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v);
@@ -6289,8 +6314,8 @@ class TableConfigurator {
         el.classList.add('price-loading');
       }
     };
-    setPrice(priceEl,       displayTotal, T('Preis wird berechnet…'));
-    setPrice(priceMobileEl, displayTotal, '€ ...');
+    setPrice(priceEl,       showTotal, T('Preis wird berechnet…'));
+    setPrice(priceMobileEl, showTotal, '€ ...');
   }
 
   showLoader() {
