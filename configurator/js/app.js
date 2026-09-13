@@ -427,8 +427,8 @@ class TableConfigurator {
         if (matType.colors.find(c => c.id === entry[1])) {
           this.state.color = entry[1];
           // Normalize legacy titles: the shop's old "Black" addon is now sold
-          // as "Yakisugi" (€220) — old product buttons still send Black.
-          const TITLE_ALIASES = LOCALE === 'nl' ? {} : { 'Black': 'Yakisugi' };
+          // as "Yakisugi" (€260) — old product buttons still send Black.
+          const TITLE_ALIASES = { 'Black': 'Yakisugi' };
           this.state.behandlungTitle = TITLE_ALIASES[entry[0]] || entry[0];
           this.state.userPickedBehandlung = true;
         }
@@ -6179,7 +6179,7 @@ class TableConfigurator {
   updatePrice() {
     // Rechteck + Yakisugi IS the shop's own Yakisugi table (Milano + burned
     // finish) — sell that exact product with its own variants/prices instead
-    // of Milano + €220 addon. Switching to another Behandlung switches back.
+    // of Milano + €260 addon. Switching to another Behandlung switches back.
     const YAKISUGI_HANDLE = 'gekohlter-esstisch-yakisugi';
     const MILANO_HANDLE = 'rechteckiger-esstisch-milano-aus-massiver-eichenholz-mit-baumstammkanten';
     if (this.state.shape === 'rectangle' && this.state.behandlungTitle === 'Yakisugi') {
@@ -6257,7 +6257,7 @@ class TableConfigurator {
         handleProd.includedBehandlung === this.state.behandlungTitle);
       if (this._behandlungIncluded) {
         behandlungVariant = null;
-      } else if (behandlungAddon && behandlungAddon.price) {
+      } else if (behandlungAddon && livePrice(behandlungAddon.variantId, behandlungAddon.price)) { // live shop price wins (Deep Black 140 / Yakisugi 260) even if bundled price is 0
         addLine(behandlungAddon.variantId, behandlungAddon.price);
       }
       this._selectedVariants = {
