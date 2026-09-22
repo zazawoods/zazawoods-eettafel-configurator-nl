@@ -17,8 +17,8 @@ den unten aufgeführten Punkten.
 | Shop | zazawoods.de | zazawoods.nl (`SHOP_URL` in `js/locale.js`) |
 | Sprache UI | Deutsch (hart im Code) | Niederländisch über `js/locale.js` (`T()` für UI-Strings, `L()` für Produkttitel) + übersetztes `index.html`/`config.js` |
 | Produktdaten | `js/zw-products.json` aus dem DE-Shop | `js/zw-products.json` aus dem NL-Shop (Titel niederländisch, siehe „Datenmodell") |
-| Formen | 7 (inkl. Organisch, Halbrund) | **7**: Rechthoek, Ovaal, Deens ovaal, Rond, Organisch, Stadionvorm, Halfrond — Organisch/Halfrond seit 2026-08-31 als eigene NL-Produkte (`organische-eettafel-pure-van-massief-eikenhout`, `halfronde-eettafel-van-massief-eikenhout`, aus DE übersetzt). |
-| Größen | DE-Varianten | NL-Varianten: Ovaal hat zusätzlich 160×90, Deens ovaal 240×110, Stadionvorm nur 7 Größen (alle 100 breit) |
+| Formen | 7 (inkl. Organisch, Halbrund) | **7**: Rechthoek, Ovaal, Deens ovaal, Rond, Organisch, Bootvorm (ehem. „Stadionvorm"), Halfrond — Organisch/Halfrond seit 2026-08-31 als eigene NL-Produkte (`organische-eettafel-pure-van-massief-eikenhout`, `halfronde-eettafel-van-massief-eikenhout`, aus DE übersetzt). |
+| Größen | DE-Varianten | NL-Varianten: Ovaal hat zusätzlich 160×90, Deens ovaal 240×110, Bootvorm nur 7 Größen (alle 100 breit) |
 | Addon-Beine ohne Shop-Produkt (`CATALOG_ONLY_LEGS`) | 9 Einträge | **leer** — seit 2026-08-31 sind alle Beine (Drone, Stahlwangen, Aeris/Butterfly/Vario/Doppel V/Felix Metall, Konische Holzsäule, U smal) echte NL-Addon-Produkte im Metafeld „addons list“ der Tafeln |
 | Preise Holzbeine | 540 € (Aeris, Ovale Säule) | 440 € für alle Holzbeine (so im NL-Shop) |
 | Yakisugi | eigenes Addon 220 € + Produktwechsel | NL-Finish „Black" (0 €), kein Produktwechsel (`LOCALE === 'nl'` schaltet den Alias ab) |
