@@ -5,7 +5,7 @@ const BASE_PATH = '..';
 
 // Single cache-bust across the whole app — bumped by the deploy script so all
 // static assets (JS, images, GLBs) invalidate together. Never edit by hand.
-export const BUILD_VERSION = '922392fa';
+export const BUILD_VERSION = 'a7c31e02';
 
 export const TABLE_SHAPES = [
   {
@@ -83,10 +83,10 @@ export const TABLE_SHAPES = [
   },
   {
     id: 'bootsform',
-    name: 'Stadionvorm',
+    name: 'Bootvorm',
     shopifyHandle: 'bootsform-esstisch-sergio-aus-massivem-eichenholz-1',
     glbFile: `${BASE_PATH}/glb files tables and legs/Bootsform.glb`,
-    icon: `<img src="Swatches/Vorm/Bootsform_bw.png?v=${BUILD_VERSION}" alt="Stadionvorm"/>`,
+    icon: `<img src="Swatches/Vorm/Bootsform_bw.png?v=${BUILD_VERSION}" alt="Bootvorm"/>`,
     meshPrefix: ['bootsform_', 'Bootsform_'],
     defaultLength: 240,
     defaultWidth: 100,
