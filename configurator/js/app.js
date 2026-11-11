@@ -5,11 +5,15 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=0dbb1ab6';
-import { OAK_PHOTO_SIZE_M, OAK_LAMELLAS } from './oak-lamellas.js?v=0dbb1ab6';
-import * as SolidOak from './solidoak.js?v=0dbb1ab6';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=ea9dc495';
+import { OAK_PHOTO_SIZE_M, OAK_LAMELLAS } from './oak-lamellas.js?v=ea9dc495';
+import * as SolidOak from './solidoak.js?v=ea9dc495';
+
+// De koppen (±X) vangen minder studiolicht dan de zijkanten (±Z); dit bakt het
+// gemeten helderheidsverschil in het kopshout-canvas zodat beide gelijk ogen.
+const ZW_ENDGRAIN_BRIGHTEN = 1.0; // gekalibreerd op scherm (zie solidoak.js)
 // NL locale layer: canonical (German) titles internally, Dutch labels via L()/T().
-import { L, T, SHOP_URL, LOCALE, canonicalizeProducts, canonicalTitle } from './locale.js?v=0dbb1ab6';
+import { L, T, SHOP_URL, LOCALE, canonicalizeProducts, canonicalTitle } from './locale.js?v=ea9dc495';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -259,7 +263,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal, fetchLivePrices } from './shopify.js?v=0dbb1ab6';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal, fetchLivePrices } from './shopify.js?v=ea9dc495';
 
 // Live shop prices (variantId → { p: priceCents, c?: compareAtCents }), loaded
 // from /api/live-prices at startup. Null until loaded; empty {} if unavailable.
@@ -2990,7 +2994,7 @@ class TableConfigurator {
   _getEndgrainMaterials(info) {
     const oak = this._oakInfo;
     if (!oak || !oak.image) return null;
-    const key = [oak.colorId, info.minZ.toFixed(3), info.maxZ.toFixed(3), info.thickness.toFixed(3)].join('|');
+    const key = [oak.colorId, info.minZ.toFixed(3), info.maxZ.toFixed(3), info.thickness.toFixed(3), info.curvedA ? 1 : 0, info.curvedB ? 1 : 0].join('|');
     let mats = this._endgrainCache.get(key);
     if (!mats) {
       if (this._endgrainCache.size > 32) {
@@ -3012,14 +3016,18 @@ class TableConfigurator {
           thickness: info.thickness,
           seed: SolidOak.endgrainSeed(oak.colorId, side),
           maxTex, anisotropy,
+          fadeEdges: side === 'A' ? !!info.curvedA : !!info.curvedB,
+          brighten: ZW_ENDGRAIN_BRIGHTEN,
         });
+        // Belichting gelijk aan het blad/de zijkanten, zodat de kop niet
+        // donkerder oogt dan de rest (gebruikersfeedback 2026-11-11)
         return new THREE.MeshStandardMaterial({
           map: tex,
           bumpMap: tex,
-          bumpScale: 0.02,
-          roughness: Math.min((oak.roughness ?? matType.roughness) + 0.08, 1),
+          bumpScale: 0.006,
+          roughness: oak.roughness ?? matType.roughness,
           metalness: matType.metalness,
-          envMapIntensity: 0.25,
+          envMapIntensity: 0.4,
         });
       });
       this._endgrainCache.set(key, mats);
