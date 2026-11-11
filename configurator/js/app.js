@@ -5,15 +5,15 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=4fd62f07';
-import { OAK_PHOTO_SIZE_M, OAK_LAMELLAS } from './oak-lamellas.js?v=4fd62f07';
-import * as SolidOak from './solidoak.js?v=4fd62f07';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=903b5c00';
+import { OAK_PHOTO_SIZE_M, OAK_LAMELLAS } from './oak-lamellas.js?v=903b5c00';
+import * as SolidOak from './solidoak.js?v=903b5c00';
 
 // De koppen (±X) vangen minder studiolicht dan de zijkanten (±Z); dit bakt het
 // gemeten helderheidsverschil in het kopshout-canvas zodat beide gelijk ogen.
 const ZW_ENDGRAIN_BRIGHTEN = 1.0; // gekalibreerd op scherm (zie solidoak.js)
 // NL locale layer: canonical (German) titles internally, Dutch labels via L()/T().
-import { L, T, SHOP_URL, LOCALE, canonicalizeProducts, canonicalTitle } from './locale.js?v=4fd62f07';
+import { L, T, SHOP_URL, LOCALE, canonicalizeProducts, canonicalTitle } from './locale.js?v=903b5c00';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -263,7 +263,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal, fetchLivePrices } from './shopify.js?v=4fd62f07';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal, fetchLivePrices } from './shopify.js?v=903b5c00';
 
 // Live shop prices (variantId → { p: priceCents, c?: compareAtCents }), loaded
 // from /api/live-prices at startup. Null until loaded; empty {} if unavailable.
