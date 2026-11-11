@@ -5,15 +5,15 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=ea9dc495';
-import { OAK_PHOTO_SIZE_M, OAK_LAMELLAS } from './oak-lamellas.js?v=ea9dc495';
-import * as SolidOak from './solidoak.js?v=ea9dc495';
+import { TABLE_SHAPES, MATERIAL_TYPES, EDGE_OPTIONS, POWDER_COAT_COLORS, DEFAULT_STATE, BUILD_VERSION } from './config.js?v=4fd62f07';
+import { OAK_PHOTO_SIZE_M, OAK_LAMELLAS } from './oak-lamellas.js?v=4fd62f07';
+import * as SolidOak from './solidoak.js?v=4fd62f07';
 
 // De koppen (±X) vangen minder studiolicht dan de zijkanten (±Z); dit bakt het
 // gemeten helderheidsverschil in het kopshout-canvas zodat beide gelijk ogen.
 const ZW_ENDGRAIN_BRIGHTEN = 1.0; // gekalibreerd op scherm (zie solidoak.js)
 // NL locale layer: canonical (German) titles internally, Dutch labels via L()/T().
-import { L, T, SHOP_URL, LOCALE, canonicalizeProducts, canonicalTitle } from './locale.js?v=ea9dc495';
+import { L, T, SHOP_URL, LOCALE, canonicalizeProducts, canonicalTitle } from './locale.js?v=4fd62f07';
 
 // ─── Zaza Woods Untergestell whitelist (user-supplied 2026-06-19) ───
 // model = { name, isWood }  → green card, clicking loads 3D model
@@ -263,7 +263,7 @@ function findBaseVariant(product, shape, state) {
   return product.baseVariants.find(v => (v.opt1||'').startsWith(lenPrefix)) || product.baseVariants[0];
 }
 
-import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal, fetchLivePrices } from './shopify.js?v=ea9dc495';
+import { fetchAllPrices, formatPrice, getCachedTotal, setCachedTotal, fetchLivePrices } from './shopify.js?v=4fd62f07';
 
 // Live shop prices (variantId → { p: priceCents, c?: compareAtCents }), loaded
 // from /api/live-prices at startup. Null until loaded; empty {} if unavailable.
@@ -4553,6 +4553,16 @@ class TableConfigurator {
     if (btn) btn.addEventListener('click', cartHandler);
     const btnMobile = document.getElementById('btn-add-to-cart-mobile');
     if (btnMobile) btnMobile.addEventListener('click', cartHandler);
+
+    // Collapsible configuration summary (bogade-style "Esstisch ⌄" row)
+    const summaryToggle = document.getElementById('summary-toggle');
+    const summaryText = document.getElementById('summary-text');
+    if (summaryToggle && summaryText) {
+      summaryToggle.addEventListener('click', () => {
+        const open = summaryText.classList.toggle('summary-collapsed');
+        summaryToggle.setAttribute('aria-expanded', open ? 'false' : 'true');
+      });
+    }
   }
 
   renderShapeGrid() {
@@ -6387,6 +6397,16 @@ class TableConfigurator {
       ${this.state.zwLegName ? `<br>${T('Tischgestell')}: ${L(this.state.zwLegName)}` : (legLabel ? `<br>${T('Tischgestell')}: ${legLabel}` : '')}
     `;
 
+    // Levertijd van de huidige vorm (van de Shopify-productpagina, config.js)
+    const deliveryEl = document.getElementById('delivery-text');
+    const deliveryMobileEl = document.getElementById('delivery-text-mobile');
+    const deliveryStr = shape && shape.deliveryTime ? `Levertijd ${shape.deliveryTime}` : '';
+    if (deliveryEl) {
+      deliveryEl.textContent = deliveryStr;
+      deliveryEl.parentElement.style.visibility = deliveryStr ? '' : 'hidden';
+    }
+    if (deliveryMobileEl) deliveryMobileEl.textContent = deliveryStr;
+
     // Update live price
     this.updatePrice();
 
@@ -6536,6 +6556,23 @@ class TableConfigurator {
     };
     setPrice(priceEl,       showTotal, T('Preis wird berechnet…'));
     setPrice(priceMobileEl, showTotal, '€ ...');
+
+    // Bogade-style summary row price (always the amount actually charged)
+    const summaryPriceEl = document.getElementById('summary-price');
+    if (summaryPriceEl) summaryPriceEl.textContent = showTotal > 0 ? fmt(showTotal) : '';
+
+    // Discount badge ("-10%") above the total while a shop promo is active
+    const badgeEl = document.getElementById('discount-badge');
+    if (badgeEl) {
+      let pct = 0;
+      if (wasPrice && wasPrice > showTotal) {
+        pct = ZW_DISCOUNT_PCT > 0
+          ? Math.round(ZW_DISCOUNT_PCT * 100)
+          : Math.round((1 - showTotal / wasPrice) * 100);
+      }
+      badgeEl.textContent = pct > 0 ? `-${pct}%` : '';
+      badgeEl.style.display = pct > 0 ? '' : 'none';
+    }
   }
 
   showLoader() {

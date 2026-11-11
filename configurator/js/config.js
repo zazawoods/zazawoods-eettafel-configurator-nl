@@ -5,13 +5,15 @@ const BASE_PATH = '..';
 
 // Single cache-bust across the whole app — bumped by the deploy script so all
 // static assets (JS, images, GLBs) invalidate together. Never edit by hand.
-export const BUILD_VERSION = 'ea9dc495';
+export const BUILD_VERSION = '4fd62f07';
 
 export const TABLE_SHAPES = [
   {
     id: 'rectangle',
     name: 'Rechthoek',
     shopifyHandle: 'rechthoekige-eettafel-massief-eikenhout',
+    // Levertijd zoals op de Shopify-productpagina (stand 2026-11-11)
+    deliveryTime: '3–4 weken',
     glbFile: `${BASE_PATH}/glb files tables and legs/rectangle.glb`,
     icon: `<img src="Swatches/Vorm/Rechteck_bw.png?v=${BUILD_VERSION}" alt="Rechthoek"/>`,
     meshPrefix: ['rectangle', 'Rectangle'],
@@ -24,6 +26,8 @@ export const TABLE_SHAPES = [
     id: 'oval',
     name: 'Ovaal',
     shopifyHandle: 'ovale-eettafel-danilo-uit-massief-eikenhout-met-een-verjongde-rand',
+    // Levertijd zoals op de Shopify-productpagina (stand 2026-11-11)
+    deliveryTime: '3–4 weken',
     glbFile: `${BASE_PATH}/glb files tables and legs/Oval.glb`,
     icon: `<img src="Swatches/Vorm/Oval_bw.png?v=${BUILD_VERSION}" alt="Ovaal"/>`,
     meshPrefix: ['Oval'],
@@ -41,6 +45,8 @@ export const TABLE_SHAPES = [
     // NL: "Massief eiken tafel Deens Ovaal 'Sergio' met verjongde rand".
     // Base variant IDs live in zw-products.json under this same key.
     shopifyHandle: 'massief-eiken-tafel-ovaal',
+    // Levertijd zoals op de Shopify-productpagina (stand 2026-11-11)
+    deliveryTime: '3–4 weken',
     glbFile: `${BASE_PATH}/glb files tables and legs/DanishOval.glb`,
     icon: `<img src="Swatches/Vorm/DanishOval_bw.png?v=${BUILD_VERSION}" alt="Deens ovaal"/>`,
     meshPrefix: ['Danish_Oval', 'Danish'],
@@ -56,6 +62,8 @@ export const TABLE_SHAPES = [
     id: 'round',
     name: 'Rond',
     shopifyHandle: 'runder-esstisch-romano-aus-massiver-eichenholz',
+    // Levertijd zoals op de Shopify-productpagina (stand 2026-11-11)
+    deliveryTime: '3–4 weken',
     glbFile: `${BASE_PATH}/glb files tables and legs/Round.glb`,
     icon: `<img src="Swatches/Vorm/Rund_bw.png?v=${BUILD_VERSION}" alt="Rond"/>`,
     meshPrefix: ['Round'],
@@ -71,6 +79,8 @@ export const TABLE_SHAPES = [
     // NL: "Organische eettafel „Pure“ van massief eikenhout" (15732884177236),
     // created 2026-08-31 as a translated copy of the DE product (same 6 sizes).
     shopifyHandle: 'organische-eettafel-pure-van-massief-eikenhout',
+    // Levertijd zoals op de Shopify-productpagina (stand 2026-11-11)
+    deliveryTime: '3–4 weken',
     glbFile: `${BASE_PATH}/glb files tables and legs/Organic.glb`,
     icon: `<img src="Swatches/Vorm/Organisch_bw.png?v=${BUILD_VERSION}" alt="Organisch"/>`,
     meshPrefix: ['Organic'],
@@ -85,6 +95,8 @@ export const TABLE_SHAPES = [
     id: 'bootsform',
     name: 'Bootvorm',
     shopifyHandle: 'bootsform-esstisch-sergio-aus-massivem-eichenholz-1',
+    // Levertijd zoals op de Shopify-productpagina (stand 2026-11-11)
+    deliveryTime: '3–4 weken',
     glbFile: `${BASE_PATH}/glb files tables and legs/Bootsform.glb`,
     icon: `<img src="Swatches/Vorm/Bootsform_bw.png?v=${BUILD_VERSION}" alt="Bootvorm"/>`,
     meshPrefix: ['bootsform_', 'Bootsform_'],
@@ -102,6 +114,8 @@ export const TABLE_SHAPES = [
     // NL: "Halfronde eettafel van massief eikenhout" (15732884767060), created
     // 2026-08-31 as a translated copy of the DE product (9 lengths × 3 widths).
     shopifyHandle: 'halfronde-eettafel-van-massief-eikenhout',
+    // Levertijd zoals op de Shopify-productpagina (stand 2026-11-11)
+    deliveryTime: '3–4 weken',
     glbFile: `${BASE_PATH}/glb files tables and legs/Halfrond.glb`,
     icon: `<img src="Swatches/Vorm/Halbrund_bw.png?v=${BUILD_VERSION}" alt="Halfrond"/>`,
     meshPrefix: ['Halfrond'],
