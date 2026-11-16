@@ -52,6 +52,9 @@ export const TABLE_SHAPES = [
     meshPrefix: ['Danish_Oval', 'Danish'],
     defaultLength: 240,
     defaultWidth: 120,
+    // The GLB tabletop is natively 240.6 x 109.4 cm. Without this the table
+    // was drawn ~10 cm narrower than the selected width.
+    modelWidth: 109.4,
     // Exactly the 9 sizes sold on the NL product page.
     fixedDimensions: [
       [180, 100], [200, 100], [220, 100], [240, 110],
@@ -102,6 +105,9 @@ export const TABLE_SHAPES = [
     meshPrefix: ['bootsform_', 'Bootsform_'],
     defaultLength: 240,
     defaultWidth: 100,
+    // Bootsform.glb is natively 240 x 110 cm; NL sells every size 100 cm wide.
+    // Without this the table was drawn 110 cm wide.
+    modelWidth: 110,
     // NL "Valerio": 7 sizes, all 100 cm wide.
     fixedDimensions: [
       [180, 100], [200, 100], [220, 100], [240, 100],
